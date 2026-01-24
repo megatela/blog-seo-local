@@ -1,0 +1,12 @@
+---
+import { client } from '../../lib/sanity';
+
+export async function getStaticPaths() {
+  const clusters = await client.fetch(`*[_type == "cluster"]{ "slug": slug.current }`);
+  return clusters.map((c) => ({ params: { cluster: c.slug } }));
+}
+
+const { cluster } = Astro.params;
+---
+<h1>Página del Clúster: {cluster}</h1>
+<p>Aquí se listarán todos los posts de este clúster pronto.</p>

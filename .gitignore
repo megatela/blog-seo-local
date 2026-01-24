@@ -1,0 +1,18 @@
+# Dependencias (lo más pesado)
+node_modules/
+web/node_modules/
+studio/node_modules/
+
+# Variables sensibles (tus llaves maestras)
+.env
+web/.env
+studio/.env
+
+# Archivos de compilación
+dist/
+web/dist/
+.sanity/
+
+# Basura del sistema
+.DS_Store
+Thumbs.db

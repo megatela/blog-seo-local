@@ -1,0 +1,60 @@
+---
+import { client, urlFor } from '../../lib/sanity'; // Importamos urlFor
+import { PortableText } from '@portabletext/react';
+
+export async function getStaticPaths() {
+  const posts = await client.fetch(`*[_type == "post"]{
+    "slug": slug.current,
+    "cluster": cluster->slug.current
+  }`);
+  return posts.map((post) => ({
+    params: { cluster: post.cluster || 'sin-categoria', slug: post.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+
+// 1. Pedimos el campo 'mainImage' en la consulta
+const post = await client.fetch(`*[_type == "post" && slug.current == $slug][0]{
+  title,
+  "h1": h1Title,
+  mainImage, 
+  content, 
+  "clusterName": cluster->title
+}`, { slug });
+
+if (!post) return Astro.redirect('/404');
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>{post.title} | Mi Blog SEO</title>
+    <style>
+      .content { line-height: 1.6; font-family: sans-serif; }
+      .main-image { width: 100%; height: auto; border-radius: 8px; margin-bottom: 2rem; }
+    </style>
+  </head>
+  <body>
+    <nav style="background: #f4f4f4; padding: 1rem; margin-bottom: 2rem;">
+      <a href="/">Inicio</a> > <span>{post.clusterName}</span> > <strong>{post.title}</strong>
+    </nav>
+
+    <main style="max-width: 800px; margin: 0 auto; padding: 0 1rem;">
+      {post.mainImage && (
+        <img 
+          src={urlFor(post.mainImage).width(800).url()} 
+          alt={post.title} 
+          class="main-image"
+        />
+      )}
+
+      <h1>{post.h1 || post.title}</h1>
+      <hr />
+
+      <div class="content">
+        <PortableText value={post.content} />
+      </div>
+    </main>
+  </body>
+</html>
