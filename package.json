@@ -6,8 +6,7 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "preview": "astro preview"
   },
   "dependencies": {
     "@sanity/astro": "^3.2.11",
@@ -17,11 +16,5 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sanity": "^3.68.3"
-  },
-  "devDependencies": {
-    "@astrojs/check": "^0.9.4",
-    "typescript": "^5.7.3",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1"
   }
 }
