@@ -1,8 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { urlFor } from '../utils/image'; // Asegúrate de tener este helper
-import { sanityClient } from "sanity:client";
+import { urlFor } from '../utils/image';
+import { useSanityClient } from "@sanity/astro";
 
+// Definimos el cliente de Sanity de forma compatible con el build de Vercel
+const sanityClient = useSanityClient();
+
+// Consulta para traer los datos, incluyendo el texto ALT de la imagen
 const proyectos = await sanityClient.fetch(`*[_type == "caseStudy"]{
   title,
   clientName,
@@ -13,32 +17,37 @@ const proyectos = await sanityClient.fetch(`*[_type == "caseStudy"]{
 ---
 
 <Layout title="Casos de Éxito | Arquitecto SEO Local">
-  <main>
-    <h1>Mis Casos de Éxito</h1>
+  <main style="max-width: 800px; margin: 0 auto; padding: 20px; font-family: sans-serif;">
+    <h1 style="border-bottom: 2px solid #EEE; padding-bottom: 10px;">Mis Casos de Éxito</h1>
+    
+    {proyectos.length === 0 && <p>Cargando casos de éxito...</p>}
+
     {proyectos.map((proyecto) => (
-      <article style="border: 1px solid #ccc; padding: 20px; margin-bottom: 20px; border-radius: 8px;">
-        <h2>{proyecto.title}</h2>
-        <p><strong>Cliente:</strong> {proyecto.clientName}</p>
+      <article style="border: 1px solid #ddd; padding: 25px; margin-bottom: 30px; border-radius: 12px; background: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <h2 style="color: #1a1a1a; margin-top: 0;">{proyecto.title}</h2>
+        <p style="color: #666;"><strong>Cliente:</strong> {proyecto.clientName}</p>
         
         {proyecto.mainImage && (
           <img 
             src={urlFor(proyecto.mainImage).url()} 
-            alt={proyecto.mainImage.alt} 
-            style="max-width: 100%; height: auto;"
+            alt={proyecto.mainImage.alt || "Imagen de caso de éxito"} 
+            style="width: 100%; height: auto; border-radius: 8px; margin: 15px 0;"
           />
         )}
 
-        <div style="display: flex; gap: 20px; margin: 20px 0; background: #f9f9f9; padding: 10px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; background: #f0f7ff; padding: 15px; border-radius: 8px;">
           {proyecto.metrics?.map((metrica) => (
-            <div>
-              <span style="display: block; font-size: 0.8rem;">{metrica.label}</span>
-              <strong style="font-size: 1.5rem; color: #007bff;">{metrica.value}</strong>
+            <div style="text-align: center;">
+              <span style="display: block; font-size: 0.85rem; color: #555; text-transform: uppercase;">{metrica.label}</span>
+              <strong style="font-size: 1.6rem; color: #0070f3;">{metrica.value}</strong>
             </div>
           ))}
         </div>
 
-        <p>{proyecto.body}</p>
+        <p style="line-height: 1.6; color: #444; white-space: pre-line;">{proyecto.body}</p>
       </article>
     ))}
+    
+    <a href="/" style="display: inline-block; margin-top: 20px; color: #0070f3; text-decoration: none;">← Volver al inicio</a>
   </main>
 </Layout>
