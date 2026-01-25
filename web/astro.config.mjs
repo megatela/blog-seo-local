@@ -1,6 +1,15 @@
 import { defineConfig } from 'astro/config';
-import react from '@astrojs/react';
-// https://astro.build/config
+import sanity from "@sanity/astro";
+
 export default defineConfig({
-  integrations: [react()]
+  integrations: [
+    sanity({
+      projectId: "qv6q15su", // Tu ID de proyecto
+      dataset: "production",
+      useCdn: true,
+      stega: {
+        enabled: false,
+      },
+    }),
+  ],
 });

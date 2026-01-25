@@ -1,12 +1,16 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { urlFor } from '../utils/image';
-import { useSanityClient } from "@sanity/astro";
+import { createClient } from "@sanity/client";
 
-// Definimos el cliente de Sanity de forma compatible con el build de Vercel
-const sanityClient = useSanityClient();
+// Configuración directa para evitar errores de integración
+const sanityClient = createClient({
+  projectId: "qv6q15su",
+  dataset: "production",
+  useCdn: true,
+  apiVersion: "2024-01-01"
+});
 
-// Consulta para traer los datos, incluyendo el texto ALT de la imagen
 const proyectos = await sanityClient.fetch(`*[_type == "caseStudy"]{
   title,
   clientName,
@@ -20,7 +24,7 @@ const proyectos = await sanityClient.fetch(`*[_type == "caseStudy"]{
   <main style="max-width: 800px; margin: 0 auto; padding: 20px; font-family: sans-serif;">
     <h1 style="border-bottom: 2px solid #EEE; padding-bottom: 10px;">Mis Casos de Éxito</h1>
     
-    {proyectos.length === 0 && <p>Cargando casos de éxito...</p>}
+    {proyectos.length === 0 && <p>No se encontraron proyectos publicados.</p>}
 
     {proyectos.map((proyecto) => (
       <article style="border: 1px solid #ddd; padding: 25px; margin-bottom: 30px; border-radius: 12px; background: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
@@ -30,7 +34,7 @@ const proyectos = await sanityClient.fetch(`*[_type == "caseStudy"]{
         {proyecto.mainImage && (
           <img 
             src={urlFor(proyecto.mainImage).url()} 
-            alt={proyecto.mainImage.alt || "Imagen de caso de éxito"} 
+            alt={proyecto.mainImage.alt || "Imagen del proyecto"} 
             style="width: 100%; height: auto; border-radius: 8px; margin: 15px 0;"
           />
         )}
