@@ -1,7 +1,25 @@
-"dependencies": {
-  "@sanity/astro": "^3.1.2",
-  "@sanity/client": "^6.12.1",
-  "@sanity/image-url": "^1.0.2",
-  "astro": "^4.0.0",
-  ... (aquí seguirán tus otras librerías)
+{
+  "name": "blog-seo-local",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@sanity/astro": "^3.1.2",
+    "@sanity/client": "^6.15.11",
+    "@sanity/image-url": "^1.0.2",
+    "astro": "^4.16.18",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sanity": "^3.68.3"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1"
+  }
 }
