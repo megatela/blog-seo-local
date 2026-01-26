@@ -1,25 +1,85 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+const clusters = [
+  {
+    title: "Google Business Profile Masterclass",
+    description: "De la configuración básica a la recuperación de fichas.",
+    pilar: { name: "Guía Definitiva GBP 2024", url: "/google-business-profile/guia-definitiva" },
+    supports: ["Checklist Verificación Video", "Categorías Secundarias", "Gestión de Atributos", "Recuperación de Fichas"]
+  },
+  {
+    title: "Factores de Ranking Local",
+    description: "Análisis técnico de proximidad, relevancia y prominencia.",
+    pilar: { name: "Algoritmo Local Explicado", url: "/factores-ranking/algoritmo-explicado" },
+    supports: ["SEO On-Page & SILO", "Link Building Local", "Señales de Comportamiento", "Impacto de Reseñas"]
+  },
+  {
+    title: "SEO Local Vertical",
+    description: "Estrategias específicas por nicho de alta competencia.",
+    pilar: { name: "Manual de Operaciones por Industria", url: "/verticales/manual-industria" },
+    supports: ["SEO para Abogados", "Clínicas Dentales", "Servicios de Emergencia", "Multi-Ubicación"]
+  },
+  {
+    title: "Herramientas y Auditoría",
+    description: "Stack tecnológico para agencias y consultores.",
+    pilar: { name: "El Stack Tecnológico Definitivo", url: "/herramientas/stack-definitivo" },
+    supports: ["Auditoría en 30 Minutos", "Grid Tracking", "Automatización Reseñas", "Schema Generators"]
+  },
+  {
+    title: "Casos de Éxito",
+    description: "Prueba social y demostración de resultados.",
+    pilar: { name: "Resultados Reales: Cómo escalamos", url: "/casos-de-exito" },
+    supports: ["Caso +300% llamadas", "Recuperación Penalización", "Dominio 5 ciudades", "Midiendo ROI Real"]
+  },
+  {
+    title: "AI Local Search (AEO)",
+    description: "Optimización para SGE y Gemini Local.",
+    pilar: { name: "El Futuro: SGE y Gemini Local", url: "/ai-local/futuro-sge" },
+    supports: ["Estructura de Entidad", "SEO Conversacional", "Imágenes en IA", "Keywords a Contexto"]
+  }
+];
 ---
 
-<Layout title="Arquitecto SEO Local | Portada">
-  <main style="max-width: 800px; margin: 0 auto; padding: 60px 20px; text-align: center; font-family: sans-serif;">
-    <h1 style="font-size: 3rem; margin-bottom: 10px;">Arquitecto SEO Local</h1>
-    <p style="font-size: 1.2rem; color: #666; margin-bottom: 40px;">Estrategias reales para negocios que quieren dominar su zona.</p>
+<Layout title="Arquitecto SEO Local | Plan Maestro">
+  <main style="max-width: 1100px; margin: 0 auto; padding: 40px 20px; font-family: system-ui, sans-serif;">
+    
+    <header style="text-align: center; margin-bottom: 60px;">
+      <h1 style="font-size: 2.5rem; color: #111;">Plan Maestro de Contenidos</h1>
+      <p style="font-size: 1.2rem; color: #555; max-width: 700px; margin: 0 auto;">
+        6 Clústers de Autoridad diseñados para satisfacer las señales de E-E-A-T y dominar el Customer Journey.
+      </p>
+    </header>
 
-    <nav style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-      <a href="/casos-de-exito" style="background-color: #0070f3; color: white; padding: 15px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: background 0.3s;">
-        🚀 Ver Casos de Éxito
-      </a>
-      
-      <a href="/contactame" style="background-color: #1a1a1a; color: white; padding: 15px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: background 0.3s;">
-        📩 Contactar
-      </a>
-    </nav>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px;">
+      {clusters.map(cluster => (
+        <section style="border: 1px solid #eaeaea; border-radius: 12px; padding: 25px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+          <h2 style="color: #0070f3; margin-top: 0; font-size: 1.4rem;">{cluster.title}</h2>
+          <p style="font-size: 0.9rem; color: #666; margin-bottom: 20px;">{cluster.description}</p>
+          
+          <div style="margin-bottom: 15px;">
+            <span style="display: block; font-size: 0.75rem; font-weight: bold; color: #999; text-transform: uppercase;">Página Pilar</span>
+            <a href={cluster.pilar.url} style="color: #1a1a1a; font-weight: bold; text-decoration: none; border-bottom: 1px solid #0070f3;">
+              {cluster.pilar.name}
+            </a>
+          </div>
 
-    <section style="margin-top: 60px; text-align: left; border-top: 1px solid #eee; padding-top: 40px;">
-      <h2>Últimas Guías</h2>
-      <p>Explora mis artículos sobre Google Business Profile y SEO Local.</p>
-      </section>
+          <div>
+            <span style="display: block; font-size: 0.75rem; font-weight: bold; color: #999; text-transform: uppercase; margin-bottom: 8px;">Artículos de Soporte</span>
+            <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.85rem; color: #444;">
+              {cluster.supports.map(item => (
+                <li style="margin-bottom: 6px; padding-left: 15px; position: relative;">
+                  <span style="position: absolute; left: 0; color: #0070f3;">•</span> {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ))}
+    </div>
+
+    <footer style="margin-top: 60px; text-align: center; padding: 40px; border-top: 1px solid #eee;">
+      <a href="/contactame" style="color: #0070f3; text-decoration: none; font-weight: bold;">¿Necesitas una estrategia personalizada? Contáctame</a>
+    </footer>
   </main>
 </Layout>
