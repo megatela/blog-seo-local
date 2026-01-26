@@ -41,7 +41,7 @@ const clusters = [
 ];
 ---
 
-<Layout title="Arquitecto SEO Local | Plan Maestro de Contenidos">
+<Layout title="Arquitecto SEO Local | Plan Maestro de Contenidos TEST EN VIVO">
   <main style="max-width: 1200px; margin: 0 auto; padding: 60px 20px; font-family: 'Inter', system-ui, sans-serif; color: #1a1a1a; background-color: #fcfcfc;">
     
     <header style="text-align: center; margin-bottom: 80px;">
