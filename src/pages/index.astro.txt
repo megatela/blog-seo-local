@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Arquitecto SEO Local | Portada">
+  <main style="max-width: 800px; margin: 0 auto; padding: 60px 20px; text-align: center; font-family: sans-serif;">
+    <h1 style="font-size: 3rem; margin-bottom: 10px;">Arquitecto SEO Local</h1>
+    <p style="font-size: 1.2rem; color: #666; margin-bottom: 40px;">Estrategias reales para negocios que quieren dominar su zona.</p>
+
+    <nav style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+      <a href="/casos-de-exito" style="background-color: #0070f3; color: white; padding: 15px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: background 0.3s;">
+        🚀 Ver Casos de Éxito
+      </a>
+      
+      <a href="/contactame" style="background-color: #1a1a1a; color: white; padding: 15px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: background 0.3s;">
+        📩 Contactar
+      </a>
+    </nav>
+
+    <section style="margin-top: 60px; text-align: left; border-top: 1px solid #eee; padding-top: 40px;">
+      <h2>Últimas Guías</h2>
+      <p>Explora mis artículos sobre Google Business Profile y SEO Local.</p>
+      </section>
+  </main>
+</Layout>
