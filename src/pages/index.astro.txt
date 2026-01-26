@@ -4,8 +4,8 @@ import Layout from '../layouts/Layout.astro';
 const clusters = [
   {
     title: "Google Business Profile Masterclass",
-    description: "De la configuración básica a la recuperación de fichas.",
-    pilar: { name: "Guía Definitiva GBP 2024", url: "#", status: "draft" },
+    description: "De la configuración básica a la recuperación de fichas suspendidas.",
+    pilar: { name: "Guía Definitiva GBP 2024", url: "/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024", status: "live" },
     supports: ["Checklist Verificación Video", "Categorías Secundarias", "Gestión de Atributos", "Recuperación de Fichas"]
   },
   {
@@ -28,13 +28,13 @@ const clusters = [
   },
   {
     title: "Casos de Éxito",
-    description: "Prueba social y demostración de resultados.",
+    description: "Prueba social y demostración de resultados reales.",
     pilar: { name: "Resultados Reales: Cómo escalamos", url: "/casos-de-exito", status: "live" },
     supports: ["Caso +300% llamadas", "Recuperación Penalización", "Dominio 5 ciudades", "Midiendo ROI Real"]
   },
   {
     title: "AI Local Search (AEO)",
-    description: "Optimización para SGE y Gemini Local.",
+    description: "Optimización para SGE, Gemini Local y Answer Engines.",
     pilar: { name: "El Futuro: SGE y Gemini Local", url: "#", status: "draft" },
     supports: ["Estructura de Entidad", "SEO Conversacional", "Imágenes en IA", "Keywords a Contexto"]
   }
@@ -42,40 +42,43 @@ const clusters = [
 ---
 
 <Layout title="Arquitecto SEO Local | Plan Maestro de Contenidos">
-  <main style="max-width: 1100px; margin: 0 auto; padding: 40px 20px; font-family: system-ui, sans-serif; color: #333;">
+  <main style="max-width: 1200px; margin: 0 auto; padding: 60px 20px; font-family: 'Inter', system-ui, sans-serif; color: #1a1a1a; background-color: #fcfcfc;">
     
-    <header style="text-align: center; margin-bottom: 60px;">
-      <h1 style="font-size: clamp(2rem, 5vw, 3rem); color: #111; margin-bottom: 1rem;">Plan Maestro de Contenidos</h1>
-      <p style="font-size: 1.1rem; color: #666; max-width: 800px; margin: 0 auto; line-height: 1.6;">
-        Arquitectura de <strong>6 Clústers de Autoridad</strong> diseñados para cubrir el Customer Journey y satisfacer las señales de E-E-A-T.
+    <header style="text-align: center; margin-bottom: 80px;">
+      <h1 style="font-size: clamp(2.5rem, 6vw, 3.5rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1.5rem; line-height: 1.1;">
+        Plan Maestro de <span style="color: #0070f3;">Contenidos</span>
+      </h1>
+      <p style="font-size: 1.25rem; color: #666; max-width: 750px; margin: 0 auto; line-height: 1.6;">
+        6 Clústers de Autoridad diseñados para dominar el <strong>Customer Journey</strong> y satisfacer las señales de E-E-A-T en SEO Local.
       </p>
     </header>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2.5rem;">
       {clusters.map(cluster => (
-        <section style="border: 1px solid #eee; border-radius: 16px; padding: 2rem; background: #fff; display: flex; flex-direction: column;">
-          <h2 style="color: #0070f3; margin: 0 0 0.5rem 0; font-size: 1.5rem;">{cluster.title}</h2>
-          <p style="font-size: 0.95rem; color: #777; margin-bottom: 1.5rem; min-height: 3rem;">{cluster.description}</p>
+        <section style="background: #ffffff; border: 1px solid #eaeaea; border-radius: 20px; padding: 2.5rem; display: flex; flex-direction: column; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+          <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 0.75rem 0; color: #111;">{cluster.title}</h2>
+          <p style="font-size: 1rem; color: #666; margin-bottom: 2rem; line-height: 1.5;">{cluster.description}</p>
           
-          <div style="margin-bottom: 1.5rem;">
-            <span style="display: block; font-size: 0.7rem; font-weight: 800; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Página Pilar</span>
+          <div style="margin-bottom: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 12px;">
+            <span style="display: block; font-size: 0.7rem; font-weight: 800; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Página Pilar</span>
             {cluster.pilar.status === "live" ? (
-              <a href={cluster.pilar.url} style="color: #0070f3; font-weight: 700; text-decoration: none; font-size: 1.1rem;">
-                {cluster.pilar.name} →
+              <a href={cluster.pilar.url} style="color: #0070f3; font-weight: 700; text-decoration: none; font-size: 1.05rem; display: flex; align-items: center; gap: 5px;">
+                {cluster.pilar.name} <span>→</span>
               </a>
             ) : (
-              <span style="color: #999; font-weight: 600; font-size: 1.1rem; cursor: help;" title="Próximamente">
-                {cluster.pilar.name} <small style="font-weight: normal; font-size: 0.7rem; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">Próximamente</small>
+              <span style="color: #999; font-weight: 600; font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
+                {cluster.pilar.name} 
+                <span style="font-size: 0.65rem; background: #e2e2e2; color: #666; padding: 2px 8px; border-radius: 20px; font-weight: 500;">Próximamente</span>
               </span>
             )}
           </div>
 
           <div style="margin-top: auto;">
-            <span style="display: block; font-size: 0.7rem; font-weight: 800; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.8rem;">Artículos de Soporte</span>
-            <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.9rem;">
+            <span style="display: block; font-size: 0.7rem; font-weight: 800; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Artículos de Soporte</span>
+            <ul style="list-style: none; padding: 0; margin: 0;">
               {cluster.supports.map(item => (
-                <li style="margin-bottom: 0.6rem; color: #bbb; display: flex; align-items: center;">
-                  <span style="width: 6px; height: 6px; background: #eee; border-radius: 50%; margin-right: 10px;"></span>
+                <li style="margin-bottom: 0.75rem; color: #999; font-size: 0.9rem; display: flex; align-items: flex-start; gap: 10px;">
+                  <span style="color: #ddd; margin-top: 2px;">•</span>
                   {item}
                 </li>
               ))}
@@ -85,11 +88,20 @@ const clusters = [
       ))}
     </div>
 
-    <footer style="margin-top: 5rem; text-align: center; padding: 3rem; background: #fafafa; border-radius: 20px;">
-      <h3 style="margin-bottom: 1rem;">¿Listo para escalar tu visibilidad local?</h3>
-      <a href="/contactame" style="display: inline-block; background: #1a1a1a; color: white; padding: 1rem 2rem; border-radius: 10px; text-decoration: none; font-weight: 600;">
-        Solicitar Auditoría de 30 Minutos
+    <footer style="margin-top: 80px; text-align: center; padding: 50px; border-top: 1px solid #eee;">
+      <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem;">¿Necesitas una estrategia de SEO Local a medida?</h3>
+      <a href="/contactame" style="display: inline-block; background: #0070f3; color: white; padding: 1.25rem 2.5rem; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 14px 0 rgba(0,118,255,0.39);">
+        Contactar ahora
       </a>
     </footer>
   </main>
 </Layout>
+
+<style>
+  /* Efecto sutil al pasar el ratón sobre las tarjetas */
+  section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.05) !important;
+    border-color: #0070f3 !important;
+  }
+</style>
