@@ -5,71 +5,78 @@ const clusters = [
   {
     title: "Google Business Profile Masterclass",
     description: "De la configuración básica a la recuperación de fichas.",
-    pilar: { name: "Guía Definitiva GBP 2024", url: "/google-business-profile/guia-definitiva" },
+    pilar: { name: "Guía Definitiva GBP 2024", url: "#", status: "draft" },
     supports: ["Checklist Verificación Video", "Categorías Secundarias", "Gestión de Atributos", "Recuperación de Fichas"]
   },
   {
     title: "Factores de Ranking Local",
     description: "Análisis técnico de proximidad, relevancia y prominencia.",
-    pilar: { name: "Algoritmo Local Explicado", url: "/factores-ranking/algoritmo-explicado" },
+    pilar: { name: "Algoritmo Local Explicado", url: "#", status: "draft" },
     supports: ["SEO On-Page & SILO", "Link Building Local", "Señales de Comportamiento", "Impacto de Reseñas"]
   },
   {
     title: "SEO Local Vertical",
     description: "Estrategias específicas por nicho de alta competencia.",
-    pilar: { name: "Manual de Operaciones por Industria", url: "/verticales/manual-industria" },
+    pilar: { name: "Manual de Operaciones por Industria", url: "#", status: "draft" },
     supports: ["SEO para Abogados", "Clínicas Dentales", "Servicios de Emergencia", "Multi-Ubicación"]
   },
   {
     title: "Herramientas y Auditoría",
     description: "Stack tecnológico para agencias y consultores.",
-    pilar: { name: "El Stack Tecnológico Definitivo", url: "/herramientas/stack-definitivo" },
+    pilar: { name: "El Stack Tecnológico Definitivo", url: "#", status: "draft" },
     supports: ["Auditoría en 30 Minutos", "Grid Tracking", "Automatización Reseñas", "Schema Generators"]
   },
   {
     title: "Casos de Éxito",
     description: "Prueba social y demostración de resultados.",
-    pilar: { name: "Resultados Reales: Cómo escalamos", url: "/casos-de-exito" },
+    pilar: { name: "Resultados Reales: Cómo escalamos", url: "/casos-de-exito", status: "live" },
     supports: ["Caso +300% llamadas", "Recuperación Penalización", "Dominio 5 ciudades", "Midiendo ROI Real"]
   },
   {
     title: "AI Local Search (AEO)",
     description: "Optimización para SGE y Gemini Local.",
-    pilar: { name: "El Futuro: SGE y Gemini Local", url: "/ai-local/futuro-sge" },
+    pilar: { name: "El Futuro: SGE y Gemini Local", url: "#", status: "draft" },
     supports: ["Estructura de Entidad", "SEO Conversacional", "Imágenes en IA", "Keywords a Contexto"]
   }
 ];
 ---
 
-<Layout title="Arquitecto SEO Local | Plan Maestro">
-  <main style="max-width: 1100px; margin: 0 auto; padding: 40px 20px; font-family: system-ui, sans-serif;">
+<Layout title="Arquitecto SEO Local | Plan Maestro de Contenidos">
+  <main style="max-width: 1100px; margin: 0 auto; padding: 40px 20px; font-family: system-ui, sans-serif; color: #333;">
     
     <header style="text-align: center; margin-bottom: 60px;">
-      <h1 style="font-size: 2.5rem; color: #111;">Plan Maestro de Contenidos</h1>
-      <p style="font-size: 1.2rem; color: #555; max-width: 700px; margin: 0 auto;">
-        6 Clústers de Autoridad diseñados para satisfacer las señales de E-E-A-T y dominar el Customer Journey.
+      <h1 style="font-size: clamp(2rem, 5vw, 3rem); color: #111; margin-bottom: 1rem;">Plan Maestro de Contenidos</h1>
+      <p style="font-size: 1.1rem; color: #666; max-width: 800px; margin: 0 auto; line-height: 1.6;">
+        Arquitectura de <strong>6 Clústers de Autoridad</strong> diseñados para cubrir el Customer Journey y satisfacer las señales de E-E-A-T.
       </p>
     </header>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
       {clusters.map(cluster => (
-        <section style="border: 1px solid #eaeaea; border-radius: 12px; padding: 25px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-          <h2 style="color: #0070f3; margin-top: 0; font-size: 1.4rem;">{cluster.title}</h2>
-          <p style="font-size: 0.9rem; color: #666; margin-bottom: 20px;">{cluster.description}</p>
+        <section style="border: 1px solid #eee; border-radius: 16px; padding: 2rem; background: #fff; display: flex; flex-direction: column;">
+          <h2 style="color: #0070f3; margin: 0 0 0.5rem 0; font-size: 1.5rem;">{cluster.title}</h2>
+          <p style="font-size: 0.95rem; color: #777; margin-bottom: 1.5rem; min-height: 3rem;">{cluster.description}</p>
           
-          <div style="margin-bottom: 15px;">
-            <span style="display: block; font-size: 0.75rem; font-weight: bold; color: #999; text-transform: uppercase;">Página Pilar</span>
-            <a href={cluster.pilar.url} style="color: #1a1a1a; font-weight: bold; text-decoration: none; border-bottom: 1px solid #0070f3;">
-              {cluster.pilar.name}
-            </a>
+          <div style="margin-bottom: 1.5rem;">
+            <span style="display: block; font-size: 0.7rem; font-weight: 800; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Página Pilar</span>
+            {cluster.pilar.status === "live" ? (
+              <a href={cluster.pilar.url} style="color: #0070f3; font-weight: 700; text-decoration: none; font-size: 1.1rem;">
+                {cluster.pilar.name} →
+              </a>
+            ) : (
+              <span style="color: #999; font-weight: 600; font-size: 1.1rem; cursor: help;" title="Próximamente">
+                {cluster.pilar.name} <small style="font-weight: normal; font-size: 0.7rem; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">Próximamente</small>
+              </span>
+            )}
           </div>
 
-          <div>
-            <span style="display: block; font-size: 0.75rem; font-weight: bold; color: #999; text-transform: uppercase; margin-bottom: 8px;">Artículos de Soporte</span>
-            <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.85rem; color: #444;">
+          <div style="margin-top: auto;">
+            <span style="display: block; font-size: 0.7rem; font-weight: 800; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.8rem;">Artículos de Soporte</span>
+            <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.9rem;">
               {cluster.supports.map(item => (
-                <li style="margin-bottom: 6px; padding-left: 15px; position: relative;">
-                  <span style="position: absolute; left: 0; color: #0070f3;">•</span> {item}
+                <li style="margin-bottom: 0.6rem; color: #bbb; display: flex; align-items: center;">
+                  <span style="width: 6px; height: 6px; background: #eee; border-radius: 50%; margin-right: 10px;"></span>
+                  {item}
                 </li>
               ))}
             </ul>
@@ -78,8 +85,11 @@ const clusters = [
       ))}
     </div>
 
-    <footer style="margin-top: 60px; text-align: center; padding: 40px; border-top: 1px solid #eee;">
-      <a href="/contactame" style="color: #0070f3; text-decoration: none; font-weight: bold;">¿Necesitas una estrategia personalizada? Contáctame</a>
+    <footer style="margin-top: 5rem; text-align: center; padding: 3rem; background: #fafafa; border-radius: 20px;">
+      <h3 style="margin-bottom: 1rem;">¿Listo para escalar tu visibilidad local?</h3>
+      <a href="/contactame" style="display: inline-block; background: #1a1a1a; color: white; padding: 1rem 2rem; border-radius: 10px; text-decoration: none; font-weight: 600;">
+        Solicitar Auditoría de 30 Minutos
+      </a>
     </footer>
   </main>
 </Layout>
