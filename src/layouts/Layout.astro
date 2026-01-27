@@ -1,23 +1,58 @@
 ---
-// src/layouts/Layout.astro
 interface Props {
-  title: string;
+	title: string;
+	description?: string;
 }
-const { title } = Astro.props;
+
+const { 
+	title, 
+	description = "Consultoría estratégica de SEO Local. Especialistas en Google Business Profile y posicionamiento en mapas para negocios locales." 
+} = Astro.props;
 ---
+
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title}</title>
-  </head>
-  <body>
-    <slot /> </body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content={description} />
+		<meta name="generator" content={Astro.generator} />
+		
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		
+		<title>{title}</title>
+
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+	</head>
+	<body>
+		<slot />
+	</body>
 </html>
 
 <style is:global>
-  html { font-family: system-ui, sans-serif; background: #fff; }
-  body { margin: 0; padding: 20px; }
+	:root {
+		--accent: #0070f3;
+		--accent-light: #e0f0ff;
+	}
+	* {
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0;
+	}
+	html {
+		font-family: 'Inter', system-ui, sans-serif;
+		background: #ffffff;
+		color: #1a1a1a;
+		scroll-behavior: smooth;
+	}
+	body {
+		min-height: 100vh;
+		line-height: 1.5;
+	}
+	img {
+		max-width: 100%;
+		display: block;
+	}
 </style>
