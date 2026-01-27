@@ -2,9 +2,13 @@ import post from './post'
 import cluster from './cluster'
 import caseStudy from './caseStudy'
 
-// Aquí registramos los 3 pilares de tu arquitectura headless
+/**
+ * Este archivo actúa como el "índice" de tu base de datos.
+ * Cada vez que añadimos un nuevo tipo de contenido (como 'cluster'),
+ * debemos exportarlo aquí para que Sanity lo muestre en el panel.
+ */
 export const schemaTypes = [
-  post,      // Tus artículos optimizados
-  cluster,   // Tus clústeres de autoridad (GBP, IA, etc.)
-  caseStudy  // Tus pruebas de resultados y autoridad
+  post,      // Artículos individuales
+  cluster,   // Secciones pilar (GBP, IA, etc.)
+  caseStudy  // Casos de éxito
 ]

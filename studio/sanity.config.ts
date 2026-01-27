@@ -1,7 +1,6 @@
 import { defineConfig } from 'sanity'
 import { deskTool } from 'sanity/desk'
-// Eliminamos la importación de visionTool que causa el error
-import { schemaTypes } from './schemaTypes'
+import { schemaTypes } from './schemaTypes' // Al estar dentro de 'studio', la ruta es directa
 
 export default defineConfig({
   name: 'default',
@@ -12,7 +11,6 @@ export default defineConfig({
 
   plugins: [
     deskTool(), 
-    // Eliminamos visionTool() de la lista de plugins
   ],
 
   schema: {
