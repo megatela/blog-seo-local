@@ -5,9 +5,10 @@ const clusters = [
   {
     title: "Google Business Profile Masterclass",
     description: "De la configuración básica a la recuperación de fichas suspendidas.",
+    url: "/google-business-profile",
     pilar: { 
       name: "Guía Definitiva GBP 2024", 
-      url: "/google-business-profile", 
+      url: "/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024", 
       status: "live" 
     },
     supports: ["Checklist Verificación Video", "Categorías Secundarias", "Gestión de Atributos", "Recuperación de Fichas"]
@@ -15,6 +16,7 @@ const clusters = [
   {
     title: "Factores de Ranking Local",
     description: "Análisis técnico de proximidad, relevancia y prominencia.",
+    url: "/factores-ranking",
     pilar: { 
       name: "Algoritmo Local Explicado", 
       url: "/factores-ranking", 
@@ -25,6 +27,7 @@ const clusters = [
   {
     title: "SEO Local Vertical",
     description: "Estrategias específicas por nicho de alta competencia.",
+    url: "/seo-vertical",
     pilar: { 
       name: "Manual de Operaciones por Industria", 
       url: "/seo-vertical", 
@@ -35,6 +38,7 @@ const clusters = [
   {
     title: "Herramientas y Auditoría",
     description: "Stack tecnológico para agencias y consultores.",
+    url: "/herramientas",
     pilar: { 
       name: "El Stack Tecnológico Definitivo", 
       url: "/herramientas", 
@@ -45,6 +49,7 @@ const clusters = [
   {
     title: "Casos de Éxito",
     description: "Prueba social y demostración de resultados reales.",
+    url: "/casos-de-exito",
     pilar: { 
       name: "Resultados Reales: Cómo escalamos", 
       url: "/casos-de-exito", 
@@ -55,6 +60,7 @@ const clusters = [
   {
     title: "AI Local Search (AEO)",
     description: "Optimización para SGE, Gemini Local y Answer Engines.",
+    url: "/ai-seo",
     pilar: { 
       name: "El Futuro: SGE y Gemini Local", 
       url: "/ai-seo", 
@@ -83,7 +89,13 @@ const clusters = [
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2.5rem;">
       {clusters.map(cluster => (
         <section style="background: #ffffff; border: 1px solid #eaeaea; border-radius: 20px; padding: 2.5rem; display: flex; flex-direction: column; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
-          <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 0.75rem 0; color: #111;">{cluster.title}</h2>
+          
+          <a href={cluster.url} style="text-decoration: none; color: inherit;">
+            <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 0.75rem 0; color: #111; transition: color 0.2s;">
+              {cluster.title}
+            </h2>
+          </a>
+
           <p style="font-size: 1rem; color: #666; margin-bottom: 2rem; line-height: 1.5;">{cluster.description}</p>
           
           <div style="margin-bottom: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 12px;">
@@ -129,5 +141,8 @@ const clusters = [
     transform: translateY(-5px);
     box-shadow: 0 12px 20px rgba(0,0,0,0.05) !important;
     border-color: #0070f3 !important;
+  }
+  h2:hover {
+    color: #0070f3 !important;
   }
 </style>
