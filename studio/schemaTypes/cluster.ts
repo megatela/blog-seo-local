@@ -1,12 +1,40 @@
-import { defineField, defineType } from 'sanity'
-
-export default defineType({
+export default {
   name: 'cluster',
   title: 'Clúster de Contenido',
   type: 'document',
   fields: [
-    defineField({ name: 'title', title: 'Nombre del Clúster', type: 'string', validation: Rule => Rule.required() }),
-    defineField({ name: 'slug', title: 'Slug', type: 'slug', options: { source: 'title' } }),
-    defineField({ name: 'description', title: 'Descripción del Clúster', type: 'text' }),
+    {
+      name: 'title',
+      title: 'Nombre del Clúster',
+      type: 'string',
+    },
+    {
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      options: {
+        source: 'title',
+        maxLength: 96,
+      },
+    },
+    {
+      name: 'description',
+      title: 'Descripción Corta (SEO)',
+      type: 'text',
+    },
+    {
+      name: 'image',
+      title: 'Imagen de Portada',
+      type: 'image',
+      options: {
+        hotspot: true,
+      },
+    },
+    {
+      name: 'content',
+      title: 'Contenido Detallado del Clúster',
+      type: 'array',
+      of: [{ type: 'block' }],
+    },
   ],
-})
+}
