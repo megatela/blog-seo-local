@@ -5,61 +5,84 @@ const clusters = [
   {
     title: "Google Business Profile Masterclass",
     description: "De la configuración básica a la recuperación de fichas suspendidas.",
-    pilar: { name: "Guía Definitiva GBP 2024", url: "/google-business-profile/guia-definitiva", status: "draft" },
+    pilar: { 
+      name: "Guía Definitiva GBP 2024", 
+      url: "/google-business-profile", 
+      status: "live" 
+    },
     supports: ["Checklist Verificación Video", "Categorías Secundarias", "Gestión de Atributos", "Recuperación de Fichas"]
   },
   {
     title: "Factores de Ranking Local",
     description: "Análisis técnico de proximidad, relevancia y prominencia.",
-    pilar: { name: "Algoritmo Local Explicado", url: "#", status: "draft" },
+    pilar: { 
+      name: "Algoritmo Local Explicado", 
+      url: "/factores-ranking", 
+      status: "draft" 
+    },
     supports: ["SEO On-Page & SILO", "Link Building Local", "Señales de Comportamiento", "Impacto de Reseñas"]
   },
   {
     title: "SEO Local Vertical",
     description: "Estrategias específicas por nicho de alta competencia.",
-    pilar: { name: "Manual de Operaciones por Industria", url: "#", status: "draft" },
+    pilar: { 
+      name: "Manual de Operaciones por Industria", 
+      url: "/seo-vertical", 
+      status: "draft" 
+    },
     supports: ["SEO para Abogados", "Clínicas Dentales", "Servicios de Emergencia", "Multi-Ubicación"]
   },
   {
     title: "Herramientas y Auditoría",
     description: "Stack tecnológico para agencias y consultores.",
-    pilar: { name: "El Stack Tecnológico Definitivo", url: "#", status: "draft" },
+    pilar: { 
+      name: "El Stack Tecnológico Definitivo", 
+      url: "/herramientas", 
+      status: "draft" 
+    },
     supports: ["Auditoría en 30 Minutos", "Grid Tracking", "Automatización Reseñas", "Schema Generators"]
   },
   {
     title: "Casos de Éxito",
     description: "Prueba social y demostración de resultados reales.",
-    pilar: { name: "Resultados Reales: Cómo escalamos", url: "/casos-de-exito", status: "live" },
+    pilar: { 
+      name: "Resultados Reales: Cómo escalamos", 
+      url: "/casos-de-exito", 
+      status: "live" 
+    },
     supports: ["Caso +300% llamadas", "Recuperación Penalización", "Dominio 5 ciudades", "Midiendo ROI Real"]
   },
   {
     title: "AI Local Search (AEO)",
     description: "Optimización para SGE, Gemini Local y Answer Engines.",
-    pilar: { name: "El Futuro: SGE y Gemini Local", url: "#", status: "draft" },
+    pilar: { 
+      name: "El Futuro: SGE y Gemini Local", 
+      url: "/ai-seo", 
+      status: "draft" 
+    },
     supports: ["Estructura de Entidad", "SEO Conversacional", "Imágenes en IA", "Keywords a Contexto"]
   }
 ];
 ---
+
 <Layout 
   title="Arquitecto SEO Local | Plan Maestro de Contenidos"
-  description="Aprende a dominar el SEO Local con nuestro Plan Maestro: 6 clústeres de autoridad para posicionar negocios en Google Maps y Google Search."
+  description="Domina el SEO Local con nuestro Plan Maestro: 6 clústeres de autoridad diseñados para posicionar negocios en Google Maps y Google Search."
 >
-
-<Layout title="Arquitecto SEO Local | Plan Maestro de Contenidos">
-  <main style="max-width: 1200px; margin: 0 auto; padding: 60px 20px; font-family: system-ui, -apple-system, sans-serif; color: #1a1a1a; background-color: #fcfcfc;">
+  <main style="max-width: 1200px; margin: 0 auto; padding: 60px 20px; color: #1a1a1a;">
     
     <header style="text-align: center; margin-bottom: 80px;">
       <h1 style="font-size: clamp(2.5rem, 6vw, 3.5rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1.5rem; line-height: 1.1;">
         Plan Maestro de <span style="color: #0070f3;">Contenidos</span>
       </h1>
       <p style="font-size: 1.25rem; color: #666; max-width: 750px; margin: 0 auto; line-height: 1.6;">
-        Arquitectura de 6 Clústers de Autoridad diseñados para dominar el Customer Journey y satisfacer las señales de E-E-A-T.
+        Arquitectura de autoridad diseñada para dominar el <strong>Customer Journey</strong> local y maximizar señales de E-E-A-T.
       </p>
     </header>
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2.5rem;">
       {clusters.map(cluster => (
-        <section style="background: #ffffff; border: 1px solid #eaeaea; border-radius: 20px; padding: 2.5rem; display: flex; flex-direction: column; transition: transform 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+        <section style="background: #ffffff; border: 1px solid #eaeaea; border-radius: 20px; padding: 2.5rem; display: flex; flex-direction: column; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
           <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 0.75rem 0; color: #111;">{cluster.title}</h2>
           <p style="font-size: 1rem; color: #666; margin-bottom: 2rem; line-height: 1.5;">{cluster.description}</p>
           
@@ -67,7 +90,7 @@ const clusters = [
             <span style="display: block; font-size: 0.7rem; font-weight: 800; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Página Pilar</span>
             {cluster.pilar.status === "live" ? (
               <a href={cluster.pilar.url} style="color: #0070f3; font-weight: 700; text-decoration: none; font-size: 1.05rem; display: flex; align-items: center; gap: 5px;">
-                {cluster.pilar.name} →
+                {cluster.pilar.name} <span>→</span>
               </a>
             ) : (
               <span style="color: #999; font-weight: 600; font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
@@ -82,7 +105,7 @@ const clusters = [
             <ul style="list-style: none; padding: 0; margin: 0;">
               {cluster.supports.map(item => (
                 <li style="margin-bottom: 0.75rem; color: #999; font-size: 0.9rem; display: flex; align-items: flex-start; gap: 10px;">
-                  <span style="color: #ddd;">•</span>
+                  <span style="color: #ddd; margin-top: 2px;">•</span>
                   {item}
                 </li>
               ))}
@@ -92,11 +115,19 @@ const clusters = [
       ))}
     </div>
 
-    <footer style="margin-top: 80px; text-align: center; padding: 50px; border-top: 1px solid #eee;">
-      <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem;">¿Necesitas una estrategia de SEO Local a medida?</h3>
+    <footer style="margin-top: 80px; text-align: center; padding: 60px; border-top: 1px solid #eee; background: #fff;">
+      <h3 style="font-size: 1.75rem; margin-bottom: 1.5rem;">¿Buscas resultados reales en Google Maps?</h3>
       <a href="/contactame" style="display: inline-block; background: #0070f3; color: white; padding: 1.25rem 2.5rem; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 14px 0 rgba(0,118,255,0.39);">
-        Contactar ahora
+        Solicitar Auditoría SEO
       </a>
     </footer>
   </main>
 </Layout>
+
+<style>
+  section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.05) !important;
+    border-color: #0070f3 !important;
+  }
+</style>
