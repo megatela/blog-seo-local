@@ -1,31 +1,51 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-// 1. Definimos las rutas que Astro debe generar y sus metadatos SEO
+// 1. Definimos TODAS las rutas que la Home referencia
 export function getStaticPaths() {
   return [
     { 
       params: { cluster: 'google-business-profile' }, 
       props: { 
         title: "Google Business Profile Masterclass | SEO Local",
-        description: "Domina Google Business Profile: Aprende a optimizar tu ficha, gestionar reseñas y subir posiciones en Google Maps para captar más clientes locales."
+        description: "Aprende a optimizar tu ficha, gestionar reseñas y subir posiciones en Google Maps para captar más clientes locales."
       } 
     },
     { 
       params: { cluster: 'factores-ranking' }, 
       props: { 
-        title: "Factores de Ranking Local | Algoritmo Maps", 
-        description: "Análisis técnico de los factores que influyen en el posicionamiento local: proximidad, relevancia y prominencia explicados."
+        title: "Factores de Ranking Local | Algoritmo Google", 
+        description: "Análisis de los factores que influyen en el SEO Local: proximidad, relevancia y prominencia."
       } 
     },
     { 
       params: { cluster: 'seo-vertical' }, 
       props: { 
         title: "SEO Local Vertical | Estrategias por Nicho", 
-        description: "Estrategias de posicionamiento local específicas para abogados, dentistas y servicios de emergencia."
+        description: "Optimización SEO específica para sectores de alta competencia como abogados y clínicas."
+      } 
+    },
+    { 
+      params: { cluster: 'herramientas' }, 
+      props: { 
+        title: "Herramientas y Auditoría SEO Local", 
+        description: "El stack tecnológico definitivo para auditar y gestionar negocios locales de forma profesional."
+      } 
+    },
+    { 
+      params: { cluster: 'casos-de-exito' }, 
+      props: { 
+        title: "Casos de Éxito SEO Local", 
+        description: "Resultados reales y estrategias aplicadas para multiplicar la visibilidad de negocios locales."
+      } 
+    },
+    { 
+      params: { cluster: 'ai-seo' }, 
+      props: { 
+        title: "AI Local Search (AEO) | El Futuro del SEO", 
+        description: "Cómo optimizar tu negocio para aparecer en las respuestas de IA (SGE, Gemini y ChatGPT)."
       } 
     }
-    // Puedes añadir más clústeres aquí siguiendo este mismo formato
   ];
 }
 
@@ -34,7 +54,7 @@ const { title, description } = Astro.props;
 ---
 
 <Layout title={title} description={description}>
-  <main style="max-width: 900px; margin: 0 auto; padding: 60px 20px; font-family: system-ui, -apple-system, sans-serif;">
+  <main style="max-width: 900px; margin: 0 auto; padding: 60px 20px; font-family: system-ui, sans-serif;">
     
     <nav style="margin-bottom: 40px;">
       <a href="/" style="color: #0070f3; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 8px;">
@@ -47,29 +67,29 @@ const { title, description } = Astro.props;
         {title.split('|')[0]}
       </h1>
       <p style="font-size: 1.25rem; color: #666; line-height: 1.6; max-width: 700px;">
-        Bienvenido al clúster especializado en <strong>{cluster.replace(/-/g, ' ')}</strong>. Aquí encontrarás la hoja de ruta para dominar esta área del SEO Local.
+        Sección especializada en <strong>{cluster.replace(/-/g, ' ')}</strong>. Aquí se agrupa el conocimiento estratégico para dominar esta área.
       </p>
     </header>
 
     <section style="background: #f8f9fa; border: 1px solid #eaeaea; border-radius: 24px; padding: 40px;">
-      <h2 style="font-size: 1.5rem; margin-bottom: 30px; font-weight: 700;">Artículos y Guías disponibles</h2>
+      <h2 style="font-size: 1.5rem; margin-bottom: 30px; font-weight: 700; color: #111;">Artículos en este Clúster</h2>
       
       <div style="display: grid; gap: 20px;">
         {cluster === 'google-business-profile' ? (
-          <a href={`/${cluster}/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024`} style="display: block; background: white; padding: 25px; border-radius: 16px; text-decoration: none; color: inherit; border: 1px solid #eee; transition: all 0.2s ease;">
-            <h3 style="color: #0070f3; margin-bottom: 10px; font-size: 1.25rem;">Guía Definitiva GBP 2024 →</h3>
-            <p style="color: #666; font-size: 0.95rem; line-height: 1.5;">El manual pilar para entender cómo funciona el Local Pack y cómo optimizar cada sección de tu ficha.</p>
+          <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" style="display: block; background: white; padding: 25px; border-radius: 16px; text-decoration: none; color: inherit; border: 1px solid #eee; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+            <h3 style="color: #0070f3; margin-bottom: 10px; font-size: 1.25rem; font-weight: 700;">Guía Definitiva GBP 2024 →</h3>
+            <p style="color: #666; font-size: 0.95rem; line-height: 1.5;">Manual pilar para optimizar tu ficha desde cero y alcanzar el Top 3.</p>
           </a>
         ) : (
           <div style="background: white; padding: 30px; border-radius: 16px; border: 1px dashed #ccc; text-align: center;">
-            <p style="color: #999; font-style: italic;">Próximamente se publicarán los artículos de este clúster.</p>
+            <p style="color: #999; font-style: italic;">El contenido para este clúster se está procesando en Sanity y aparecerá aquí próximamente.</p>
           </div>
         )}
       </div>
     </section>
 
     <footer style="margin-top: 80px; padding-top: 40px; border-top: 1px solid #eee; text-align: center;">
-      <p style="color: #888; font-size: 0.9rem;">Estrategia de contenidos diseñada para autoridad tópica (Topic Authority).</p>
+      <p style="color: #aaa; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">Topic Authority Framework</p>
     </footer>
 
   </main>
@@ -79,6 +99,6 @@ const { title, description } = Astro.props;
   a:hover {
     border-color: #0070f3 !important;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.05) !important;
   }
 </style>
