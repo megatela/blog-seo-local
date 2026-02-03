@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 import sanity from '@sanity/astro';
-import react from '@astrojs/react'; // El panel de Sanity necesita React
-import vercel from '@astrojs/vercel/serverless';
+import react from '@astrojs/react';
+import vercel from '@astrojs/vercel/serverless'; // Volvemos a /serverless para Astro 4
 
 export default defineConfig({
   output: 'server',
@@ -11,7 +11,7 @@ export default defineConfig({
     sanity({
       projectId: 'qv6q15su',
       dataset: 'production',
-      studioBasePath: '/studio', // Esto crea la URL /studio automáticamente
+      studioBasePath: '/studio',
     }),
   ],
 });
