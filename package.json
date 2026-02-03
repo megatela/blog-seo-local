@@ -15,8 +15,10 @@
     "@sanity/client": "^7.6.0",
     "@sanity/image-url": "^1.1.0",
     "astro": "^4.16.18",
+    "lucide-react": "^0.563.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "sanity": "^3.68.3"
+    "sanity": "^3.68.3",
+    "styled-components": "^6.3.8"
   }
 }
