@@ -9,16 +9,16 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "@astrojs/react": "^3.6.3",
-    "@astrojs/vercel": "^9.0.4",
+    "@astrojs/react": "^3.6.2",
+    "@astrojs/vercel": "^7.8.2",
     "@sanity/astro": "^3.2.11",
     "@sanity/client": "^7.6.0",
     "@sanity/image-url": "^1.1.0",
     "astro": "^4.16.18",
-    "lucide-react": "^0.563.0",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
+    "lucide-react": "^0.454.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "sanity": "^3.68.3",
-    "styled-components": "^6.3.8"
+    "styled-components": "^6.1.13"
   }
 }
