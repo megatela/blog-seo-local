@@ -1,6 +1,6 @@
 import { defineConfig } from 'sanity'
 import { deskTool } from 'sanity/desk'
-import { schemaTypes } from './schemaTypes' // Al estar dentro de 'studio', la ruta es directa
+import { schemaTypes } from './studio/schemaTypes'
 
 export default defineConfig({
   name: 'default',
