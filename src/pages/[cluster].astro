@@ -10,21 +10,28 @@ export async function getStaticPaths() {
 
 const { cluster: slug } = Astro.params;
 
-const clusterData = await client.fetch(`*[_type == "cluster" && slug.current == $slug][0]{
-  title,
-  description,
-  imagenPortada
-}`, { slug });
+// Traemos los datos básicos
+const clusterData = await client.fetch(`*[_type == "cluster" && slug.current == $slug][0]`, { slug });
 
 if (!clusterData) return Astro.redirect('/404');
 ---
 
 <html lang="es">
-  <body>
-    <h1>{clusterData.title}</h1>
-    <p>{clusterData.description}</p>
-    {clusterData.imagenPortada && (
-      <img src={urlFor(clusterData.imagenPortada).url()} width="500" />
+  <head>
+    <meta charset="utf-8" />
+    <title>Prueba de Clúster</title>
+  </head>
+  <body style="font-family: sans-serif; padding: 2rem;">
+    <h1>Si lees esto, la conexión con Sanity funciona</h1>
+    <h2>Título: {clusterData.title}</h2>
+    <p>Descripción: {clusterData.description}</p>
+    <hr />
+    <p>Slug actual: <strong>{slug}</strong></p>
+    
+    {clusterData.imagenPortada ? (
+      <p>✅ Hay una imagen seleccionada.</p>
+    ) : (
+      <p>❌ No hay imagen en Sanity para este clúster.</p>
     )}
   </body>
 </html>
