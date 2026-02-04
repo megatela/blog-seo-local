@@ -56,10 +56,14 @@ const { title, description } = Astro.props;
 <Layout title={title} description={description}>
   <main style="max-width: 900px; margin: 0 auto; padding: 60px 20px; font-family: system-ui, sans-serif;">
     
-    <nav style="margin-bottom: 40px;">
-      <a href="/" style="color: #0070f3; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 8px;">
-        <span>←</span> Volver al Plan Maestro
+    <nav style="margin-bottom: 30px; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; color: #666;">
+      <a href="/" style="color: #0070f3; text-decoration: none;">Inicio</a>
+      <span style="color: #ccc;">&gt;</span>
+      <a href={`/${cluster}`} style="color: #0070f3; text-decoration: none; font-weight: 600; text-transform: capitalize;">
+        {cluster.replace(/-/g, ' ')}
       </a>
+      <span style="color: #ccc;">&gt;</span>
+      <span style="color: #999;">Listado de Artículos</span>
     </nav>
 
     <header style="margin-bottom: 60px;">
