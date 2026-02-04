@@ -2,7 +2,7 @@
 import { client, urlFor } from '../lib/sanity';
 import { PortableText } from '@portabletext/react';
 
-// Esto asegura que la página sea ultra-rápida y estable
+// Forzamos el renderizado estático para evitar el Error 500
 export const prerender = true;
 
 export async function getStaticPaths() {
@@ -14,11 +14,12 @@ export async function getStaticPaths() {
 
 const { cluster: slug } = Astro.params;
 
+// Consulta a Sanity con los nombres exactos de tu cluster.ts
 const clusterData = await client.fetch(`*[_type == "cluster" && slug.current == $slug][0]{
   title,
   description,
-  imagenPortada,
-  contenidoDetallado
+  image,
+  content
 }`, { slug });
 
 if (!clusterData) return Astro.redirect('/404');
@@ -27,35 +28,71 @@ if (!clusterData) return Astro.redirect('/404');
 <html lang="es">
   <head>
     <meta charset="utf-8" />
-    <title>{clusterData.title} | Guía SEO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{clusterData.title} | Mi Blog SEO</title>
     <style>
-      body { font-family: sans-serif; line-height: 1.6; max-width: 850px; margin: 0 auto; padding: 2rem; color: #1a1a1a; }
-      .portada { width: 100%; height: auto; border-radius: 12px; margin: 2rem 0; background: #eee; }
-      .intro { font-size: 1.25rem; color: #444; font-style: italic; border-left: 5px solid #007bff; padding-left: 1rem; margin-bottom: 3rem; }
-      .content { font-size: 1.1rem; }
+      body { 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        line-height: 1.6; 
+        max-width: 850px; 
+        margin: 0 auto; 
+        padding: 2rem; 
+        color: #1a1a1a; 
+        background-color: #fcfcfc;
+      }
+      nav { margin-bottom: 2rem; }
+      nav a { text-decoration: none; color: #007bff; font-weight: bold; }
+      h1 { font-size: 2.5rem; margin-bottom: 1rem; color: #000; }
+      .portada { 
+        width: 100%; 
+        height: auto; 
+        border-radius: 12px; 
+        margin: 1.5rem 0; 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      }
+      .intro { 
+        font-size: 1.3rem; 
+        color: #444; 
+        font-style: italic; 
+        border-left: 6px solid #007bff; 
+        padding: 1rem 1.5rem; 
+        margin: 2rem 0;
+        background: #f0f7ff;
+      }
+      .content { 
+        font-size: 1.15rem; 
+        color: #333;
+      }
+      /* Estilos básicos para el texto de Sanity */
+      .content p { margin-bottom: 1.5rem; }
+      .content h2 { color: #007bff; margin-top: 2rem; }
     </style>
   </head>
   <body>
-    <nav><a href="/" style="text-decoration: none; color: #007bff;">← Volver al blog</a></nav>
+    <nav>
+      <a href="/">← Volver al Inicio</a>
+    </nav>
     
     <h1>{clusterData.title}</h1>
 
-    {clusterData.imagenPortada && (
+    {clusterData.image && (
       <img 
-        src={urlFor(clusterData.imagenPortada).width(1200).url()} 
+        src={urlFor(clusterData.image).width(1200).url()} 
         alt={clusterData.title} 
         class="portada"
       />
     )}
 
-    <div class="intro">{clusterData.description}</div>
-
-    <div class="content">
-      {clusterData.contenidoDetallado ? (
-        <PortableText value={clusterData.contenidoDetallado} />
-      ) : (
-        <p>Próximamente publicaremos el contenido detallado de esta sección.</p>
-      )}
+    <div class="intro">
+      {clusterData.description}
     </div>
+
+    <article class="content">
+      {clusterData.content ? (
+        <PortableText value={clusterData.content} />
+      ) : (
+        <p>El contenido detallado se está redactando. ¡Vuelve pronto!</p>
+      )}
+    </article>
   </body>
 </html>
