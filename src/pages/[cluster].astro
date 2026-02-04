@@ -1,4 +1,7 @@
 ---
+export const prerender = true; // <--- AÑADE ESTA LÍNEA
+import { client, urlFor } from '../lib/sanity';
+// ... resto del código
 import { client, urlFor } from '../lib/sanity';
 
 export async function getStaticPaths() {
