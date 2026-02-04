@@ -11,6 +11,7 @@
   "dependencies": {
     "@astrojs/react": "^3.6.2",
     "@astrojs/vercel": "^7.8.2",
+    "@portabletext/react": "^6.0.2",
     "@sanity/astro": "^3.2.11",
     "@sanity/client": "^7.6.0",
     "@sanity/image-url": "^1.1.0",
