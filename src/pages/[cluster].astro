@@ -1,0 +1,65 @@
+---
+import { client, urlFor } from '../lib/sanity';
+import { PortableText } from '@portabletext/react';
+
+// 1. Generamos las rutas para cada clúster (el nombre de la URL)
+export async function getStaticPaths() {
+  const clusters = await client.fetch(`*[_type == "cluster"]{
+    "slug": slug.current
+  }`);
+  return clusters.map((c) => ({
+    params: { cluster: c.slug }, // El parámetro coincide con el nombre del archivo [cluster].astro
+  }));
+}
+
+const { cluster: slug } = Astro.params;
+
+// 2. Traemos los datos del clúster
+const clusterData = await client.fetch(`*[_type == "cluster" && slug.current == $slug][0]{
+  title,
+  description,
+  imagenPortada,
+  contenidoDetallado
+}`, { slug });
+
+if (!clusterData) return Astro.redirect('/404');
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>{clusterData.title} | Guía SEO Local</title>
+    <style>
+      body { font-family: sans-serif; line-height: 1.6; color: #333; margin: 0; }
+      main { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; }
+      .portada { width: 100%; border-radius: 12px; margin-bottom: 2rem; }
+      .guia-content { background: #fff; border-radius: 8px; }
+      .intro { font-size: 1.2rem; color: #555; margin-bottom: 2rem; border-left: 5px solid #007bff; padding-left: 1rem; }
+    </style>
+  </head>
+  <body>
+    <nav style="background: #eee; padding: 1rem;">
+      <a href="/">← Inicio</a> | <strong>Pilar de Autoridad</strong>
+    </nav>
+
+    <main>
+      <h1>{clusterData.title}</h1>
+
+      {clusterData.imagenPortada && (
+        <img 
+          src={urlFor(clusterData.imagenPortada).width(1000).url()} 
+          alt={clusterData.imagenPortada.alt || clusterData.title} 
+          class="portada"
+        />
+      )}
+
+      <div class="intro">
+        {clusterData.description}
+      </div>
+
+      <div class="guia-content">
+        <PortableText value={clusterData.contenidoDetallado} />
+      </div>
+    </main>
+  </body>
+</html>
