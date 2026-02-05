@@ -43,20 +43,20 @@ if (!clusterData) return Astro.redirect('/404');
     </header>
 
     <div class="description-text">
-      {clusterData.description}
+      <p>{clusterData.description}</p>
     </div>
 
-    <article class="content-area">
+    <article class="rich-text">
       <PortableText value={clusterData.content} />
     </article>
 
     <hr class="divider" />
 
     <section>
-      <h2 class="section-title">Artículos relacionados</h2>
-      <div class="posts-list">
+      <h2 class="section-title">Artículos detallados</h2>
+      <div class="grid">
         {slug === 'google-business-profile' && (
-          <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" class="post-card">
+          <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" class="card">
             Guía Definitiva GBP 2024 →
           </a>
         )}
@@ -66,27 +66,39 @@ if (!clusterData) return Astro.redirect('/404');
 </Layout>
 
 <style>
-  .cluster-container { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; }
+  .cluster-container { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: sans-serif; }
   .breadcrumb a { color: #0070f3; text-decoration: none; font-weight: bold; }
-  .main-title { font-size: 2.8rem; margin-bottom: 1.5rem; color: #111; line-height: 1.2; }
-  .featured-image { width: 100%; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-  .description-text { font-size: 1.25rem; color: #555; border-left: 4px solid #0070f3; padding-left: 1.5rem; margin-bottom: 2.5rem; line-height: 1.6; }
   
-  .content-area { line-height: 1.8; font-size: 1.15rem; color: #333; }
-
-  /** * SOLUCIÓN SEO TÉCNICA:
-   * Forzamos que cualquier H1 que venga de Sanity se comporte visualmente como un H2.
-   * IMPORTANTE: Para que deje de ser un H1 en el código, debes cambiarlo en el editor de Sanity a 'Heading 2'.
-   */
-  .content-area :global(h1) {
-    font-size: 2rem;
-    margin-top: 2.5rem;
-    color: #111;
-    font-weight: 700;
+  .main-title { 
+    font-size: 2.8rem; 
+    margin-bottom: 1.5rem; 
+    color: #111; 
+    line-height: 1.2;
+    display: block;
   }
+
+  .featured-image { width: 100%; border-radius: 12px; margin-bottom: 2rem; }
+
+  .description-text { 
+    font-size: 1.25rem; 
+    color: #444; 
+    line-height: 1.6; 
+    border-left: 4px solid #0070f3; 
+    padding-left: 1.5rem; 
+    margin-bottom: 2.5rem;
+    font-style: italic;
+  }
+
+  .rich-text { line-height: 1.8; font-size: 1.15rem; color: #333; }
   
-  .content-area :global(h2) { font-size: 2rem; margin-top: 2.5rem; color: #111; font-weight: 700; }
+  /* SEGURIDAD: Si el contenido trae encabezados, que sean H2 */
+  .rich-text :global(h1), .rich-text :global(h2) {
+    font-size: 1.8rem;
+    margin-top: 2rem;
+    color: #111;
+  }
+
   .divider { margin: 3rem 0; border: 0; border-top: 1px solid #eee; }
   .section-title { font-size: 1.8rem; margin-bottom: 1.5rem; }
-  .post-card { display: block; padding: 1.5rem; border: 1px solid #ddd; border-radius: 12px; text-decoration: none; color: #0070f3; font-weight: bold; }
+  .card { display: block; padding: 1.5rem; border: 1px solid #ddd; border-radius: 12px; text-decoration: none; color: #0070f3; font-weight: bold; }
 </style>
