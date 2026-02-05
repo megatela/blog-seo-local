@@ -22,10 +22,20 @@ const clusterData = await client.fetch(`*[_type == "cluster" && slug.current == 
 }`, { slug });
 
 if (!clusterData) return Astro.redirect('/404');
+
+// SOLUCIÓN DEFINITIVA: Mapeo de bloques para asegurar la jerarquía SEO
+const ptComponents = {
+  block: {
+    // Esto convierte CUALQUIER h1 que venga de Sanity en un h2 real
+    h1: ({children}: any) => <h2 class="transformed-h2">{children}</h2>,
+    // Aseguramos que los h2 normales también mantengan consistencia
+    h2: ({children}: any) => <h2 class="transformed-h2">{children}</h2>,
+  },
+};
 ---
 
 <Layout title={clusterData.title} description={clusterData.description}>
-  <main class="cluster-main">
+  <main class="cluster-container">
     <nav class="breadcrumb">
       <a href="/">← Inicio</a>
     </nav>
@@ -37,26 +47,26 @@ if (!clusterData) return Astro.redirect('/404');
         <img 
           src={urlFor(clusterData.image).width(1200).url()} 
           alt={clusterData.title} 
-          class="header-img"
+          class="featured-image"
         />
       )}
     </header>
 
-    <div class="description-box">
+    <div class="description-text">
       {clusterData.description}
     </div>
 
-    <article class="rich-text-content">
-      <PortableText value={clusterData.content} />
+    <article class="content-area">
+      <PortableText value={clusterData.content} components={ptComponents} />
     </article>
 
     <hr class="divider" />
 
     <section>
-      <h2>Artículos detallados</h2>
-      <div class="posts-grid">
+      <h2 class="section-title">Artículos relacionados</h2>
+      <div class="posts-list">
         {slug === 'google-business-profile' && (
-          <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" class="card">
+          <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" class="post-card">
             Guía Definitiva GBP 2024 →
           </a>
         )}
@@ -66,18 +76,25 @@ if (!clusterData) return Astro.redirect('/404');
 </Layout>
 
 <style>
-  .cluster-main { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; }
+  .cluster-container { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; }
   .breadcrumb a { color: #0070f3; text-decoration: none; font-weight: bold; }
-  .main-title { font-size: 2.8rem; margin-bottom: 1.5rem; color: #111; }
-  .header-img { width: 100%; border-radius: 12px; margin-bottom: 2rem; }
-  .description-box { font-size: 1.2rem; color: #555; border-left: 4px solid #0070f3; padding-left: 1.5rem; margin-bottom: 2.5rem; }
+  .main-title { font-size: 2.8rem; margin-bottom: 1.5rem; color: #111; line-height: 1.2; }
+  .featured-image { width: 100%; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+  .description-text { font-size: 1.25rem; color: #555; border-left: 4px solid #0070f3; padding-left: 1.5rem; margin-bottom: 2.5rem; line-height: 1.6; }
   
-  /* ESTO ELIMINA EL SEGUNDO H1 VISUALMENTE SI VIENE DE SANITY */
-  .rich-text-content :global(h1) {
-    font-size: 1.8rem; /* Tamaño de un H2 */
+  /* Estilos para el contenido de Sanity */
+  .content-area { line-height: 1.8; font-size: 1.15rem; color: #333; }
+  
+  /* Aquí damos estilo al H2 que acabamos de crear */
+  .transformed-h2, .content-area :global(h2) {
+    font-size: 2rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    color: #111;
     font-weight: 700;
-    margin-top: 2rem;
-    color: #333;
-    display: block;
   }
+  
+  .divider { margin: 3rem 0; border: 0; border-top: 1px solid #eee; }
+  .section-title { font-size: 1.8rem; margin-bottom: 1.5rem; }
+  .post-card { display: block; padding: 1.5rem; border: 1px solid #ddd; border-radius: 12px; text-decoration: none; color: #0070f3; font-weight: bold; }
 </style>
