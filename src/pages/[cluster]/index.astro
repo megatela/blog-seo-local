@@ -1,56 +1,63 @@
 ---
+import { client, urlFor } from '../../lib/sanity';
+import { PortableText } from '@portabletext/react';
 import Layout from '../../layouts/Layout.astro';
 
-export function getStaticPaths() {
-  return [
-    { params: { cluster: 'google-business-profile' }, props: { title: "Google Business Profile Masterclass", description: "Aprende a optimizar tu ficha." } },
-    { params: { cluster: 'factores-ranking' }, props: { title: "Factores de Ranking Local", description: "Análisis de los factores." } },
-    { params: { cluster: 'seo-vertical' }, props: { title: "SEO Local Vertical", description: "Estrategias por Nicho." } },
-    { params: { cluster: 'herramientas' }, props: { title: "Herramientas SEO Local", description: "Stack tecnológico." } },
-    { params: { cluster: 'casos-de-exito' }, props: { title: "Casos de Éxito", description: "Resultados reales." } },
-    { params: { cluster: 'ai-seo' }, props: { title: "AI Local Search", description: "Futuro del SEO." } }
-  ];
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const clusters = await client.fetch(`*[_type == "cluster"]{ "slug": slug.current }`);
+  return clusters.map((c: any) => ({
+    params: { cluster: c.slug },
+  }));
 }
 
-const { cluster } = Astro.params;
-const { title, description } = Astro.props;
+const { cluster: slug } = Astro.params;
+
+const clusterData = await client.fetch(`*[_type == "cluster" && slug.current == $slug][0]{
+  title,
+  description,
+  image,
+  content
+}`, { slug });
+
+if (!clusterData) return Astro.redirect('/404');
 ---
 
-<Layout title={title} description={description}>
-  <main style="max-width: 900px; margin: 0 auto; padding: 60px 20px; font-family: system-ui, sans-serif;">
+<Layout title={clusterData.title} description={clusterData.description}>
+  <main style="max-width: 850px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif;">
     
-    <nav style="margin-bottom: 30px; font-size: 0.95rem; color: #666;">
-      <a href="/" style="color: #0070f3; text-decoration: none;">Inicio</a>
-      <span style="margin: 0 8px;">&gt;</span>
-      <a href={`/${cluster}/`} style="color: #0070f3; text-decoration: none; font-weight: 600; text-transform: capitalize;">
-        {cluster.replace(/-/g, ' ')}
-      </a>
-      <span style="margin: 0 8px;">&gt;</span>
-      <span style="color: #999;">Artículos</span>
+    <nav style="margin-bottom: 2rem;">
+      <a href="/" style="color: #0070f3; text-decoration: none; font-weight: bold;">← Inicio</a>
     </nav>
+    
+    <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">{clusterData.title}</h1>
 
-    <header style="margin-bottom: 60px;">
-      <h1 style="font-size: 3rem; font-weight: 800; color: #111; margin-bottom: 20px;">
-        {title}
-      </h1>
-      <p style="font-size: 1.25rem; color: #666;">
-        Explora nuestros artículos sobre <strong>{cluster.replace(/-/g, ' ')}</strong>.
-      </p>
-    </header>
+    {clusterData.image && (
+      <img 
+        src={urlFor(clusterData.image).width(1200).url()} 
+        alt={clusterData.title} 
+        style="width: 100%; height: auto; border-radius: 12px; margin: 1.5rem 0; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"
+      />
+    )}
 
-    <section style="background: #f8f9fa; border: 1px solid #eaeaea; border-radius: 24px; padding: 40px;">
-      <h2 style="font-size: 1.5rem; margin-bottom: 30px;">Contenido disponible</h2>
-      
-      <div style="display: grid; gap: 20px;">
-        {cluster === 'google-business-profile' ? (
-          <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" style="display: block; background: white; padding: 25px; border-radius: 16px; text-decoration: none; border: 1px solid #eee;">
-            <h3 style="color: #0070f3; margin-bottom: 10px;">Guía Definitiva GBP 2024 →</h3>
-            <p style="color: #666;">Manual pilar para optimizar tu ficha.</p>
-          </a>
-        ) : (
-          <p style="text-align: center; color: #999;">Próximamente más contenido.</p>
-        )}
-      </div>
+    <div style="font-size: 1.25rem; color: #444; font-style: italic; border-left: 6px solid #0070f3; padding: 1rem 1.5rem; margin: 2rem 0; background: #f0f7ff;">
+      {clusterData.description}
+    </div>
+
+    <article style="font-size: 1.15rem; line-height: 1.7; color: #333;">
+      <PortableText value={clusterData.content} />
+    </article>
+
+    <hr style="margin: 4rem 0; border: 0; border-top: 1px solid #eee;" />
+
+    <section>
+      <h2 style="color: #111;">Artículos detallados</h2>
+      {slug === 'google-business-profile' && (
+        <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" style="display: block; padding: 20px; border: 1px solid #eee; border-radius: 12px; text-decoration: none; color: #0070f3; font-weight: bold; margin-top: 1rem;">
+          Guía Definitiva GBP 2024 →
+        </a>
+      )}
     </section>
   </main>
 </Layout>
