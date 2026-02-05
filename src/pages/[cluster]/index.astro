@@ -42,18 +42,18 @@ if (!clusterData) return Astro.redirect('/404');
       )}
     </header>
 
-    <section class="description-area">
+    <section class="description-container">
       <p class="description-text">{clusterData.description}</p>
     </section>
 
-    <article class="rich-text">
+    <article class="content-body">
       <PortableText value={clusterData.content} />
     </article>
 
     <hr class="divider" />
 
-    <section class="articles-section">
-      <h2 class="section-title">Artículos detallados</h2>
+    <section class="articles-grid-section">
+      <h2 class="section-subtitle">Artículos en esta categoría</h2>
       <div class="grid">
         {slug === 'google-business-profile' && (
           <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" class="card-link">
@@ -66,47 +66,47 @@ if (!clusterData) return Astro.redirect('/404');
 </Layout>
 
 <style>
-  .cluster-main { max-width: 850px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; }
+  .cluster-main { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; }
   .breadcrumb a { color: #0070f3; text-decoration: none; font-weight: bold; }
   
-  /* Estilo del H1 */
+  /* H1 Principal */
   .main-title { 
-    font-size: clamp(2.5rem, 5vw, 3.5rem); 
+    font-size: clamp(2.5rem, 5vw, 3rem); 
     font-weight: 800; 
     color: #111; 
     margin-bottom: 1.5rem; 
     line-height: 1.1;
   }
 
-  .header-image { width: 100%; height: auto; border-radius: 16px; margin-bottom: 2.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+  .header-image { width: 100%; height: auto; border-radius: 12px; margin-bottom: 2.5rem; }
 
-  /* Estilo de la descripción (Antes era el segundo H1) */
-  .description-area {
+  /* Estilo de la Descripción (Texto de la Guía) */
+  .description-container {
     margin-bottom: 3rem;
-    padding: 1.5rem 2rem;
-    background: #f8faff;
+    padding: 1.5rem;
+    background: #f0f7ff;
     border-left: 5px solid #0070f3;
-    border-radius: 0 12px 12px 0;
+    border-radius: 4px;
   }
   .description-text {
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     line-height: 1.6;
-    color: #444;
-    font-weight: 500;
+    color: #333;
     margin: 0;
+    font-weight: 500;
   }
 
-  .rich-text { font-size: 1.2rem; line-height: 1.8; color: #333; }
+  .content-body { line-height: 1.8; font-size: 1.1rem; color: #444; }
   
-  /* Seguridad: Si por error hay H1/H2 en el contenido, los estilizamos */
-  .rich-text :global(h1), .rich-text :global(h2) {
+  /* Forzamos que si hay h1/h2 en el PortableText se vean como subencabezados */
+  .content-body :global(h1), .content-body :global(h2) {
     font-size: 1.8rem;
-    margin-top: 2.5rem;
+    margin-top: 2rem;
     color: #111;
     font-weight: 700;
   }
 
-  .divider { margin: 4rem 0; border: 0; border-top: 1px solid #eee; }
-  .section-title { font-size: 1.8rem; color: #111; margin-bottom: 1.5rem; }
-  .card-link { display: block; padding: 20px; border: 1px solid #eee; border-radius: 12px; text-decoration: none; color: #0070f3; font-weight: bold; }
+  .divider { margin: 3rem 0; border: 0; border-top: 1px solid #eee; }
+  .section-subtitle { font-size: 1.8rem; color: #111; margin-bottom: 1.5rem; }
+  .card-link { display: block; padding: 20px; border: 1px solid #eee; border-radius: 8px; text-decoration: none; color: #0070f3; font-weight: bold; }
 </style>
