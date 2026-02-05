@@ -22,27 +22,16 @@ const clusterData = await client.fetch(`*[_type == "cluster" && slug.current == 
 }`, { slug });
 
 if (!clusterData) return Astro.redirect('/404');
-
-// Cambiado a sintaxis mínima para evitar errores de compilación en el build
-const components = {
-  block: {
-    h1: ({ children }: any) => <h2>{children}</h2>,
-  },
-};
 ---
 
 <Layout title={clusterData.title} description={clusterData.description}>
   <main class="cluster-main">
-    
     <nav class="top-nav">
       <a href="/">← Inicio</a>
     </nav>
     
     <header class="cluster-header">
-      <h1 class="main-title">
-        {clusterData.title}
-      </h1>
-      
+      <h1 class="main-title">{clusterData.title}</h1>
       {clusterData.image && (
         <img 
           src={urlFor(clusterData.image).width(1200).url()} 
@@ -57,7 +46,14 @@ const components = {
     </section>
 
     <article class="rich-text">
-      <PortableText value={clusterData.content} components={components} />
+      <PortableText 
+        value={clusterData.content} 
+        components={{
+          block: {
+            h1: ({ children }) => <h2>{children}</h2>,
+          }
+        }} 
+      />
     </article>
 
     <hr class="section-divider" />
@@ -66,8 +62,7 @@ const components = {
       <h2 class="section-title">Artículos detallados</h2>
       <div class="posts-grid">
         {slug === 'google-business-profile' && (
-          <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" 
-             class="card-link">
+          <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" class="card-link">
             Guía Definitiva GBP 2024 →
           </a>
         )}
@@ -77,79 +72,16 @@ const components = {
 </Layout>
 
 <style>
-  .cluster-main {
-    max-width: 850px;
-    margin: 0 auto;
-    padding: 2rem;
-    font-family: system-ui, sans-serif;
-  }
-  .top-nav {
-    margin-bottom: 2rem;
-    font-size: 0.9rem;
-  }
-  .top-nav a {
-    color: #0070f3;
-    text-decoration: none;
-    font-weight: bold;
-  }
-  .main-title {
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
-    font-weight: 800;
-    color: #111;
-    line-height: 1.1;
-    margin-bottom: 1.5rem;
-  }
-  .header-image {
-    width: 100%;
-    height: auto;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    margin-bottom: 2rem;
-  }
-  .description-box {
-    font-size: 1.25rem;
-    color: #444;
-    line-height: 1.6;
-    border-left: 5px solid #0070f3;
-    padding: 1.5rem 2rem;
-    margin-bottom: 3rem;
-    background: #f8faff;
-    border-radius: 0 12px 12px 0;
-  }
-  .rich-text {
-    font-size: 1.2rem;
-    line-height: 1.8;
-    color: #333;
-  }
-  /* Estiliza los h2 que vienen del PortableText (incluyendo los h1 degradados) */
-  .rich-text :global(h2) {
-    font-size: 1.8rem;
-    margin-top: 2.5rem;
-    color: #111;
-  }
-  .section-divider {
-    margin: 4rem 0;
-    border: 0;
-    border-top: 1px solid #eee;
-  }
-  .section-title {
-    font-size: 1.8rem;
-    color: #111;
-    margin-bottom: 1.5rem;
-  }
-  .card-link {
-    display: block; 
-    padding: 25px; 
-    border: 1px solid #eee; 
-    border-radius: 16px; 
-    text-decoration: none; 
-    color: #0070f3; 
-    font-weight: 700; 
-    transition: all 0.2s ease;
-  }
-  .card-link:hover {
-    border-color: #0070f3;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-  }
+  .cluster-main { max-width: 850px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; }
+  .top-nav { margin-bottom: 2rem; font-size: 0.9rem; }
+  .top-nav a { color: #0070f3; text-decoration: none; font-weight: bold; }
+  .main-title { font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #111; line-height: 1.1; margin-bottom: 1.5rem; }
+  .header-image { width: 100%; height: auto; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+  .description-box { font-size: 1.25rem; color: #444; line-height: 1.6; border-left: 5px solid #0070f3; padding: 1.5rem 2rem; margin-bottom: 3rem; background: #f8faff; border-radius: 0 12px 12px 0; }
+  .rich-text { font-size: 1.2rem; line-height: 1.8; color: #333; }
+  .rich-text :global(h2) { font-size: 1.8rem; margin-top: 2.5rem; color: #111; }
+  .section-divider { margin: 4rem 0; border: 0; border-top: 1px solid #eee; }
+  .section-title { font-size: 1.8rem; color: #111; margin-bottom: 1.5rem; }
+  .card-link { display: block; padding: 25px; border: 1px solid #eee; border-radius: 16px; text-decoration: none; color: #0070f3; font-weight: 700; transition: all 0.2s ease; }
+  .card-link:hover { border-color: #0070f3; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
 </style>
