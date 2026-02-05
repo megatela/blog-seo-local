@@ -23,22 +23,22 @@ const clusterData = await client.fetch(`*[_type == "cluster" && slug.current == 
 
 if (!clusterData) return Astro.redirect('/404');
 
-// Corregido: Quitamos el estilo en línea que causaba el error de compilación
+// Cambiado a sintaxis mínima para evitar errores de compilación en el build
 const components = {
   block: {
-    h1: ({ children }: any) => <h2 class="degraded-h1">{children}</h2>,
+    h1: ({ children }: any) => <h2>{children}</h2>,
   },
 };
 ---
 
 <Layout title={clusterData.title} description={clusterData.description}>
-  <main style="max-width: 850px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif;">
+  <main class="cluster-main">
     
-    <nav style="margin-bottom: 2rem; font-size: 0.9rem;">
-      <a href="/" style="color: #0070f3; text-decoration: none; font-weight: bold;">← Inicio</a>
+    <nav class="top-nav">
+      <a href="/">← Inicio</a>
     </nav>
     
-    <header style="margin-bottom: 3rem;">
+    <header class="cluster-header">
       <h1 class="main-title">
         {clusterData.title}
       </h1>
@@ -60,11 +60,11 @@ const components = {
       <PortableText value={clusterData.content} components={components} />
     </article>
 
-    <hr style="margin: 4rem 0; border: 0; border-top: 1px solid #eee;" />
+    <hr class="section-divider" />
 
-    <section style="padding-bottom: 4rem;">
-      <h2 style="font-size: 1.8rem; color: #111; margin-bottom: 1.5rem;">Artículos detallados</h2>
-      <div style="display: grid; gap: 1rem;">
+    <section class="posts-section">
+      <h2 class="section-title">Artículos detallados</h2>
+      <div class="posts-grid">
         {slug === 'google-business-profile' && (
           <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" 
              class="card-link">
@@ -77,6 +77,21 @@ const components = {
 </Layout>
 
 <style>
+  .cluster-main {
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: system-ui, sans-serif;
+  }
+  .top-nav {
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+  }
+  .top-nav a {
+    color: #0070f3;
+    text-decoration: none;
+    font-weight: bold;
+  }
   .main-title {
     font-size: clamp(2.5rem, 5vw, 3.5rem);
     font-weight: 800;
@@ -89,6 +104,7 @@ const components = {
     height: auto;
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
   }
   .description-box {
     font-size: 1.25rem;
@@ -105,11 +121,21 @@ const components = {
     line-height: 1.8;
     color: #333;
   }
-  /* Estilo para el H1 degradado que viene de Sanity */
-  .degraded-h1 {
+  /* Estiliza los h2 que vienen del PortableText (incluyendo los h1 degradados) */
+  .rich-text :global(h2) {
     font-size: 1.8rem;
-    margin-top: 2rem;
+    margin-top: 2.5rem;
     color: #111;
+  }
+  .section-divider {
+    margin: 4rem 0;
+    border: 0;
+    border-top: 1px solid #eee;
+  }
+  .section-title {
+    font-size: 1.8rem;
+    color: #111;
+    margin-bottom: 1.5rem;
   }
   .card-link {
     display: block; 
