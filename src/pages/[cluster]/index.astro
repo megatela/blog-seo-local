@@ -31,7 +31,7 @@ if (!clusterData) return Astro.redirect('/404');
     </nav>
     
     <header>
-      <h1 class="main-title">{clusterData.title}</h1>
+      <div class="category-label">{clusterData.title}</div>
       
       {clusterData.image && (
         <img 
@@ -42,19 +42,19 @@ if (!clusterData) return Astro.redirect('/404');
       )}
     </header>
 
-    <section class="description-section">
-      <h2 class="sub-title-desc">{clusterData.description}</h2>
-    </section>
+    <div class="description-text">
+      {clusterData.description}
+    </div>
 
-    <article class="rich-text-area">
+    <article class="main-content">
       <PortableText value={clusterData.content} />
     </article>
 
     <hr class="divider" />
 
     <section>
-      <h3 class="section-title">Artículos en esta categoría</h3>
-      <div class="grid">
+      <h2>Artículos detallados</h2>
+      <div class="links-grid">
         {slug === 'google-business-profile' && (
           <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" class="card">
             Guía Definitiva GBP 2024 →
@@ -66,24 +66,29 @@ if (!clusterData) return Astro.redirect('/404');
 </Layout>
 
 <style>
-  .cluster-container { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: sans-serif; }
+  .cluster-container { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; }
   .breadcrumb a { color: #0070f3; text-decoration: none; font-weight: bold; }
-  .main-title { font-size: 3rem; font-weight: 800; margin-bottom: 1.5rem; color: #111; }
-  .featured-image { width: 100%; border-radius: 12px; margin-bottom: 2rem; }
-  .description-section { margin-bottom: 2.5rem; padding: 1.5rem; background: #f9f9f9; border-left: 5px solid #0070f3; }
-  .sub-title-desc { font-size: 1.4rem; line-height: 1.5; color: #444; margin: 0; font-weight: 600; }
+  
+  /* Estilo para el título de categoría (Ya no es H1) */
+  .category-label { 
+    font-size: 1.2rem; 
+    text-transform: uppercase; 
+    letter-spacing: 0.1em; 
+    color: #666; 
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
 
-  /* SOLUCIÓN FINAL AL SEGUNDO H1:
-     Como no podemos usar JS dinámico sin romper el build, usamos CSS.
-     Buscamos cualquier H1 que esté DENTRO del contenido de Sanity y 
-     lo forzamos a comportarse visualmente como un H2.
-  */
-  .rich-text-area :global(h1) {
-    font-size: 2rem !important;
-    font-weight: 700 !important;
-    margin-top: 2rem !important;
-    color: #111 !important;
-    /* Aunque el tag sea H1, Google verá que lo tratas como subencabezado */
+  .featured-image { width: 100%; border-radius: 12px; margin-bottom: 2rem; }
+  .description-text { font-size: 1.2rem; color: #444; margin-bottom: 3rem; line-height: 1.6; }
+  
+  /* El H1 que viene de Sanity se verá así */
+  .main-content :global(h1) {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 2rem;
+    line-height: 1.1;
   }
 
   .divider { margin: 3rem 0; border: 0; border-top: 1px solid #eee; }
