@@ -1,6 +1,7 @@
 ---
 import { client, urlFor } from '../../lib/sanity';
 import { PortableText } from '@portabletext/react';
+import Layout from '../../layouts/Layout.astro';
 
 export async function getStaticPaths() {
   const posts = await client.fetch(`*[_type == "post"]{
@@ -8,15 +9,19 @@ export async function getStaticPaths() {
     "cluster": cluster->slug.current
   }`);
   return posts.map((post) => ({
-    params: { cluster: post.cluster || 'sin-categoria', slug: post.slug },
+    params: { 
+      cluster: post.cluster || 'sin-categoria', 
+      slug: post.slug 
+    },
   }));
 }
 
-const { cluster, slug } = Astro.params;
+const { slug } = Astro.params;
 
-// 1. Pedimos 'clusterSlug' y 'clusterName' para construir el enlace
+// 1. Consulta extendida con SEO (meta description) y Slugs
 const post = await client.fetch(`*[_type == "post" && slug.current == $slug][0]{
   title,
+  "description": description, 
   "h1": h1Title,
   mainImage, 
   content, 
@@ -25,48 +30,126 @@ const post = await client.fetch(`*[_type == "post" && slug.current == $slug][0]{
 }`, { slug });
 
 if (!post) return Astro.redirect('/404');
+
+// Fallback para descripción si no existe en Sanity
+const metaDescription = post.description || `Lee más sobre ${post.title} en nuestro blog de SEO Local.`;
 ---
 
-<html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <title>{post.title} | Mi Blog SEO</title>
-    <style>
-      body { margin: 0; font-family: system-ui, -apple-system, sans-serif; color: #333; }
-      .content { line-height: 1.8; font-size: 1.1rem; }
-      .main-image { width: 100%; height: auto; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-      nav a { color: #0070f3; text-decoration: none; font-weight: 500; }
-      nav a:hover { text-decoration: underline; }
-      nav span.separator { color: #ccc; margin: 0 8px; }
-      h1 { font-size: 2.5rem; margin-top: 0; line-height: 1.2; }
-    </style>
-  </head>
-  <body>
-    <nav style="background: #fdfdfd; padding: 1.5rem; border-bottom: 1px solid #eee; margin-bottom: 3rem;">
-      <div style="max-width: 800px; margin: 0 auto;">
+<Layout title={post.title} description={metaDescription}>
+  <article class="post-container">
+    
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <div class="nav-content">
         <a href="/">Inicio</a> 
-        <span class="separator">></span> 
+        <span class="separator">/</span> 
         <a href={`/${post.clusterSlug}`}>{post.clusterName}</a> 
-        <span class="separator">></span> 
-        <strong style="color: #666;">{post.title}</strong>
+        <span class="separator">/</span> 
+        <span class="current">{post.title}</span>
       </div>
     </nav>
 
-    <main style="max-width: 800px; margin: 0 auto; padding: 0 1.5rem; padding-bottom: 5rem;">
+    <main class="main-content">
       {post.mainImage && (
         <img 
-          src={urlFor(post.mainImage).width(800).url()} 
+          src={urlFor(post.mainImage).width(1200).url()} 
           alt={post.title} 
           class="main-image"
+          loading="eager"
         />
       )}
 
-      <h1>{post.h1 || post.title}</h1>
-      <hr style="border: 0; border-top: 1px solid #eee; margin: 2rem 0;" />
+      <header>
+        <h1>{post.h1 || post.title}</h1>
+        <div class="meta-info">
+          <span>Publicado en <strong>{post.clusterName}</strong></span>
+        </div>
+      </header>
 
-      <div class="content">
+      <hr class="divider" />
+
+      <div class="rich-text">
         <PortableText value={post.content} />
       </div>
     </main>
-  </body>
-</html>
+  </article>
+</Layout>
+
+<style>
+  .post-container {
+    background: white;
+    min-height: 100vh;
+  }
+
+  /* Estilos de Migas de Pan */
+  .breadcrumbs {
+    background: #f9f9f9;
+    padding: 1rem 0;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+  }
+  .nav-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    color: #666;
+  }
+  .breadcrumbs a {
+    color: #0070f3;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .breadcrumbs a:hover {
+    text-decoration: underline;
+  }
+  .separator {
+    margin: 0 10px;
+    color: #ccc;
+  }
+  .current {
+    color: #999;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Estilos del Contenido */
+  .main-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+  }
+  .main-image {
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    color: #111;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+  .meta-info {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+  }
+  .divider {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 2.5rem 0;
+  }
+  .rich-text {
+    line-height: 1.8;
+    font-size: 1.15rem;
+    color: #333;
+  }
+  
+  /* Mejoras para el PortableText */
+  .rich-text :global(p) { margin-bottom: 1.5rem; }
+  .rich-text :global(h2) { font-size: 1.8rem; margin-top: 2.5rem; color: #111; }
+  .rich-text :global(h3) { font-size: 1.4rem; margin-top: 2rem; color: #222; }
+</style>
