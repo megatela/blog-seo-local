@@ -22,42 +22,58 @@ const clusterData = await client.fetch(`*[_type == "cluster" && slug.current == 
 }`, { slug });
 
 if (!clusterData) return Astro.redirect('/404');
+
+// PROTECCIÓN SEO: Si el usuario pone un H1 en Sanity, lo convertimos en H2 para evitar duplicados
+const components = {
+  block: {
+    h1: ({ children }: any) => <h2 style="font-size: 1.8rem; margin-top: 2rem;">{children}</h2>,
+  },
+};
 ---
 
 <Layout title={clusterData.title} description={clusterData.description}>
   <main style="max-width: 850px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif;">
     
-    <nav style="margin-bottom: 2rem;">
+    <nav style="margin-bottom: 2rem; font-size: 0.9rem;">
       <a href="/" style="color: #0070f3; text-decoration: none; font-weight: bold;">← Inicio</a>
     </nav>
     
-    <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">{clusterData.title}</h1>
+    <header style="margin-bottom: 3rem;">
+      <h1 style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #111; line-height: 1.1; margin-bottom: 1.5rem;">
+        {clusterData.title}
+      </h1>
+      
+      {clusterData.image && (
+        <img 
+          src={urlFor(clusterData.image).width(1200).url()} 
+          alt={clusterData.title} 
+          style="width: 100%; height: auto; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);"
+        />
+      )}
+    </header>
 
-    {clusterData.image && (
-      <img 
-        src={urlFor(clusterData.image).width(1200).url()} 
-        alt={clusterData.title} 
-        style="width: 100%; height: auto; border-radius: 12px; margin: 1.5rem 0; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"
-      />
-    )}
-
-    <div style="font-size: 1.25rem; color: #444; font-style: italic; border-left: 6px solid #0070f3; padding: 1rem 1.5rem; margin: 2rem 0; background: #f0f7ff;">
+    <section style="font-size: 1.25rem; color: #444; line-height: 1.6; border-left: 5px solid #0070f3; padding: 1.5rem 2rem; margin-bottom: 3rem; background: #f8faff; border-radius: 0 12px 12px 0;">
       {clusterData.description}
-    </div>
+    </section>
 
-    <article style="font-size: 1.15rem; line-height: 1.7; color: #333;">
-      <PortableText value={clusterData.content} />
+    <article style="font-size: 1.2rem; line-height: 1.8; color: #333;">
+      <PortableText value={clusterData.content} components={components} />
     </article>
 
     <hr style="margin: 4rem 0; border: 0; border-top: 1px solid #eee;" />
 
-    <section>
-      <h2 style="color: #111;">Artículos detallados</h2>
-      {slug === 'google-business-profile' && (
-        <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" style="display: block; padding: 20px; border: 1px solid #eee; border-radius: 12px; text-decoration: none; color: #0070f3; font-weight: bold; margin-top: 1rem;">
-          Guía Definitiva GBP 2024 →
-        </a>
-      )}
+    <section style="padding-bottom: 4rem;">
+      <h2 style="font-size: 1.8rem; color: #111; margin-bottom: 1.5rem;">Artículos detallados</h2>
+      <div style="display: grid; gap: 1rem;">
+        {slug === 'google-business-profile' && (
+          <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" 
+             style="display: block; padding: 25px; border: 1px solid #eee; border-radius: 16px; text-decoration: none; color: #0070f3; font-weight: 700; transition: all 0.2s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.02);"
+             onmouseover="this.style.borderColor='#0070f3'; this.style.transform='translateY(-2px)'"
+             onmouseout="this.style.borderColor='#eee'; this.style.transform='translateY(0)'">
+            Guía Definitiva GBP 2024 →
+          </a>
+        )}
+      </div>
     </section>
   </main>
 </Layout>
