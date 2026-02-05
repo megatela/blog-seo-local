@@ -1,5 +1,5 @@
 ---
-import { client, urlFor } from '../../lib/sanity'; // Importamos urlFor
+import { client, urlFor } from '../../lib/sanity';
 import { PortableText } from '@portabletext/react';
 
 export async function getStaticPaths() {
@@ -12,15 +12,16 @@ export async function getStaticPaths() {
   }));
 }
 
-const { slug } = Astro.params;
+const { cluster, slug } = Astro.params;
 
-// 1. Pedimos el campo 'mainImage' en la consulta
+// 1. Pedimos 'clusterSlug' y 'clusterName' para construir el enlace
 const post = await client.fetch(`*[_type == "post" && slug.current == $slug][0]{
   title,
   "h1": h1Title,
   mainImage, 
   content, 
-  "clusterName": cluster->title
+  "clusterName": cluster->title,
+  "clusterSlug": cluster->slug.current
 }`, { slug });
 
 if (!post) return Astro.redirect('/404');
@@ -31,16 +32,27 @@ if (!post) return Astro.redirect('/404');
     <meta charset="utf-8" />
     <title>{post.title} | Mi Blog SEO</title>
     <style>
-      .content { line-height: 1.6; font-family: sans-serif; }
-      .main-image { width: 100%; height: auto; border-radius: 8px; margin-bottom: 2rem; }
+      body { margin: 0; font-family: system-ui, -apple-system, sans-serif; color: #333; }
+      .content { line-height: 1.8; font-size: 1.1rem; }
+      .main-image { width: 100%; height: auto; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+      nav a { color: #0070f3; text-decoration: none; font-weight: 500; }
+      nav a:hover { text-decoration: underline; }
+      nav span.separator { color: #ccc; margin: 0 8px; }
+      h1 { font-size: 2.5rem; margin-top: 0; line-height: 1.2; }
     </style>
   </head>
   <body>
-    <nav style="background: #f4f4f4; padding: 1rem; margin-bottom: 2rem;">
-      <a href="/">Inicio</a> > <span>{post.clusterName}</span> > <strong>{post.title}</strong>
+    <nav style="background: #fdfdfd; padding: 1.5rem; border-bottom: 1px solid #eee; margin-bottom: 3rem;">
+      <div style="max-width: 800px; margin: 0 auto;">
+        <a href="/">Inicio</a> 
+        <span class="separator">></span> 
+        <a href={`/${post.clusterSlug}`}>{post.clusterName}</a> 
+        <span class="separator">></span> 
+        <strong style="color: #666;">{post.title}</strong>
+      </div>
     </nav>
 
-    <main style="max-width: 800px; margin: 0 auto; padding: 0 1rem;">
+    <main style="max-width: 800px; margin: 0 auto; padding: 0 1.5rem; padding-bottom: 5rem;">
       {post.mainImage && (
         <img 
           src={urlFor(post.mainImage).width(800).url()} 
@@ -50,7 +62,7 @@ if (!post) return Astro.redirect('/404');
       )}
 
       <h1>{post.h1 || post.title}</h1>
-      <hr />
+      <hr style="border: 0; border-top: 1px solid #eee; margin: 2rem 0;" />
 
       <div class="content">
         <PortableText value={post.content} />
