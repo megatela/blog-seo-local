@@ -23,9 +23,10 @@ const clusterData = await client.fetch(`*[_type == "cluster" && slug.current == 
 
 if (!clusterData) return Astro.redirect('/404');
 
+// Corregido: Quitamos el estilo en línea que causaba el error de compilación
 const components = {
   block: {
-    h1: ({ children }: any) => <h2 style="font-size: 1.8rem; margin-top: 2rem;">{children}</h2>,
+    h1: ({ children }: any) => <h2 class="degraded-h1">{children}</h2>,
   },
 };
 ---
@@ -38,7 +39,7 @@ const components = {
     </nav>
     
     <header style="margin-bottom: 3rem;">
-      <h1 style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #111; line-height: 1.1; margin-bottom: 1.5rem;">
+      <h1 class="main-title">
         {clusterData.title}
       </h1>
       
@@ -46,16 +47,16 @@ const components = {
         <img 
           src={urlFor(clusterData.image).width(1200).url()} 
           alt={clusterData.title} 
-          style="width: 100%; height: auto; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);"
+          class="header-image"
         />
       )}
     </header>
 
-    <section style="font-size: 1.25rem; color: #444; line-height: 1.6; border-left: 5px solid #0070f3; padding: 1.5rem 2rem; margin-bottom: 3rem; background: #f8faff; border-radius: 0 12px 12px 0;">
+    <section class="description-box">
       {clusterData.description}
     </section>
 
-    <article style="font-size: 1.2rem; line-height: 1.8; color: #333;">
+    <article class="rich-text">
       <PortableText value={clusterData.content} components={components} />
     </article>
 
@@ -76,6 +77,40 @@ const components = {
 </Layout>
 
 <style>
+  .main-title {
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    font-weight: 800;
+    color: #111;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+  .header-image {
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+  .description-box {
+    font-size: 1.25rem;
+    color: #444;
+    line-height: 1.6;
+    border-left: 5px solid #0070f3;
+    padding: 1.5rem 2rem;
+    margin-bottom: 3rem;
+    background: #f8faff;
+    border-radius: 0 12px 12px 0;
+  }
+  .rich-text {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: #333;
+  }
+  /* Estilo para el H1 degradado que viene de Sanity */
+  .degraded-h1 {
+    font-size: 1.8rem;
+    margin-top: 2rem;
+    color: #111;
+  }
   .card-link {
     display: block; 
     padding: 25px; 
