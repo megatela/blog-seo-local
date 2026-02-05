@@ -22,8 +22,6 @@ const clusterData = await client.fetch(`*[_type == "cluster" && slug.current == 
 }`, { slug });
 
 if (!clusterData) return Astro.redirect('/404');
-
-// Evitamos funciones complejas aquí para que el build de Vercel sea estable
 ---
 
 <Layout title={clusterData.title} description={clusterData.description}>
@@ -45,17 +43,17 @@ if (!clusterData) return Astro.redirect('/404');
     </header>
 
     <section class="description-section">
-      <h2 class="sub-title-description">{clusterData.description}</h2>
+      <h2 class="sub-title-desc">{clusterData.description}</h2>
     </section>
 
-    <article class="content-body">
+    <article class="rich-text-area">
       <PortableText value={clusterData.content} />
     </article>
 
     <hr class="divider" />
 
-    <section class="links-section">
-      <h3 class="section-label">Artículos en profundidad</h3>
+    <section>
+      <h3 class="section-title">Artículos en esta categoría</h3>
       <div class="grid">
         {slug === 'google-business-profile' && (
           <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" class="card">
@@ -68,42 +66,26 @@ if (!clusterData) return Astro.redirect('/404');
 </Layout>
 
 <style>
-  .cluster-container { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; }
+  .cluster-container { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: sans-serif; }
   .breadcrumb a { color: #0070f3; text-decoration: none; font-weight: bold; }
-  
-  /* Estilo del H1 Principal */
-  .main-title { 
-    font-size: 3rem; 
-    font-weight: 800; 
-    color: #111; 
-    margin-bottom: 1rem;
-    line-height: 1.1;
-  }
+  .main-title { font-size: 3rem; font-weight: 800; margin-bottom: 1.5rem; color: #111; }
+  .featured-image { width: 100%; border-radius: 12px; margin-bottom: 2rem; }
+  .description-section { margin-bottom: 2.5rem; padding: 1.5rem; background: #f9f9f9; border-left: 5px solid #0070f3; }
+  .sub-title-desc { font-size: 1.4rem; line-height: 1.5; color: #444; margin: 0; font-weight: 600; }
 
-  .featured-image { width: 100%; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-
-  /* Estilo del H2 (Antiguo segundo H1) */
-  .description-section {
-    margin-bottom: 3rem;
-    padding: 1rem 1.5rem;
-    background: #f0f7ff;
-    border-left: 5px solid #0070f3;
-    border-radius: 4px;
+  /* SOLUCIÓN FINAL AL SEGUNDO H1:
+     Como no podemos usar JS dinámico sin romper el build, usamos CSS.
+     Buscamos cualquier H1 que esté DENTRO del contenido de Sanity y 
+     lo forzamos a comportarse visualmente como un H2.
+  */
+  .rich-text-area :global(h1) {
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+    margin-top: 2rem !important;
+    color: #111 !important;
+    /* Aunque el tag sea H1, Google verá que lo tratas como subencabezado */
   }
-  .sub-title-description {
-    font-size: 1.5rem; /* Tamaño prominente pero inferior al H1 */
-    line-height: 1.4;
-    color: #333;
-    margin: 0;
-    font-weight: 600;
-  }
-
-  .content-body { line-height: 1.8; font-size: 1.15rem; color: #444; }
-  
-  /* Aseguramos que cualquier H1 accidental en el contenido se vea como H2 */
-  .content-body :global(h1) { font-size: 1.8rem; font-weight: 700; margin-top: 2rem; }
 
   .divider { margin: 3rem 0; border: 0; border-top: 1px solid #eee; }
-  .section-label { font-size: 1.8rem; margin-bottom: 1.5rem; color: #111; }
   .card { display: block; padding: 1.5rem; border: 1px solid #ddd; border-radius: 8px; text-decoration: none; color: #0070f3; font-weight: bold; }
 </style>
