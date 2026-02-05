@@ -3,12 +3,11 @@ import cluster from './cluster'
 import caseStudy from './caseStudy'
 
 /**
- * Este archivo actúa como el "índice" de tu base de datos.
- * Cada vez que añadimos un nuevo tipo de contenido (como 'cluster'),
- * debemos exportarlo aquí para que Sanity lo muestre en el panel.
+ * Exportación central de esquemas.
+ * El orden aquí determina el orden en la barra lateral del Studio.
  */
 export const schemaTypes = [
-  post,      // Artículos individuales
-  cluster,   // Secciones pilar (GBP, IA, etc.)
-  caseStudy  // Casos de éxito
+  post,
+  cluster,
+  caseStudy
 ]

@@ -9,7 +9,6 @@ export default defineType({
       name: 'title',
       title: 'Nombre del Clúster',
       type: 'string',
-      description: 'Ejemplo: Google Business Profile o Inteligencia Artificial local',
     }),
     defineField({
       name: 'slug',
@@ -23,28 +22,33 @@ export default defineType({
     }),
     defineField({
       name: 'description',
-      title: 'Descripción Corta (SEO)',
+      title: 'Descripción del Clúster',
       type: 'text',
       rows: 3,
-      description: 'Este texto aparecerá en los resultados de Google y en las tarjetas del blog.',
     }),
     defineField({
       name: 'image',
       title: 'Imagen de Portada',
       type: 'image',
       options: {
-        hotspot: true, // Permite elegir el foco de la imagen para que no se corte mal
+        hotspot: true,
       },
     }),
     defineField({
       name: 'content',
       title: 'Contenido Detallado del Clúster',
       type: 'array',
-      description: 'Escribe aquí la guía completa del pilar de autoridad.',
+      description: 'Escribe aquí la guía completa. Usa H2 para las secciones principales.',
       of: [
         {
           type: 'block',
-          // Esto permite negritas, listas y enlaces estándar
+          // Esto habilita los encabezados en el editor
+          styles: [
+            {title: 'Normal', value: 'normal'},
+            {title: 'H1', value: 'h1'},
+            {title: 'H2', value: 'h2'},
+            {title: 'H3', value: 'h3'},
+          ],
         },
       ],
     }),
