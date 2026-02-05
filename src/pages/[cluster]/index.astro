@@ -22,10 +22,12 @@ const clusterData = await client.fetch(`*[_type == "cluster" && slug.current == 
 }`, { slug });
 
 if (!clusterData) return Astro.redirect('/404');
+
+// Evitamos funciones complejas aquí para que el build de Vercel sea estable
 ---
 
 <Layout title={clusterData.title} description={clusterData.description}>
-  <main class="cluster-main">
+  <main class="cluster-container">
     <nav class="breadcrumb">
       <a href="/">← Inicio</a>
     </nav>
@@ -37,13 +39,13 @@ if (!clusterData) return Astro.redirect('/404');
         <img 
           src={urlFor(clusterData.image).width(1200).url()} 
           alt={clusterData.title} 
-          class="header-image"
+          class="featured-image"
         />
       )}
     </header>
 
-    <section class="description-container">
-      <p class="description-text">{clusterData.description}</p>
+    <section class="description-section">
+      <h2 class="sub-title-description">{clusterData.description}</h2>
     </section>
 
     <article class="content-body">
@@ -52,11 +54,11 @@ if (!clusterData) return Astro.redirect('/404');
 
     <hr class="divider" />
 
-    <section class="articles-grid-section">
-      <h2 class="section-subtitle">Artículos en esta categoría</h2>
+    <section class="links-section">
+      <h3 class="section-label">Artículos en profundidad</h3>
       <div class="grid">
         {slug === 'google-business-profile' && (
-          <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" class="card-link">
+          <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" class="card">
             Guía Definitiva GBP 2024 →
           </a>
         )}
@@ -66,47 +68,42 @@ if (!clusterData) return Astro.redirect('/404');
 </Layout>
 
 <style>
-  .cluster-main { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; }
+  .cluster-container { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; }
   .breadcrumb a { color: #0070f3; text-decoration: none; font-weight: bold; }
   
-  /* H1 Principal */
+  /* Estilo del H1 Principal */
   .main-title { 
-    font-size: clamp(2.5rem, 5vw, 3rem); 
+    font-size: 3rem; 
     font-weight: 800; 
     color: #111; 
-    margin-bottom: 1.5rem; 
+    margin-bottom: 1rem;
     line-height: 1.1;
   }
 
-  .header-image { width: 100%; height: auto; border-radius: 12px; margin-bottom: 2.5rem; }
+  .featured-image { width: 100%; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
 
-  /* Estilo de la Descripción (Texto de la Guía) */
-  .description-container {
+  /* Estilo del H2 (Antiguo segundo H1) */
+  .description-section {
     margin-bottom: 3rem;
-    padding: 1.5rem;
+    padding: 1rem 1.5rem;
     background: #f0f7ff;
     border-left: 5px solid #0070f3;
     border-radius: 4px;
   }
-  .description-text {
-    font-size: 1.25rem;
-    line-height: 1.6;
+  .sub-title-description {
+    font-size: 1.5rem; /* Tamaño prominente pero inferior al H1 */
+    line-height: 1.4;
     color: #333;
     margin: 0;
-    font-weight: 500;
+    font-weight: 600;
   }
 
-  .content-body { line-height: 1.8; font-size: 1.1rem; color: #444; }
+  .content-body { line-height: 1.8; font-size: 1.15rem; color: #444; }
   
-  /* Forzamos que si hay h1/h2 en el PortableText se vean como subencabezados */
-  .content-body :global(h1), .content-body :global(h2) {
-    font-size: 1.8rem;
-    margin-top: 2rem;
-    color: #111;
-    font-weight: 700;
-  }
+  /* Aseguramos que cualquier H1 accidental en el contenido se vea como H2 */
+  .content-body :global(h1) { font-size: 1.8rem; font-weight: 700; margin-top: 2rem; }
 
   .divider { margin: 3rem 0; border: 0; border-top: 1px solid #eee; }
-  .section-subtitle { font-size: 1.8rem; color: #111; margin-bottom: 1.5rem; }
-  .card-link { display: block; padding: 20px; border: 1px solid #eee; border-radius: 8px; text-decoration: none; color: #0070f3; font-weight: bold; }
+  .section-label { font-size: 1.8rem; margin-bottom: 1.5rem; color: #111; }
+  .card { display: block; padding: 1.5rem; border: 1px solid #ddd; border-radius: 8px; text-decoration: none; color: #0070f3; font-weight: bold; }
 </style>
