@@ -1,51 +1,14 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-// 1. Definimos TODAS las rutas que la Home referencia
 export function getStaticPaths() {
   return [
-    { 
-      params: { cluster: 'google-business-profile' }, 
-      props: { 
-        title: "Google Business Profile Masterclass | SEO Local",
-        description: "Aprende a optimizar tu ficha, gestionar reseñas y subir posiciones en Google Maps para captar más clientes locales."
-      } 
-    },
-    { 
-      params: { cluster: 'factores-ranking' }, 
-      props: { 
-        title: "Factores de Ranking Local | Algoritmo Google", 
-        description: "Análisis de los factores que influyen en el SEO Local: proximidad, relevancia y prominencia."
-      } 
-    },
-    { 
-      params: { cluster: 'seo-vertical' }, 
-      props: { 
-        title: "SEO Local Vertical | Estrategias por Nicho", 
-        description: "Optimización SEO específica para sectores de alta competencia como abogados y clínicas."
-      } 
-    },
-    { 
-      params: { cluster: 'herramientas' }, 
-      props: { 
-        title: "Herramientas y Auditoría SEO Local", 
-        description: "El stack tecnológico definitivo para auditar y gestionar negocios locales de forma profesional."
-      } 
-    },
-    { 
-      params: { cluster: 'casos-de-exito' }, 
-      props: { 
-        title: "Casos de Éxito SEO Local", 
-        description: "Resultados reales y estrategias aplicadas para multiplicar la visibilidad de negocios locales."
-      } 
-    },
-    { 
-      params: { cluster: 'ai-seo' }, 
-      props: { 
-        title: "AI Local Search (AEO) | El Futuro del SEO", 
-        description: "Cómo optimizar tu negocio para aparecer en las respuestas de IA (SGE, Gemini y ChatGPT)."
-      } 
-    }
+    { params: { cluster: 'google-business-profile' }, props: { title: "Google Business Profile Masterclass", description: "Aprende a optimizar tu ficha." } },
+    { params: { cluster: 'factores-ranking' }, props: { title: "Factores de Ranking Local", description: "Análisis de los factores." } },
+    { params: { cluster: 'seo-vertical' }, props: { title: "SEO Local Vertical", description: "Estrategias por Nicho." } },
+    { params: { cluster: 'herramientas' }, props: { title: "Herramientas SEO Local", description: "Stack tecnológico." } },
+    { params: { cluster: 'casos-de-exito' }, props: { title: "Casos de Éxito", description: "Resultados reales." } },
+    { params: { cluster: 'ai-seo' }, props: { title: "AI Local Search", description: "Futuro del SEO." } }
   ];
 }
 
@@ -56,53 +19,38 @@ const { title, description } = Astro.props;
 <Layout title={title} description={description}>
   <main style="max-width: 900px; margin: 0 auto; padding: 60px 20px; font-family: system-ui, sans-serif;">
     
-    <nav style="margin-bottom: 30px; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; color: #666;">
+    <nav style="margin-bottom: 30px; font-size: 0.95rem; color: #666;">
       <a href="/" style="color: #0070f3; text-decoration: none;">Inicio</a>
-      <span style="color: #ccc;">&gt;</span>
-      <a href={`/${cluster}`} style="color: #0070f3; text-decoration: none; font-weight: 600; text-transform: capitalize;">
+      <span style="margin: 0 8px;">&gt;</span>
+      <a href={`/${cluster}/`} style="color: #0070f3; text-decoration: none; font-weight: 600; text-transform: capitalize;">
         {cluster.replace(/-/g, ' ')}
       </a>
-      <span style="color: #ccc;">&gt;</span>
-      <span style="color: #999;">Listado de Artículos</span>
+      <span style="margin: 0 8px;">&gt;</span>
+      <span style="color: #999;">Artículos</span>
     </nav>
 
     <header style="margin-bottom: 60px;">
-      <h1 style="font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; color: #111; margin-bottom: 20px; line-height: 1.1;">
-        {title.split('|')[0]}
+      <h1 style="font-size: 3rem; font-weight: 800; color: #111; margin-bottom: 20px;">
+        {title}
       </h1>
-      <p style="font-size: 1.25rem; color: #666; line-height: 1.6; max-width: 700px;">
-        Sección especializada en <strong>{cluster.replace(/-/g, ' ')}</strong>. Aquí se agrupa el conocimiento estratégico para dominar esta área.
+      <p style="font-size: 1.25rem; color: #666;">
+        Explora nuestros artículos sobre <strong>{cluster.replace(/-/g, ' ')}</strong>.
       </p>
     </header>
 
     <section style="background: #f8f9fa; border: 1px solid #eaeaea; border-radius: 24px; padding: 40px;">
-      <h2 style="font-size: 1.5rem; margin-bottom: 30px; font-weight: 700; color: #111;">Artículos en este Clúster</h2>
+      <h2 style="font-size: 1.5rem; margin-bottom: 30px;">Contenido disponible</h2>
       
       <div style="display: grid; gap: 20px;">
         {cluster === 'google-business-profile' ? (
-          <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" style="display: block; background: white; padding: 25px; border-radius: 16px; text-decoration: none; color: inherit; border: 1px solid #eee; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-            <h3 style="color: #0070f3; margin-bottom: 10px; font-size: 1.25rem; font-weight: 700;">Guía Definitiva GBP 2024 →</h3>
-            <p style="color: #666; font-size: 0.95rem; line-height: 1.5;">Manual pilar para optimizar tu ficha desde cero y alcanzar el Top 3.</p>
+          <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" style="display: block; background: white; padding: 25px; border-radius: 16px; text-decoration: none; border: 1px solid #eee;">
+            <h3 style="color: #0070f3; margin-bottom: 10px;">Guía Definitiva GBP 2024 →</h3>
+            <p style="color: #666;">Manual pilar para optimizar tu ficha.</p>
           </a>
         ) : (
-          <div style="background: white; padding: 30px; border-radius: 16px; border: 1px dashed #ccc; text-align: center;">
-            <p style="color: #999; font-style: italic;">El contenido para este clúster se está procesando en Sanity y aparecerá aquí próximamente.</p>
-          </div>
+          <p style="text-align: center; color: #999;">Próximamente más contenido.</p>
         )}
       </div>
     </section>
-
-    <footer style="margin-top: 80px; padding-top: 40px; border-top: 1px solid #eee; text-align: center;">
-      <p style="color: #aaa; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">Topic Authority Framework</p>
-    </footer>
-
   </main>
 </Layout>
-
-<style>
-  a:hover {
-    border-color: #0070f3 !important;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.05) !important;
-  }
-</style>
