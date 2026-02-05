@@ -46,14 +46,7 @@ if (!clusterData) return Astro.redirect('/404');
     </section>
 
     <article class="rich-text">
-      <PortableText 
-        value={clusterData.content} 
-        components={{
-          block: {
-            h1: ({ children }) => <h2>{children}</h2>,
-          }
-        }} 
-      />
+      <PortableText value={clusterData.content} />
     </article>
 
     <hr class="section-divider" />
@@ -78,8 +71,18 @@ if (!clusterData) return Astro.redirect('/404');
   .main-title { font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #111; line-height: 1.1; margin-bottom: 1.5rem; }
   .header-image { width: 100%; height: auto; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 2rem; }
   .description-box { font-size: 1.25rem; color: #444; line-height: 1.6; border-left: 5px solid #0070f3; padding: 1.5rem 2rem; margin-bottom: 3rem; background: #f8faff; border-radius: 0 12px 12px 0; }
+  
   .rich-text { font-size: 1.2rem; line-height: 1.8; color: #333; }
+
+  /* SOLUCIÓN SEO: Forzamos que cualquier H1 que venga de Sanity se vea como un H2 */
+  .rich-text :global(h1) {
+    font-size: 1.8rem;
+    margin-top: 2.5rem;
+    color: #111;
+    font-weight: 700;
+  }
   .rich-text :global(h2) { font-size: 1.8rem; margin-top: 2.5rem; color: #111; }
+  
   .section-divider { margin: 4rem 0; border: 0; border-top: 1px solid #eee; }
   .section-title { font-size: 1.8rem; color: #111; margin-bottom: 1.5rem; }
   .card-link { display: block; padding: 25px; border: 1px solid #eee; border-radius: 16px; text-decoration: none; color: #0070f3; font-weight: 700; transition: all 0.2s ease; }
