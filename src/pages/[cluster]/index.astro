@@ -3,6 +3,7 @@ import { client, urlFor } from '../../lib/sanity';
 import { PortableText } from '@portabletext/react';
 import Layout from '../../layouts/Layout.astro';
 
+// Forzamos que la página sea estática para mejor SEO y velocidad
 export const prerender = true;
 
 export async function getStaticPaths() {
@@ -25,37 +26,42 @@ if (!clusterData) return Astro.redirect('/404');
 ---
 
 <Layout title={clusterData.title} description={clusterData.description}>
-  <main class="cluster-main">
-    <nav class="top-nav">
-      <a href="/">← Inicio</a>
+  <main style="max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif;">
+    
+    <nav style="margin-bottom: 2rem;">
+      <a href="/" style="color: #0070f3; text-decoration: none; font-weight: bold;">← Inicio</a>
     </nav>
     
-    <header class="cluster-header">
-      <h1 class="main-title">{clusterData.title}</h1>
+    <header>
+      <h1 style="font-size: 3rem; font-weight: 800; margin-bottom: 1.5rem; color: #111;">
+        {clusterData.title}
+      </h1>
+      
       {clusterData.image && (
         <img 
           src={urlFor(clusterData.image).width(1200).url()} 
           alt={clusterData.title} 
-          class="header-image"
+          style="width: 100%; height: auto; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1);"
         />
       )}
     </header>
 
-    <section class="description-box">
+    <div style="font-size: 1.2rem; color: #555; border-left: 4px solid #0070f3; padding-left: 1.5rem; margin-bottom: 2.5rem; line-height: 1.6;">
       {clusterData.description}
-    </section>
+    </div>
 
-    <article class="rich-text">
+    <article class="sanity-content" style="line-height: 1.8; font-size: 1.15rem; color: #333;">
       <PortableText value={clusterData.content} />
     </article>
 
-    <hr class="section-divider" />
+    <hr style="margin: 3rem 0; border: 0; border-top: 1px solid #eee;" />
 
-    <section class="posts-section">
-      <h2 class="section-title">Artículos detallados</h2>
-      <div class="posts-grid">
+    <section>
+      <h2 style="font-size: 1.8rem; margin-bottom: 1.5rem;">Artículos en esta categoría</h2>
+      <div style="display: grid; gap: 1rem;">
         {slug === 'google-business-profile' && (
-          <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" class="card-link">
+          <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" 
+             style="display: block; padding: 1.5rem; border: 1px solid #ddd; border-radius: 12px; text-decoration: none; color: #0070f3; font-weight: bold; transition: border-color 0.2s;">
             Guía Definitiva GBP 2024 →
           </a>
         )}
@@ -65,26 +71,11 @@ if (!clusterData) return Astro.redirect('/404');
 </Layout>
 
 <style>
-  .cluster-main { max-width: 850px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; }
-  .top-nav { margin-bottom: 2rem; font-size: 0.9rem; }
-  .top-nav a { color: #0070f3; text-decoration: none; font-weight: bold; }
-  .main-title { font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #111; line-height: 1.1; margin-bottom: 1.5rem; }
-  .header-image { width: 100%; height: auto; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 2rem; }
-  .description-box { font-size: 1.25rem; color: #444; line-height: 1.6; border-left: 5px solid #0070f3; padding: 1.5rem 2rem; margin-bottom: 3rem; background: #f8faff; border-radius: 0 12px 12px 0; }
-  
-  .rich-text { font-size: 1.2rem; line-height: 1.8; color: #333; }
-
-  /* SOLUCIÓN SEO: Forzamos que cualquier H1 que venga de Sanity se vea como un H2 */
-  .rich-text :global(h1) {
-    font-size: 1.8rem;
-    margin-top: 2.5rem;
-    color: #111;
-    font-weight: 700;
+  /* SEGURIDAD SEO: Si Sanity inyecta un H1 por error, lo forzamos a parecer un párrafo o H2 */
+  .sanity-content :global(h1) {
+    font-size: 1.8rem !important;
+    display: block !important;
+    margin-top: 2rem !important;
+    color: #111 !important;
   }
-  .rich-text :global(h2) { font-size: 1.8rem; margin-top: 2.5rem; color: #111; }
-  
-  .section-divider { margin: 4rem 0; border: 0; border-top: 1px solid #eee; }
-  .section-title { font-size: 1.8rem; color: #111; margin-bottom: 1.5rem; }
-  .card-link { display: block; padding: 25px; border: 1px solid #eee; border-radius: 16px; text-decoration: none; color: #0070f3; font-weight: 700; transition: all 0.2s ease; }
-  .card-link:hover { border-color: #0070f3; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
 </style>
