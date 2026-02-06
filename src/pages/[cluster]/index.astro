@@ -3,7 +3,7 @@ import { client, urlFor } from '../../lib/sanity';
 import { PortableText } from '@portabletext/react';
 import Layout from '../../layouts/Layout.astro';
 
-// 1. Mantenemos el renderizado dinámico para ver cambios al instante
+// 1. Mantenemos el renderizado dinámico
 export const prerender = false;
 
 export async function getStaticPaths() {
@@ -15,17 +15,25 @@ export async function getStaticPaths() {
 
 const { cluster: slug } = Astro.params;
 
-const clusterData = await client.fetch(`*[_type == "cluster" && slug.current == $slug][0]{
-  title,
-  description,
-  image,
-  content
+// Traemos el clúster Y los posts que pertenecen a este clúster dinámicamente
+const data = await client.fetch(`{
+  "cluster": *[_type == "cluster" && slug.current == $slug][0]{
+    title,
+    description,
+    image,
+    content,
+    "currentSlug": slug.current
+  },
+  "posts": *[_type == "post" && cluster->slug.current == $slug]{
+    title,
+    "slug": slug.current
+  }
 }`, { slug });
 
-if (!clusterData) return Astro.redirect('/404');
+if (!data.cluster) return Astro.redirect('/404');
 
-// 2. CONFIGURACIÓN DE COMPONENTES:
-// Definimos objetos simples. Astro los procesará correctamente en la parte del HTML inferior.
+const { cluster: clusterData, posts } = data;
+
 const components = {
   block: {
     h1: 'h1',
@@ -59,19 +67,22 @@ const components = {
     </div>
 
     <article class="main-content">
-      {/* 3. APLICAMOS EL COMPONENTE CON EL MAPEO DEFINIDO ARRIBA */}
       <PortableText value={clusterData.content} components={components} />
     </article>
 
     <hr class="divider" />
 
     <section>
-      <h3 class="section-title">Artículos detallados</h2>
+      <h3 class="section-title">Artículos detallados</h3>
       <div class="links-grid">
-        {slug === 'google-business-profile' && (
-          <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" class="card">
-            Guía Definitiva GBP 2024 →
-          </a>
+        {posts.length > 0 ? (
+          posts.map((post: any) => (
+            <a href={`/${slug}/${post.slug}`} class="card">
+              {post.title} →
+            </a>
+          ))
+        ) : (
+          <p>Próximamente más artículos...</p>
         )}
       </div>
     </section>
@@ -91,33 +102,17 @@ const components = {
     margin-bottom: 1rem;
   }
 
-  .featured-image { width: 100%; border-radius: 12px; margin-bottom: 2rem; }
+  .featured-image { width: 100%; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
   .description-text { font-size: 1.2rem; color: #444; margin-bottom: 3rem; line-height: 1.6; }
   
-  /* ESTILOS CLAVE PARA FORZAR EL DISEÑO DE LOS H2 QUE VIENEN DE SANITY */
-  .main-content :global(h1) {
-    font-size: 2.8rem;
-    font-weight: 800;
-    color: #111;
-    margin-bottom: 1.5rem;
-  }
-
   .main-content :global(h2) {
     font-size: 2.2rem;
     font-weight: 700;
     color: #1a1a1a;
     margin-top: 2.5rem;
     margin-bottom: 1.2rem;
-    border-bottom: 2px solid #eee; /* Línea decorativa para confirmar que es un H2 */
+    border-bottom: 2px solid #eee;
     padding-bottom: 0.5rem;
-  }
-
-  .main-content :global(h3) {
-    font-size: 1.6rem;
-    font-weight: 600;
-    color: #333;
-    margin-top: 2rem;
-    margin-bottom: 0.8rem;
   }
 
   .main-content :global(p) {
@@ -129,5 +124,21 @@ const components = {
 
   .section-title { font-size: 1.8rem; margin-bottom: 1.5rem; font-weight: 700; }
   .divider { margin: 3rem 0; border: 0; border-top: 1px solid #eee; }
-  .card { display: block; padding: 1.5rem; border: 1px solid #ddd; border-radius: 8px; text-decoration: none; color: #0070f3; font-weight: bold; }
+  
+  .links-grid { display: grid; gap: 1rem; }
+  .card { 
+    display: block; 
+    padding: 1.5rem; 
+    border: 1px solid #ddd; 
+    border-radius: 8px; 
+    text-decoration: none; 
+    color: #0070f3; 
+    font-weight: bold;
+    transition: all 0.2s ease;
+  }
+  .card:hover {
+    border-color: #0070f3;
+    background-color: #f0f7ff;
+    transform: translateY(-2px);
+  }
 </style>
