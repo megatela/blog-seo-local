@@ -2,23 +2,21 @@
 import { client, urlFor } from '../../lib/sanity';
 import { PortableText } from '@portabletext/react';
 import Layout from '../../layouts/Layout.astro';
-export const prerender = true;
+
+export const prerender = false;
+
 export async function getStaticPaths() {
   const posts = await client.fetch(`*[_type == "post"]{
     "slug": slug.current,
     "cluster": cluster->slug.current
   }`);
   return posts.map((post) => ({
-    params: { 
-      cluster: post.cluster || 'sin-categoria', 
-      slug: post.slug 
-    },
+    params: { cluster: post.cluster || 'sin-categoria', slug: post.slug },
   }));
 }
 
 const { slug } = Astro.params;
 
-// 1. Consulta extendida con SEO (meta description) y Slugs
 const post = await client.fetch(`*[_type == "post" && slug.current == $slug][0]{
   title,
   "description": description, 
@@ -31,14 +29,35 @@ const post = await client.fetch(`*[_type == "post" && slug.current == $slug][0]{
 
 if (!post) return Astro.redirect('/404');
 
-// Fallback para descripción si no existe en Sanity
-const metaDescription = post.description || `Lee más sobre ${post.title} en nuestro blog de SEO Local.`;
+// CONFIGURACIÓN SIN ETIQUETAS HTML (Para evitar el error de la captura)
+const components = {
+  block: {
+    h2: 'h2',
+    h3: 'h3',
+    normal: 'p',
+  },
+  marks: {
+    link: (props: any) => {
+      const {children, value} = props;
+      const isExternal = value.href.startsWith('http');
+      // Usamos un objeto de propiedades para evitar símbolos < > en esta zona
+      const linkProps = {
+        href: value.href,
+        target: isExternal ? "_blank" : undefined,
+        rel: isExternal ? "noopener noreferrer" : undefined,
+        className: "text-blue-600 underline font-bold"
+      };
+      // Renderizado seguro
+      import { createElement } from 'react';
+      return createElement('a', linkProps, children);
+    }
+  }
+};
 ---
 
-<Layout title={post.title} description={metaDescription}>
+<Layout title={post.title} description={post.description || post.title}>
   <article class="post-container">
-    
-    <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <nav class="breadcrumbs">
       <div class="nav-content">
         <a href="/">Inicio</a> 
         <span class="separator">/</span> 
@@ -60,96 +79,39 @@ const metaDescription = post.description || `Lee más sobre ${post.title} en nue
 
       <header>
         <h1>{post.h1 || post.title}</h1>
-        <div class="meta-info">
-          <span>Publicado en <strong>{post.clusterName}</strong></span>
-        </div>
+        <p class="meta-info">Publicado en <strong>{post.clusterName}</strong></p>
       </header>
 
       <hr class="divider" />
 
       <div class="rich-text">
-        <PortableText value={post.content} />
+        <PortableText value={post.content} components={components} />
       </div>
     </main>
   </article>
 </Layout>
 
 <style>
-  .post-container {
-    background: white;
-    min-height: 100vh;
-  }
+  .post-container { background: white; min-height: 100vh; }
+  .breadcrumbs { background: #f9f9f9; padding: 1rem 0; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+  .nav-content { max-width: 800px; margin: 0 auto; padding: 0 1.5rem; color: #666; }
+  .separator { margin: 0 10px; color: #ccc; }
+  .current { color: #999; }
 
-  /* Estilos de Migas de Pan */
-  .breadcrumbs {
-    background: #f9f9f9;
-    padding: 1rem 0;
-    border-bottom: 1px solid #eee;
-    font-size: 0.9rem;
-  }
-  .nav-content {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-    color: #666;
-  }
-  .breadcrumbs a {
-    color: #0070f3;
-    text-decoration: none;
-    font-weight: 500;
-  }
-  .breadcrumbs a:hover {
-    text-decoration: underline;
-  }
-  .separator {
-    margin: 0 10px;
-    color: #ccc;
-  }
-  .current {
-    color: #999;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  /* Estilos del Contenido */
-  .main-content {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 3rem 1.5rem;
-  }
-  .main-image {
-    width: 100%;
-    height: auto;
-    border-radius: 16px;
-    margin-bottom: 2.5rem;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  }
-  h1 {
-    font-size: clamp(2rem, 5vw, 3rem);
-    font-weight: 800;
-    color: #111;
-    line-height: 1.1;
-    margin-bottom: 1rem;
-  }
-  .meta-info {
-    color: #666;
-    font-size: 0.95rem;
-    margin-bottom: 2rem;
-  }
-  .divider {
-    border: 0;
-    border-top: 1px solid #eee;
-    margin: 2.5rem 0;
-  }
-  .rich-text {
-    line-height: 1.8;
-    font-size: 1.15rem;
-    color: #333;
-  }
+  .main-content { max-width: 800px; margin: 0 auto; padding: 3rem 1.5rem; }
+  .main-image { width: 100%; border-radius: 16px; margin-bottom: 2.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
   
-  /* Mejoras para el PortableText */
-  .rich-text :global(p) { margin-bottom: 1.5rem; }
-  .rich-text :global(h2) { font-size: 1.8rem; margin-top: 2.5rem; color: #111; }
-  .rich-text :global(h3) { font-size: 1.4rem; margin-top: 2rem; color: #222; }
+  h1 { font-size: clamp(2.2rem, 5vw, 3rem); font-weight: 800; color: #111; line-height: 1.1; margin-bottom: 1.5rem; }
+  .divider { border: 0; border-top: 1px solid #eee; margin: 2.5rem 0; }
+
+  .rich-text { line-height: 1.8; font-size: 1.15rem; color: #333; }
+  .rich-text :global(h2) { 
+    font-size: 1.9rem; 
+    font-weight: 700; 
+    margin-top: 3rem; 
+    margin-bottom: 1.2rem; 
+    color: #111;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 0.5rem;
+  }
 </style>
