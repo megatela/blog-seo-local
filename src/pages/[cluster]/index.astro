@@ -3,7 +3,8 @@ import { client, urlFor } from '../../lib/sanity';
 import { PortableText } from '@portabletext/react';
 import Layout from '../../layouts/Layout.astro';
 
-export const prerender = true;
+// 1. Mantenemos el renderizado dinámico para ver cambios al instante
+export const prerender = false;
 
 export async function getStaticPaths() {
   const clusters = await client.fetch(`*[_type == "cluster"]{ "slug": slug.current }`);
@@ -22,6 +23,17 @@ const clusterData = await client.fetch(`*[_type == "cluster" && slug.current == 
 }`, { slug });
 
 if (!clusterData) return Astro.redirect('/404');
+
+// 2. CONFIGURACIÓN DE COMPONENTES:
+// Definimos objetos simples. Astro los procesará correctamente en la parte del HTML inferior.
+const components = {
+  block: {
+    h1: 'h1',
+    h2: 'h2',
+    h3: 'h3',
+    normal: 'p',
+  },
+};
 ---
 
 <Layout title={clusterData.title} description={clusterData.description}>
@@ -47,13 +59,14 @@ if (!clusterData) return Astro.redirect('/404');
     </div>
 
     <article class="main-content">
-      <PortableText value={clusterData.content} />
+      {/* 3. APLICAMOS EL COMPONENTE CON EL MAPEO DEFINIDO ARRIBA */}
+      <PortableText value={clusterData.content} components={components} />
     </article>
 
     <hr class="divider" />
 
     <section>
-      <h2>Artículos detallados</h2>
+      <h3 class="section-title">Artículos detallados</h2>
       <div class="links-grid">
         {slug === 'google-business-profile' && (
           <a href="/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024" class="card">
@@ -69,7 +82,6 @@ if (!clusterData) return Astro.redirect('/404');
   .cluster-container { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; }
   .breadcrumb a { color: #0070f3; text-decoration: none; font-weight: bold; }
   
-  /* Estilo para el título de categoría (Ya no es H1) */
   .category-label { 
     font-size: 1.2rem; 
     text-transform: uppercase; 
@@ -82,15 +94,40 @@ if (!clusterData) return Astro.redirect('/404');
   .featured-image { width: 100%; border-radius: 12px; margin-bottom: 2rem; }
   .description-text { font-size: 1.2rem; color: #444; margin-bottom: 3rem; line-height: 1.6; }
   
-  /* El H1 que viene de Sanity se verá así */
+  /* ESTILOS CLAVE PARA FORZAR EL DISEÑO DE LOS H2 QUE VIENEN DE SANITY */
   .main-content :global(h1) {
-    font-size: 3rem;
+    font-size: 2.8rem;
     font-weight: 800;
     color: #111;
-    margin-bottom: 2rem;
-    line-height: 1.1;
+    margin-bottom: 1.5rem;
   }
 
+  .main-content :global(h2) {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-top: 2.5rem;
+    margin-bottom: 1.2rem;
+    border-bottom: 2px solid #eee; /* Línea decorativa para confirmar que es un H2 */
+    padding-bottom: 0.5rem;
+  }
+
+  .main-content :global(h3) {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #333;
+    margin-top: 2rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .main-content :global(p) {
+    margin-bottom: 1.2rem;
+    line-height: 1.7;
+    color: #333;
+    font-size: 1.1rem;
+  }
+
+  .section-title { font-size: 1.8rem; margin-bottom: 1.5rem; font-weight: 700; }
   .divider { margin: 3rem 0; border: 0; border-top: 1px solid #eee; }
   .card { display: block; padding: 1.5rem; border: 1px solid #ddd; border-radius: 8px; text-decoration: none; color: #0070f3; font-weight: bold; }
 </style>
