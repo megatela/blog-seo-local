@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { client } from '../lib/sanity';
 
-// 1. Fetch de los clusters existentes en Sanity
+// 1. Fetch de los clusters existentes en Sanity (Actualmente tienes 2 locales)
 const sanityClusters = await client.fetch(`*[_type == "cluster"] | order(_createdAt asc) {
   title,
   "slug": slug.current,
@@ -13,7 +13,7 @@ const sanityClusters = await client.fetch(`*[_type == "cluster"] | order(_create
   }
 }`);
 
-// 2. Definición manual de las 3 nuevas tarjetas para completar las 9
+// 2. Definición manual de las 7 tarjetas restantes para completar las 9
 const manualClusters = [
   {
     title: "Nichos de Alta Rentabilidad",
@@ -47,10 +47,54 @@ const manualClusters = [
       { title: "Cómo Gestionar Reseñas", slug: "gestion-reseñas" },
       { title: "Métricas de Crecimiento Real", slug: "metricas" }
     ]
+  },
+  {
+    title: "Factores de Ranking Local",
+    slug: "factores-ranking",
+    description: "Análisis técnico de proximidad y relevancia.",
+    posts: [
+      { title: "SEO On-Page & SILO", slug: "silo-local" },
+      { title: "Link Building Local", slug: "backlinks" },
+      { title: "Señales de Comportamiento", slug: "user-signals" },
+      { title: "Impacto de Reseñas", slug: "reviews-impact" }
+    ]
+  },
+  {
+    title: "AI Local Search (AEO)",
+    slug: "ai-local",
+    description: "Optimización para SGE y Answer Engines.",
+    posts: [
+      { title: "Estructura de Entidad", slug: "entidades" },
+      { title: "SEO Conversacional", slug: "voice-search" },
+      { title: "Imágenes en IA", slug: "ia-images" },
+      { title: "Keywords a Contexto", slug: "context-seo" }
+    ]
+  },
+  {
+    title: "Herramientas y Auditoría",
+    slug: "herramientas",
+    description: "Stack tecnológico para agencias locales.",
+    posts: [
+      { title: "Auditoría en 30 Minutos", slug: "fast-audit" },
+      { title: "Grid Tracking", slug: "geogrid" },
+      { title: "Automatización Reseñas", slug: "auto-reviews" },
+      { title: "Schema Generators", slug: "local-schema" }
+    ]
+  },
+  {
+    title: "Estrategia Multi-Ubicación",
+    slug: "multi-location",
+    description: "Escalando el SEO local para franquicias.",
+    posts: [
+      { title: "Gestión de Múltiples Fichas", slug: "bulk-management" },
+      { title: "Canibalización Local", slug: "avoid-cannibalization" },
+      { title: "Landing Pages por Ciudad", slug: "city-landings" },
+      { title: "NAP Consistency Pro", slug: "nap-scale" }
+    ]
   }
 ];
 
-// Unimos todo en un solo array
+// Unimos todo: Si Sanity tiene 2, manualClusters tiene 7 = 9 tarjetas.
 const allClusters = [...sanityClusters, ...manualClusters];
 ---
 
@@ -94,7 +138,6 @@ const allClusters = [...sanityClusters, ...manualClusters];
       ))}
     </div>
     
-    {/* Botón de llamada a la acción al final */}
     <div style="text-align: center; margin-top: 4rem;">
        <h3 style="margin-bottom: 1.5rem;">¿Buscas resultados reales en Google Maps?</h3>
        <a href="#" class="cta-button">Solicitar Auditoría SEO</a>
@@ -103,122 +146,26 @@ const allClusters = [...sanityClusters, ...manualClusters];
 </Layout>
 
 <style>
-  .home-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 4rem 2rem;
-  }
-
-  .hero {
-    text-align: center;
-    margin-bottom: 4rem;
-  }
-
+  /* Se mantiene el mismo estilo CSS que ya tenías */
+  .home-container { max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; }
+  .hero { text-align: center; margin-bottom: 4rem; }
   h1 { font-size: 3.5rem; font-weight: 800; margin-bottom: 1rem; }
-  .text-gradient {
-    background: linear-gradient(45deg, #0070f3, #00dfd8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 2rem;
-  }
-
-  .card {
-    background: white;
-    border: 1px solid #eaeaea;
-    border-radius: 16px;
-    transition: all 0.3s ease;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
-    border-color: #0070f3;
-  }
-
+  .text-gradient { background: linear-gradient(45deg, #0070f3, #00dfd8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 2rem; }
+  .card { background: white; border: 1px solid #eaeaea; border-radius: 16px; transition: all 0.3s ease; overflow: hidden; display: flex; flex-direction: column; }
+  .card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); border-color: #0070f3; }
   .card-content { padding: 2rem; }
-
-  .card-title {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-    color: #111;
-    border-left: 4px solid #0070f3;
-    padding-left: 1rem;
-    line-height: 1.2;
-  }
-
-  .label {
-    display: block;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    font-weight: 700;
-    color: #888;
-    margin-bottom: 0.5rem;
-    letter-spacing: 0.05em;
-  }
-
+  .card-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: #111; border-left: 4px solid #0070f3; padding-left: 1rem; line-height: 1.2; }
+  .label { display: block; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #888; margin-bottom: 0.5rem; letter-spacing: 0.05em; }
   .pilar-section { margin-bottom: 1.5rem; }
-  .pilar-link {
-    color: #0070f3;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 1.1rem;
-  }
-
-  .support-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .support-list li {
-    margin-bottom: 0.6rem;
-    padding-left: 1.2rem;
-    position: relative;
-  }
-
-  .support-list li::before {
-    content: "•";
-    position: absolute;
-    left: 0;
-    color: #0070f3;
-    font-weight: bold;
-  }
-
-  .support-list a {
-    color: #444;
-    text-decoration: none;
-    font-size: 0.95rem;
-    transition: color 0.2s;
-  }
-
+  .pilar-link { color: #0070f3; text-decoration: none; font-weight: 700; font-size: 1.1rem; }
+  .support-list { list-style: none; padding: 0; margin: 0; }
+  .support-list li { margin-bottom: 0.6rem; padding-left: 1.2rem; position: relative; }
+  .support-list li::before { content: "•"; position: absolute; left: 0; color: #0070f3; font-weight: bold; }
+  .support-list a { color: #444; text-decoration: none; font-size: 0.95rem; transition: color 0.2s; }
   .support-list a:hover { color: #0070f3; }
   .coming-soon { color: #999; font-style: italic; font-size: 0.9rem; }
-
-  .cta-button {
-    background: #0070f3;
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: bold;
-    box-shadow: 0 4px 14px 0 rgba(0,118,255,0.39);
-    transition: background 0.2s;
-  }
-
-  .cta-button:hover {
-    background: #0061d5;
-  }
-
-  @media (max-width: 768px) {
-    .grid-container { grid-template-columns: 1fr; }
-    h1 { font-size: 2.5rem; }
-  }
+  .cta-button { background: #0070f3; color: white; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; font-weight: bold; box-shadow: 0 4px 14px 0 rgba(0,118,255,0.39); transition: background 0.2s; }
+  .cta-button:hover { background: #0061d5; }
+  @media (max-width: 768px) { .grid-container { grid-template-columns: 1fr; } h1 { font-size: 2.5rem; } }
 </style>
