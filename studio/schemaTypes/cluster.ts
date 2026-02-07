@@ -9,7 +9,7 @@ export default defineType({
       name: 'title',
       title: 'Nombre del Clúster',
       type: 'string',
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().error('El título es necesario para la web'),
     }),
     defineField({
       name: 'slug',
@@ -23,9 +23,10 @@ export default defineType({
     }),
     defineField({
       name: 'description',
-      title: 'Descripción del Clúster',
+      title: 'Descripción SEO (Tarjeta)',
       type: 'text',
       rows: 3,
+      description: 'Este texto aparecerá en la caja de la página de inicio.',
     }),
     defineField({
       name: 'image',
@@ -34,23 +35,35 @@ export default defineType({
       options: {
         hotspot: true,
       },
+      // Campos adicionales para la imagen (SEO)
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Texto Alternativo (SEO)',
+          description: 'Importante para buscadores y accesibilidad.',
+          validation: (Rule) => Rule.required(),
+        }
+      ],
     }),
     defineField({
       name: 'content',
-      title: 'Contenido Detallado',
+      title: 'Contenido de la Guía Pilar',
       type: 'array',
+      description: 'Aquí va el contenido largo que tus usuarios leerán.',
       of: [
         {
           type: 'block',
           styles: [
             { title: 'Párrafo', value: 'normal' },
-            { title: 'Título 1', value: 'h1' }, // ESTO ES VITAL: Tu contenido tiene H1
-            { title: 'Título 2', value: 'h2' },
-            { title: 'Título 3', value: 'h3' },
+            { title: 'Título 1 (H1)', value: 'h1' },
+            { title: 'Título 2 (H2)', value: 'h2' },
+            { title: 'Título 3 (H3)', value: 'h3' },
+            { title: 'Título 4 (H4)', value: 'h4' },
             { title: 'Cita', value: 'blockquote' },
           ],
           lists: [
-            { title: 'Viñetas', value: 'bullet' },
+            { title: 'Puntos', value: 'bullet' },
             { title: 'Números', value: 'number' },
           ],
           marks: {
@@ -63,6 +76,16 @@ export default defineType({
         {
           type: 'image',
           options: { hotspot: true },
+          title: 'Imagen interna',
+          // También permitimos Texto Alt en imágenes dentro del texto
+          fields: [
+            {
+              name: 'alt',
+              type: 'string',
+              title: 'Texto Alternativo',
+              validation: (Rule) => Rule.required(),
+            }
+          ]
         }
       ],
     }),
