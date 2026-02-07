@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { client } from '../lib/sanity';
 
-// 1. Fetch de los clusters existentes en Sanity (Actualmente tienes 2 locales)
+// 1. Recuperamos tus 2 clusters reales de Sanity
 const sanityClusters = await client.fetch(`*[_type == "cluster"] | order(_createdAt asc) {
   title,
   "slug": slug.current,
@@ -13,88 +13,49 @@ const sanityClusters = await client.fetch(`*[_type == "cluster"] | order(_create
   }
 }`);
 
-// 2. Definición manual de las 7 tarjetas restantes para completar las 9
+// 2. Definimos las otras 7 tarjetas manualmente para completar la home
 const manualClusters = [
   {
     title: "Nichos de Alta Rentabilidad",
     slug: "nichos-rentables",
-    description: "Estrategias para sectores de alta competencia local.",
     posts: [
-      { title: "SEO para Cerrajeros (Emergencias)", slug: "cerrajeros" },
-      { title: "Clínicas Dentales y Estéticas", slug: "clinicas" },
-      { title: "Abogados y Bufetes Locales", slug: "abogados" },
-      { title: "SaaS para Negocios Físicos", slug: "saas-local" }
+      { title: "SEO para Cerrajeros", slug: "cerrajeros" },
+      { title: "Clínicas Dentales", slug: "clinicas" },
+      { title: "Abogados Locales", slug: "abogados" }
     ]
   },
   {
     title: "Lead Magnet Geográfico",
     slug: "recursos-gratis",
-    description: "Herramientas y guías descargables por ubicación.",
-    posts: [
-      { title: "Checklist Verificación GMB", slug: "checklist" },
-      { title: "Plantilla Auditoría SEO Local", slug: "plantilla-auditoria" },
-      { title: "Mapa de Competencia Local", slug: "mapa-competencia" },
-      { title: "Guía de Keywords por Ciudad", slug: "keywords-ciudad" }
-    ]
+    posts: [{ title: "Checklist GMB 2024", slug: "checklist" }]
   },
   {
     title: "Social Proof (GMB Live)",
-    slug: "recursos-autoridad",
-    description: "Resultados reales y reputación verificada.",
-    posts: [
-      { title: "Nuestros Casos de Éxito", slug: "casos-exito" },
-      { title: "Opiniones de Clientes", slug: "opiniones" },
-      { title: "Cómo Gestionar Reseñas", slug: "gestion-reseñas" },
-      { title: "Métricas de Crecimiento Real", slug: "metricas" }
-    ]
+    slug: "reputacion",
+    posts: [{ title: "Casos de Éxito", slug: "casos" }]
   },
   {
-    title: "Factores de Ranking Local",
-    slug: "factores-ranking",
-    description: "Análisis técnico de proximidad y relevancia.",
-    posts: [
-      { title: "SEO On-Page & SILO", slug: "silo-local" },
-      { title: "Link Building Local", slug: "backlinks" },
-      { title: "Señales de Comportamiento", slug: "user-signals" },
-      { title: "Impacto de Reseñas", slug: "reviews-impact" }
-    ]
+    title: "Factores de Ranking",
+    slug: "factores",
+    posts: [{ title: "SEO On-Page", slug: "on-page" }]
   },
   {
-    title: "AI Local Search (AEO)",
-    slug: "ai-local",
-    description: "Optimización para SGE y Answer Engines.",
-    posts: [
-      { title: "Estructura de Entidad", slug: "entidades" },
-      { title: "SEO Conversacional", slug: "voice-search" },
-      { title: "Imágenes en IA", slug: "ia-images" },
-      { title: "Keywords a Contexto", slug: "context-seo" }
-    ]
+    title: "AI Local Search",
+    slug: "ai-seo",
+    posts: [{ title: "SGE Local", slug: "sge" }]
   },
   {
-    title: "Herramientas y Auditoría",
-    slug: "herramientas",
-    description: "Stack tecnológico para agencias locales.",
-    posts: [
-      { title: "Auditoría en 30 Minutos", slug: "fast-audit" },
-      { title: "Grid Tracking", slug: "geogrid" },
-      { title: "Automatización Reseñas", slug: "auto-reviews" },
-      { title: "Schema Generators", slug: "local-schema" }
-    ]
+    title: "Herramientas",
+    slug: "tools",
+    posts: [{ title: "Auditoría Express", slug: "audit" }]
   },
   {
     title: "Estrategia Multi-Ubicación",
     slug: "multi-location",
-    description: "Escalando el SEO local para franquicias.",
-    posts: [
-      { title: "Gestión de Múltiples Fichas", slug: "bulk-management" },
-      { title: "Canibalización Local", slug: "avoid-cannibalization" },
-      { title: "Landing Pages por Ciudad", slug: "city-landings" },
-      { title: "NAP Consistency Pro", slug: "nap-scale" }
-    ]
+    posts: [{ title: "Gestión Bulk", slug: "bulk" }]
   }
 ];
 
-// Unimos todo: Si Sanity tiene 2, manualClusters tiene 7 = 9 tarjetas.
 const allClusters = [...sanityClusters, ...manualClusters];
 ---
 
@@ -102,7 +63,7 @@ const allClusters = [...sanityClusters, ...manualClusters];
   <main class="home-container">
     <header class="hero">
       <h1>Masterclass <span class="text-gradient">SEO Local</span></h1>
-      <p>La guía definitiva para dominar el algoritmo de Google Maps y captar clientes.</p>
+      <p>La guía definitiva para dominar el algoritmo de Google Maps.</p>
     </header>
 
     <div class="grid-container">
@@ -114,7 +75,7 @@ const allClusters = [...sanityClusters, ...manualClusters];
             <div class="pilar-section">
               <span class="label">Página Pilar</span>
               <a href={`/${cluster.slug}`} class="pilar-link">
-                Guía Completa {cluster.title} →
+                Guía Completa →
               </a>
             </div>
 
@@ -128,44 +89,38 @@ const allClusters = [...sanityClusters, ...manualClusters];
                     </a>
                   </li>
                 ))}
-                {(!cluster.posts || cluster.posts.length === 0) && (
-                  <li class="coming-soon">Próximamente...</li>
-                )}
               </ul>
             </div>
           </div>
         </div>
       ))}
     </div>
-    
-    <div style="text-align: center; margin-top: 4rem;">
-       <h3 style="margin-bottom: 1.5rem;">¿Buscas resultados reales en Google Maps?</h3>
-       <a href="#" class="cta-button">Solicitar Auditoría SEO</a>
+
+    <div class="cta-container">
+       <h3>¿Buscas resultados reales en Google Maps?</h3>
+       {/* ENLACE CORREGIDO A TU ARCHIVO contactame.astro */}
+       <a href="/contactame" class="cta-button">Solicitar Auditoría SEO</a>
     </div>
   </main>
 </Layout>
 
 <style>
-  /* Se mantiene el mismo estilo CSS que ya tenías */
   .home-container { max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; }
   .hero { text-align: center; margin-bottom: 4rem; }
-  h1 { font-size: 3.5rem; font-weight: 800; margin-bottom: 1rem; }
+  h1 { font-size: 3.5rem; font-weight: 800; }
   .text-gradient { background: linear-gradient(45deg, #0070f3, #00dfd8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 2rem; }
-  .card { background: white; border: 1px solid #eaeaea; border-radius: 16px; transition: all 0.3s ease; overflow: hidden; display: flex; flex-direction: column; }
-  .card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); border-color: #0070f3; }
+  .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
+  .card { background: white; border: 1px solid #eaeaea; border-radius: 16px; transition: 0.3s; }
+  .card:hover { transform: translateY(-5px); border-color: #0070f3; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
   .card-content { padding: 2rem; }
-  .card-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: #111; border-left: 4px solid #0070f3; padding-left: 1rem; line-height: 1.2; }
-  .label { display: block; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #888; margin-bottom: 0.5rem; letter-spacing: 0.05em; }
-  .pilar-section { margin-bottom: 1.5rem; }
-  .pilar-link { color: #0070f3; text-decoration: none; font-weight: 700; font-size: 1.1rem; }
-  .support-list { list-style: none; padding: 0; margin: 0; }
-  .support-list li { margin-bottom: 0.6rem; padding-left: 1.2rem; position: relative; }
-  .support-list li::before { content: "•"; position: absolute; left: 0; color: #0070f3; font-weight: bold; }
-  .support-list a { color: #444; text-decoration: none; font-size: 0.95rem; transition: color 0.2s; }
-  .support-list a:hover { color: #0070f3; }
-  .coming-soon { color: #999; font-style: italic; font-size: 0.9rem; }
-  .cta-button { background: #0070f3; color: white; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; font-weight: bold; box-shadow: 0 4px 14px 0 rgba(0,118,255,0.39); transition: background 0.2s; }
-  .cta-button:hover { background: #0061d5; }
-  @media (max-width: 768px) { .grid-container { grid-template-columns: 1fr; } h1 { font-size: 2.5rem; } }
+  .card-title { font-size: 1.4rem; border-left: 4px solid #0070f3; padding-left: 1rem; margin-bottom: 1.5rem; }
+  .label { font-size: 0.7rem; color: #888; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 0.5rem; }
+  .pilar-link { color: #0070f3; font-weight: bold; text-decoration: none; display: block; margin-bottom: 1rem; }
+  .support-list { list-style: none; padding: 0; }
+  .support-list li { margin-bottom: 0.5rem; font-size: 0.9rem; padding-left: 1rem; position: relative; }
+  .support-list li::before { content: "•"; position: absolute; left: 0; color: #0070f3; }
+  .support-list a { color: #555; text-decoration: none; }
+  .cta-container { text-align: center; margin-top: 4rem; padding: 4rem; background: #f0f7ff; border-radius: 24px; }
+  .cta-button { background: #0070f3; color: white; padding: 1.2rem 2.5rem; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 1rem; transition: background 0.2s; }
+  .cta-button:hover { background: #0056b3; }
 </style>
