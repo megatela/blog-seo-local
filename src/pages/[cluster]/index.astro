@@ -3,36 +3,19 @@ import { client, urlFor } from '../../lib/sanity';
 import { PortableText } from '@portabletext/react';
 import Layout from '../../layouts/Layout.astro';
 
-// 1. Mantenemos el renderizado dinámico
 export const prerender = false;
 
-export async function getStaticPaths() {
-  const clusters = await client.fetch(`*[_type == "cluster"]{ "slug": slug.current }`);
-  return clusters.map((c: any) => ({
-    params: { cluster: c.slug },
-  }));
-}
+const { cluster } = Astro.params;
 
-const { cluster: slug } = Astro.params;
+const data = await client.fetch(`*[_type == "cluster" && slug.current == $cluster][0]{
+  title,
+  description,
+  image,
+  "altText": image.alt, 
+  content
+}`, { cluster });
 
-// Traemos el clúster Y los posts que pertenecen a este clúster dinámicamente
-const data = await client.fetch(`{
-  "cluster": *[_type == "cluster" && slug.current == $slug][0]{
-    title,
-    description,
-    image,
-    content,
-    "currentSlug": slug.current
-  },
-  "posts": *[_type == "post" && cluster->slug.current == $slug]{
-    title,
-    "slug": slug.current
-  }
-}`, { slug });
-
-if (!data.cluster) return Astro.redirect('/404');
-
-const { cluster: clusterData, posts } = data;
+if (!data) return Astro.redirect('/404');
 
 const components = {
   block: {
@@ -40,105 +23,38 @@ const components = {
     h2: 'h2',
     h3: 'h3',
     normal: 'p',
-  },
+  }
 };
 ---
 
-<Layout title={clusterData.title} description={clusterData.description}>
-  <main class="cluster-container">
-    <nav class="breadcrumb">
-      <a href="/">← Inicio</a>
-    </nav>
-    
-    <header>
-      <div class="category-label">{clusterData.title}</div>
-      
-      {clusterData.image && (
+<Layout title={data.title} description={data.description}>
+  <article class="cluster-container">
+    <main class="main-content">
+      {data.image && (
         <img 
-          src={urlFor(clusterData.image).width(1200).url()} 
-          alt={clusterData.title} 
+          src={urlFor(data.image).width(1200).url()} 
+          alt={data.altText || data.title} 
           class="featured-image"
+          loading="eager"
         />
       )}
-    </header>
 
-    <div class="description-text">
-      {clusterData.description}
-    </div>
+      <header>
+        <h1>{data.title}</h1>
+      </header>
 
-    <article class="main-content">
-      <PortableText value={clusterData.content} components={components} />
-    </article>
-
-    <hr class="divider" />
-
-    <section>
-      <h3 class="section-title">Artículos detallados</h3>
-      <div class="links-grid">
-        {posts.length > 0 ? (
-          posts.map((post: any) => (
-            <a href={`/${slug}/${post.slug}`} class="card">
-              {post.title} →
-            </a>
-          ))
-        ) : (
-          <p>Próximamente más artículos...</p>
-        )}
+      <div class="rich-text">
+        <PortableText value={data.content} components={components} />
       </div>
-    </section>
-  </main>
+    </main>
+  </article>
 </Layout>
 
 <style>
-  .cluster-container { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; }
-  .breadcrumb a { color: #0070f3; text-decoration: none; font-weight: bold; }
-  
-  .category-label { 
-    font-size: 1.2rem; 
-    text-transform: uppercase; 
-    letter-spacing: 0.1em; 
-    color: #666; 
-    font-weight: 700;
-    margin-bottom: 1rem;
-  }
-
-  .featured-image { width: 100%; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-  .description-text { font-size: 1.2rem; color: #444; margin-bottom: 3rem; line-height: 1.6; }
-  
-  .main-content :global(h2) {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin-top: 2.5rem;
-    margin-bottom: 1.2rem;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 0.5rem;
-  }
-
-  .main-content :global(p) {
-    margin-bottom: 1.2rem;
-    line-height: 1.7;
-    color: #333;
-    font-size: 1.1rem;
-  }
-
-  .section-title { font-size: 1.8rem; margin-bottom: 1.5rem; font-weight: 700; }
-  .divider { margin: 3rem 0; border: 0; border-top: 1px solid #eee; }
-  
-  .links-grid { display: grid; gap: 1rem; }
-  .card { 
-    display: block; 
-    padding: 1.5rem; 
-    border: 1px solid #ddd; 
-    border-radius: 8px; 
-    text-decoration: none; 
-    color: #0070f3; 
-    font-weight: bold;
-    transition: all 0.2s ease;
-  }
-  .card:hover {
-    border-color: #0070f3;
-    background-color: #f0f7ff;
-    transform: translateY(-2px);
-  }
+  .cluster-container { background: white; min-height: 100vh; }
+  .main-content { max-width: 800px; margin: 0 auto; padding: 3rem 1.5rem; }
+  .featured-image { width: 100%; border-radius: 16px; margin-bottom: 2.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+  h1 { font-size: 3rem; font-weight: 800; color: #111; margin-bottom: 2rem; }
+  .rich-text { line-height: 1.8; font-size: 1.15rem; color: #333; }
+  .rich-text :global(h2) { font-size: 1.9rem; margin-top: 2.5rem; border-bottom: 2px solid #eee; padding-bottom: 0.5rem; }
 </style>
