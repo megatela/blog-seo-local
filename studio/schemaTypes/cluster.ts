@@ -9,7 +9,7 @@ export default defineType({
       name: 'title',
       title: 'Nombre del Clúster',
       type: 'string',
-      validation: (Rule) => Rule.required().error('El título es necesario para la web'),
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'slug',
@@ -23,10 +23,9 @@ export default defineType({
     }),
     defineField({
       name: 'description',
-      title: 'Descripción SEO (Tarjeta)',
+      title: 'Descripción del Clúster',
       type: 'text',
       rows: 3,
-      description: 'Este texto aparecerá en la caja de la página de inicio.',
     }),
     defineField({
       name: 'image',
@@ -38,23 +37,20 @@ export default defineType({
     }),
     defineField({
       name: 'content',
-      title: 'Contenido de la Guía Pilar',
+      title: 'Contenido Detallado',
       type: 'array',
-      description: 'Aquí va el contenido largo que tus usuarios leerán.',
       of: [
         {
           type: 'block',
-          // Hemos añadido h1 y h4 para asegurar compatibilidad total con lo que ya escribiste
           styles: [
             { title: 'Párrafo', value: 'normal' },
-            { title: 'Título 1', value: 'h1' },
+            { title: 'Título 1', value: 'h1' }, // ESTO ES VITAL: Tu contenido tiene H1
             { title: 'Título 2', value: 'h2' },
             { title: 'Título 3', value: 'h3' },
-            { title: 'Título 4', value: 'h4' },
             { title: 'Cita', value: 'blockquote' },
           ],
           lists: [
-            { title: 'Puntos', value: 'bullet' },
+            { title: 'Viñetas', value: 'bullet' },
             { title: 'Números', value: 'number' },
           ],
           marks: {
@@ -67,7 +63,6 @@ export default defineType({
         {
           type: 'image',
           options: { hotspot: true },
-          title: 'Imagen interna',
         }
       ],
     }),
