@@ -9,6 +9,7 @@ export default defineType({
       name: 'title',
       title: 'Nombre del Clúster',
       type: 'string',
+      validation: (Rule) => Rule.required().error('El título es obligatorio'),
     }),
     defineField({
       name: 'slug',
@@ -22,9 +23,10 @@ export default defineType({
     }),
     defineField({
       name: 'description',
-      title: 'Descripción del Clúster',
+      title: 'Descripción Corta (SEO)',
       type: 'text',
       rows: 3,
+      description: 'Este texto se muestra en las tarjetas de la página de inicio.',
     }),
     defineField({
       name: 'image',
@@ -36,20 +38,34 @@ export default defineType({
     }),
     defineField({
       name: 'content',
-      title: 'Contenido Detallado del Clúster',
+      title: 'Contenido Detallado (Página Pilar)',
       type: 'array',
-      description: 'Escribe aquí la guía completa. Usa H2 para las secciones principales.',
+      description: 'Escribe aquí la guía completa para este clúster.',
       of: [
         {
           type: 'block',
-          // Esto habilita los encabezados en el editor
           styles: [
-            {title: 'Normal', value: 'normal'},
-            {title: 'H1', value: 'h1'},
-            {title: 'H2', value: 'h2'},
-            {title: 'H3', value: 'h3'},
+            { title: 'Párrafo', value: 'normal' },
+            { title: 'Título 2 (H2)', value: 'h2' },
+            { title: 'Título 3 (H3)', value: 'h3' },
+            { title: 'Cita', value: 'blockquote' },
           ],
+          lists: [
+            { title: 'Viñetas', value: 'bullet' },
+            { title: 'Numeración', value: 'number' },
+          ],
+          marks: {
+            decorators: [
+              { title: 'Negrita', value: 'strong' },
+              { title: 'Cursiva', value: 'em' },
+            ],
+          },
         },
+        {
+          type: 'image',
+          options: { hotspot: true },
+          title: 'Imagen en el cuerpo del texto',
+        }
       ],
     }),
   ],
