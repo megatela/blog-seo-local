@@ -33,7 +33,7 @@ export default defineType({
       title: 'Imagen de Portada',
       type: 'image',
       options: {
-        hotspot: true, // Esto te permite centrar la imagen para que no se corte
+        hotspot: true,
       },
     }),
     defineField({
@@ -44,10 +44,13 @@ export default defineType({
       of: [
         {
           type: 'block',
+          // Hemos añadido h1 y h4 para asegurar compatibilidad total con lo que ya escribiste
           styles: [
             { title: 'Párrafo', value: 'normal' },
-            { title: 'Encabezado 2 (H2)', value: 'h2' },
-            { title: 'Encabezado 3 (H3)', value: 'h3' },
+            { title: 'Título 1', value: 'h1' },
+            { title: 'Título 2', value: 'h2' },
+            { title: 'Título 3', value: 'h3' },
+            { title: 'Título 4', value: 'h4' },
             { title: 'Cita', value: 'blockquote' },
           ],
           lists: [
