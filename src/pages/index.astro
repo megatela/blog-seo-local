@@ -1,148 +1,224 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { client } from '../lib/sanity';
 
-const clusters = [
+// 1. Fetch de los clusters existentes en Sanity
+const sanityClusters = await client.fetch(`*[_type == "cluster"] | order(_createdAt asc) {
+  title,
+  "slug": slug.current,
+  description,
+  "posts": *[_type == "post" && references(^._id)][0...4] {
+    title,
+    "slug": slug.current
+  }
+}`);
+
+// 2. Definición manual de las 3 nuevas tarjetas para completar las 9
+const manualClusters = [
   {
-    title: "Google Business Profile Masterclass",
-    description: "De la configuración básica a la recuperación de fichas suspendidas.",
-    url: "/google-business-profile",
-    pilar: { 
-      name: "Guía Definitiva GBP 2024", 
-      url: "/google-business-profile/guia-definitiva-de-google-business-profile-domina-el-local-pack-en-2024", 
-      status: "live" 
-    },
-    supports: ["Checklist Verificación Video", "Categorías Secundarias", "Gestión de Atributos", "Recuperación de Fichas"]
+    title: "Nichos de Alta Rentabilidad",
+    slug: "nichos-rentables",
+    description: "Estrategias para sectores de alta competencia local.",
+    posts: [
+      { title: "SEO para Cerrajeros (Emergencias)", slug: "cerrajeros" },
+      { title: "Clínicas Dentales y Estéticas", slug: "clinicas" },
+      { title: "Abogados y Bufetes Locales", slug: "abogados" },
+      { title: "SaaS para Negocios Físicos", slug: "saas-local" }
+    ]
   },
   {
-    title: "Factores de Ranking Local",
-    description: "Análisis técnico de proximidad, relevancia y prominencia.",
-    url: "/factores-ranking",
-    pilar: { 
-      name: "Algoritmo Local Explicado", 
-      url: "/factores-ranking", 
-      status: "draft" 
-    },
-    supports: ["SEO On-Page & SILO", "Link Building Local", "Señales de Comportamiento", "Impacto de Reseñas"]
+    title: "Lead Magnet Geográfico",
+    slug: "recursos-gratis",
+    description: "Herramientas y guías descargables por ubicación.",
+    posts: [
+      { title: "Checklist Verificación GMB", slug: "checklist" },
+      { title: "Plantilla Auditoría SEO Local", slug: "plantilla-auditoria" },
+      { title: "Mapa de Competencia Local", slug: "mapa-competencia" },
+      { title: "Guía de Keywords por Ciudad", slug: "keywords-ciudad" }
+    ]
   },
   {
-    title: "SEO Local Vertical",
-    description: "Estrategias específicas por nicho de alta competencia.",
-    url: "/seo-vertical",
-    pilar: { 
-      name: "Manual de Operaciones por Industria", 
-      url: "/seo-vertical", 
-      status: "draft" 
-    },
-    supports: ["SEO para Abogados", "Clínicas Dentales", "Servicios de Emergencia", "Multi-Ubicación"]
-  },
-  {
-    title: "Herramientas y Auditoría",
-    description: "Stack tecnológico para agencias y consultores.",
-    url: "/herramientas",
-    pilar: { 
-      name: "El Stack Tecnológico Definitivo", 
-      url: "/herramientas", 
-      status: "draft" 
-    },
-    supports: ["Auditoría en 30 Minutos", "Grid Tracking", "Automatización Reseñas", "Schema Generators"]
-  },
-  {
-    title: "Casos de Éxito",
-    description: "Prueba social y demostración de resultados reales.",
-    url: "/casos-de-exito",
-    pilar: { 
-      name: "Resultados Reales: Cómo escalamos", 
-      url: "/casos-de-exito", 
-      status: "live" 
-    },
-    supports: ["Caso +300% llamadas", "Recuperación Penalización", "Dominio 5 ciudades", "Midiendo ROI Real"]
-  },
-  {
-    title: "AI Local Search (AEO)",
-    description: "Optimización para SGE, Gemini Local y Answer Engines.",
-    url: "/ai-seo",
-    pilar: { 
-      name: "El Futuro: SGE y Gemini Local", 
-      url: "/ai-seo", 
-      status: "draft" 
-    },
-    supports: ["Estructura de Entidad", "SEO Conversacional", "Imágenes en IA", "Keywords a Contexto"]
+    title: "Social Proof (GMB Live)",
+    slug: "recursos-autoridad",
+    description: "Resultados reales y reputación verificada.",
+    posts: [
+      { title: "Nuestros Casos de Éxito", slug: "casos-exito" },
+      { title: "Opiniones de Clientes", slug: "opiniones" },
+      { title: "Cómo Gestionar Reseñas", slug: "gestion-reseñas" },
+      { title: "Métricas de Crecimiento Real", slug: "metricas" }
+    ]
   }
 ];
+
+// Unimos todo en un solo array
+const allClusters = [...sanityClusters, ...manualClusters];
 ---
 
-<Layout 
-  title="Arquitecto SEO Local | Plan Maestro de Contenidos"
-  description="Domina el SEO Local con nuestro Plan Maestro: 6 clústeres de autoridad diseñados para posicionar negocios en Google Maps y Google Search."
->
-  <main style="max-width: 1200px; margin: 0 auto; padding: 60px 20px; color: #1a1a1a;">
-    
-    <header style="text-align: center; margin-bottom: 80px;">
-      <h1 style="font-size: clamp(2.5rem, 6vw, 3.5rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1.5rem; line-height: 1.1;">
-        Plan Maestro de <span style="color: #0070f3;">Contenidos</span>
-      </h1>
-      <p style="font-size: 1.25rem; color: #666; max-width: 750px; margin: 0 auto; line-height: 1.6;">
-        Arquitectura de autoridad diseñada para dominar el <strong>Customer Journey</strong> local y maximizar señales de E-E-A-T.
-      </p>
+<Layout title="Masterclass SEO Local - Domina el Mapa">
+  <main class="home-container">
+    <header class="hero">
+      <h1>Masterclass <span class="text-gradient">SEO Local</span></h1>
+      <p>La guía definitiva para dominar el algoritmo de Google Maps y captar clientes.</p>
     </header>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2.5rem;">
-      {clusters.map(cluster => (
-        <section style="background: #ffffff; border: 1px solid #eaeaea; border-radius: 20px; padding: 2.5rem; display: flex; flex-direction: column; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
-          
-          <a href={cluster.url} style="text-decoration: none; color: inherit;">
-            <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 0.75rem 0; color: #111; transition: color 0.2s;">
-              {cluster.title}
-            </h2>
-          </a>
-
-          <p style="font-size: 1rem; color: #666; margin-bottom: 2rem; line-height: 1.5;">{cluster.description}</p>
-          
-          <div style="margin-bottom: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 12px;">
-            <span style="display: block; font-size: 0.7rem; font-weight: 800; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Página Pilar</span>
-            {cluster.pilar.status === "live" ? (
-              <a href={cluster.pilar.url} style="color: #0070f3; font-weight: 700; text-decoration: none; font-size: 1.05rem; display: flex; align-items: center; gap: 5px;">
-                {cluster.pilar.name} <span>→</span>
+    <div class="grid-container">
+      {allClusters.map((cluster: any) => (
+        <div class="card">
+          <div class="card-content">
+            <h2 class="card-title">{cluster.title}</h2>
+            
+            <div class="pilar-section">
+              <span class="label">Página Pilar</span>
+              <a href={`/${cluster.slug}`} class="pilar-link">
+                Guía Completa {cluster.title} →
               </a>
-            ) : (
-              <span style="color: #999; font-weight: 600; font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
-                {cluster.pilar.name} 
-                <span style="font-size: 0.65rem; background: #e2e2e2; color: #666; padding: 2px 8px; border-radius: 20px; font-weight: 500;">Próximamente</span>
-              </span>
-            )}
-          </div>
+            </div>
 
-          <div style="margin-top: auto;">
-            <span style="display: block; font-size: 0.7rem; font-weight: 800; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Artículos de Soporte</span>
-            <ul style="list-style: none; padding: 0; margin: 0;">
-              {cluster.supports.map(item => (
-                <li style="margin-bottom: 0.75rem; color: #999; font-size: 0.9rem; display: flex; align-items: flex-start; gap: 10px;">
-                  <span style="color: #ddd; margin-top: 2px;">•</span>
-                  {item}
-                </li>
-              ))}
-            </ul>
+            <div class="support-section">
+              <span class="label">Artículos de Soporte</span>
+              <ul class="support-list">
+                {cluster.posts && cluster.posts.map((post: any) => (
+                  <li>
+                    <a href={`/${cluster.slug}/${post.slug}`}>
+                      {post.title}
+                    </a>
+                  </li>
+                ))}
+                {(!cluster.posts || cluster.posts.length === 0) && (
+                  <li class="coming-soon">Próximamente...</li>
+                )}
+              </ul>
+            </div>
           </div>
-        </section>
+        </div>
       ))}
     </div>
-
-    <footer style="margin-top: 80px; text-align: center; padding: 60px; border-top: 1px solid #eee; background: #fff;">
-      <h3 style="font-size: 1.75rem; margin-bottom: 1.5rem;">¿Buscas resultados reales en Google Maps?</h3>
-      <a href="/contactame" style="display: inline-block; background: #0070f3; color: white; padding: 1.25rem 2.5rem; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 14px 0 rgba(0,118,255,0.39);">
-        Solicitar Auditoría SEO
-      </a>
-    </footer>
+    
+    {/* Botón de llamada a la acción al final */}
+    <div style="text-align: center; margin-top: 4rem;">
+       <h3 style="margin-bottom: 1.5rem;">¿Buscas resultados reales en Google Maps?</h3>
+       <a href="#" class="cta-button">Solicitar Auditoría SEO</a>
+    </div>
   </main>
 </Layout>
 
 <style>
-  section:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 20px rgba(0,0,0,0.05) !important;
-    border-color: #0070f3 !important;
+  .home-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
   }
-  h2:hover {
-    color: #0070f3 !important;
+
+  .hero {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  h1 { font-size: 3.5rem; font-weight: 800; margin-bottom: 1rem; }
+  .text-gradient {
+    background: linear-gradient(45deg, #0070f3, #00dfd8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+  }
+
+  .card {
+    background: white;
+    border: 1px solid #eaeaea;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+    border-color: #0070f3;
+  }
+
+  .card-content { padding: 2rem; }
+
+  .card-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #111;
+    border-left: 4px solid #0070f3;
+    padding-left: 1rem;
+    line-height: 1.2;
+  }
+
+  .label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #888;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  .pilar-section { margin-bottom: 1.5rem; }
+  .pilar-link {
+    color: #0070f3;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .support-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .support-list li {
+    margin-bottom: 0.6rem;
+    padding-left: 1.2rem;
+    position: relative;
+  }
+
+  .support-list li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #0070f3;
+    font-weight: bold;
+  }
+
+  .support-list a {
+    color: #444;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+  }
+
+  .support-list a:hover { color: #0070f3; }
+  .coming-soon { color: #999; font-style: italic; font-size: 0.9rem; }
+
+  .cta-button {
+    background: #0070f3;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 4px 14px 0 rgba(0,118,255,0.39);
+    transition: background 0.2s;
+  }
+
+  .cta-button:hover {
+    background: #0061d5;
+  }
+
+  @media (max-width: 768px) {
+    .grid-container { grid-template-columns: 1fr; }
+    h1 { font-size: 2.5rem; }
   }
 </style>
