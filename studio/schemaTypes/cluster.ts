@@ -9,7 +9,7 @@ export default defineType({
       name: 'title',
       title: 'Nombre del Clúster',
       type: 'string',
-      validation: (Rule) => Rule.required().error('El título es obligatorio'),
+      validation: (Rule) => Rule.required().error('El título es necesario para la web'),
     }),
     defineField({
       name: 'slug',
@@ -23,36 +23,36 @@ export default defineType({
     }),
     defineField({
       name: 'description',
-      title: 'Descripción Corta (SEO)',
+      title: 'Descripción SEO (Tarjeta)',
       type: 'text',
       rows: 3,
-      description: 'Este texto se muestra en las tarjetas de la página de inicio.',
+      description: 'Este texto aparecerá en la caja de la página de inicio.',
     }),
     defineField({
       name: 'image',
       title: 'Imagen de Portada',
       type: 'image',
       options: {
-        hotspot: true,
+        hotspot: true, // Esto te permite centrar la imagen para que no se corte
       },
     }),
     defineField({
       name: 'content',
-      title: 'Contenido Detallado (Página Pilar)',
+      title: 'Contenido de la Guía Pilar',
       type: 'array',
-      description: 'Escribe aquí la guía completa para este clúster.',
+      description: 'Aquí va el contenido largo que tus usuarios leerán.',
       of: [
         {
           type: 'block',
           styles: [
             { title: 'Párrafo', value: 'normal' },
-            { title: 'Título 2 (H2)', value: 'h2' },
-            { title: 'Título 3 (H3)', value: 'h3' },
+            { title: 'Encabezado 2 (H2)', value: 'h2' },
+            { title: 'Encabezado 3 (H3)', value: 'h3' },
             { title: 'Cita', value: 'blockquote' },
           ],
           lists: [
-            { title: 'Viñetas', value: 'bullet' },
-            { title: 'Numeración', value: 'number' },
+            { title: 'Puntos', value: 'bullet' },
+            { title: 'Números', value: 'number' },
           ],
           marks: {
             decorators: [
@@ -64,7 +64,7 @@ export default defineType({
         {
           type: 'image',
           options: { hotspot: true },
-          title: 'Imagen en el cuerpo del texto',
+          title: 'Imagen interna',
         }
       ],
     }),
