@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { client } from '../lib/sanity';
 
-// 1. Recuperamos tus 2 clusters reales de Sanity
+// 1. Fetch de Sanity (Tus datos dinámicos)
 const sanityClusters = await client.fetch(`*[_type == "cluster"] | order(_createdAt asc) {
   title,
   "slug": slug.current,
@@ -13,8 +13,17 @@ const sanityClusters = await client.fetch(`*[_type == "cluster"] | order(_create
   }
 }`);
 
-// 2. Definimos las otras 7 tarjetas manualmente para completar la home
+// 2. Tarjetas manuales con los slugs exactos que me has pedido
 const manualClusters = [
+  {
+    title: "Web Local (On-Page)",
+    slug: "seo-web-local", // Slug corregido según tu instrucción
+    posts: [
+      { title: "Optimización de Landings", slug: "landings" },
+      { title: "Estructura SILO Local", slug: "silo" },
+      { title: "Schema Markup Local", slug: "schema" }
+    ]
+  },
   {
     title: "Nichos de Alta Rentabilidad",
     slug: "nichos-rentables",
@@ -35,11 +44,6 @@ const manualClusters = [
     posts: [{ title: "Casos de Éxito", slug: "casos" }]
   },
   {
-    title: "Factores de Ranking",
-    slug: "factores",
-    posts: [{ title: "SEO On-Page", slug: "on-page" }]
-  },
-  {
     title: "AI Local Search",
     slug: "ai-seo",
     posts: [{ title: "SGE Local", slug: "sge" }]
@@ -56,7 +60,12 @@ const manualClusters = [
   }
 ];
 
-const allClusters = [...sanityClusters, ...manualClusters];
+// Filtramos para evitar que se duplique "Web Local" si ya viene de Sanity
+const filteredManual = manualClusters.filter(mc => 
+  !sanityClusters.some((sc: any) => sc.slug === mc.slug)
+);
+
+const allClusters = [...sanityClusters, ...filteredManual].slice(0, 9);
 ---
 
 <Layout title="Masterclass SEO Local - Domina el Mapa">
@@ -70,7 +79,9 @@ const allClusters = [...sanityClusters, ...manualClusters];
       {allClusters.map((cluster: any) => (
         <div class="card">
           <div class="card-content">
-            <h2 class="card-title">{cluster.title}</h2>
+            <a href={`/${cluster.slug}`} class="title-link">
+              <h2 class="card-title">{cluster.title}</h2>
+            </a>
             
             <div class="pilar-section">
               <span class="label">Página Pilar</span>
@@ -98,7 +109,6 @@ const allClusters = [...sanityClusters, ...manualClusters];
 
     <div class="cta-container">
        <h3>¿Buscas resultados reales en Google Maps?</h3>
-       {/* ENLACE CORREGIDO A TU ARCHIVO contactame.astro */}
        <a href="/contactame" class="cta-button">Solicitar Auditoría SEO</a>
     </div>
   </main>
@@ -110,17 +120,19 @@ const allClusters = [...sanityClusters, ...manualClusters];
   h1 { font-size: 3.5rem; font-weight: 800; }
   .text-gradient { background: linear-gradient(45deg, #0070f3, #00dfd8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
-  .card { background: white; border: 1px solid #eaeaea; border-radius: 16px; transition: 0.3s; }
+  .card { background: white; border: 1px solid #eaeaea; border-radius: 16px; transition: 0.3s; height: 100%; }
   .card:hover { transform: translateY(-5px); border-color: #0070f3; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
   .card-content { padding: 2rem; }
-  .card-title { font-size: 1.4rem; border-left: 4px solid #0070f3; padding-left: 1rem; margin-bottom: 1.5rem; }
+  .title-link { text-decoration: none; color: inherit; }
+  .title-link:hover .card-title { color: #0070f3; }
+  .card-title { font-size: 1.4rem; border-left: 4px solid #0070f3; padding-left: 1rem; margin-bottom: 1.5rem; transition: color 0.2s; }
   .label { font-size: 0.7rem; color: #888; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 0.5rem; }
   .pilar-link { color: #0070f3; font-weight: bold; text-decoration: none; display: block; margin-bottom: 1rem; }
   .support-list { list-style: none; padding: 0; }
   .support-list li { margin-bottom: 0.5rem; font-size: 0.9rem; padding-left: 1rem; position: relative; }
   .support-list li::before { content: "•"; position: absolute; left: 0; color: #0070f3; }
   .support-list a { color: #555; text-decoration: none; }
+  .support-list a:hover { color: #0070f3; }
   .cta-container { text-align: center; margin-top: 4rem; padding: 4rem; background: #f0f7ff; border-radius: 24px; }
-  .cta-button { background: #0070f3; color: white; padding: 1.2rem 2.5rem; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 1rem; transition: background 0.2s; }
-  .cta-button:hover { background: #0056b3; }
+  .cta-button { background: #0070f3; color: white; padding: 1.2rem 2.5rem; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 1rem; }
 </style>
