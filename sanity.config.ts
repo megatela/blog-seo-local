@@ -1,5 +1,6 @@
 import { defineConfig } from 'sanity'
 import { deskTool } from 'sanity/desk'
+import { visionTool } from '@sanity/vision' // <--- 1. Importación añadida
 import { schemaTypes } from './studio/schemaTypes'
 
 export default defineConfig({
@@ -9,11 +10,12 @@ export default defineConfig({
   dataset: 'production',
   plugins: [
     deskTool(), 
+    visionTool(), // <--- 2. Plugin activado
   ],
   schema: {
     types: schemaTypes,
   },
-  // Añadimos esto para que Vercel no se queje de las librerías visuales
+  // Mantenemos tu configuración para Vercel
   form: {
     components: {
       input: (props) => props.renderDefault(props),

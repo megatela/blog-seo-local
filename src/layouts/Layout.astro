@@ -2,11 +2,13 @@
 interface Props {
 	title: string;
 	description?: string;
+	imageAlt?: string; // Nueva propiedad opcional
 }
 
 const { 
 	title, 
-	description = "Consultoría estratégica de SEO Local. Especialistas en Google Business Profile y posicionamiento en mapas para negocios locales." 
+	description = "Consultoría estratégica de SEO Local. Especialistas en Google Business Profile y posicionamiento en mapas para negocios locales.",
+	imageAlt
 } = Astro.props;
 ---
 
@@ -21,6 +23,9 @@ const {
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		
 		<title>{title}</title>
+
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
 
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
