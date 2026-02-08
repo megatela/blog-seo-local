@@ -2,70 +2,20 @@
 import Layout from '../layouts/Layout.astro';
 import { client } from '../lib/sanity';
 
-// 1. Fetch de Sanity (Tus datos dinámicos)
-const sanityClusters = await client.fetch(`*[_type == "cluster"] | order(_createdAt asc) {
+/**
+ * 1. FETCH DINÁMICO TOTAL
+ * Traemos todos los clústers creados en Sanity y sus respectivos posts.
+ * Esto elimina la necesidad de la lista "manualClusters" y evita duplicados.
+ */
+const allClusters = await client.fetch(`*[_type == "cluster"] | order(_createdAt asc) {
   title,
   "slug": slug.current,
   description,
-  "posts": *[_type == "post" && references(^._id)][0...4] {
+  "posts": *[_type == "post" && references(^._id)] | order(_createdAt desc) [0...4] {
     title,
     "slug": slug.current
   }
 }`);
-
-// 2. Tarjetas manuales con los slugs exactos que me has pedido
-const manualClusters = [
-  {
-    title: "Web Local (On-Page)",
-    slug: "seo-web-local", // Slug corregido según tu instrucción
-    posts: [
-      { title: "Optimización de Landings", slug: "landings" },
-      { title: "Estructura SILO Local", slug: "silo" },
-      { title: "Schema Markup Local", slug: "schema" }
-    ]
-  },
-  {
-    title: "Nichos de Alta Rentabilidad",
-    slug: "nichos-rentables",
-    posts: [
-      { title: "SEO para Cerrajeros", slug: "cerrajeros" },
-      { title: "Clínicas Dentales", slug: "clinicas" },
-      { title: "Abogados Locales", slug: "abogados" }
-    ]
-  },
-  {
-    title: "Lead Magnet Geográfico",
-    slug: "recursos-gratis",
-    posts: [{ title: "Checklist GMB 2024", slug: "checklist" }]
-  },
-  {
-    title: "Social Proof (GMB Live)",
-    slug: "reputacion",
-    posts: [{ title: "Casos de Éxito", slug: "casos" }]
-  },
-  {
-    title: "AI Local Search",
-    slug: "ai-seo",
-    posts: [{ title: "SGE Local", slug: "sge" }]
-  },
-  {
-    title: "Herramientas",
-    slug: "tools",
-    posts: [{ title: "Auditoría Express", slug: "audit" }]
-  },
-  {
-    title: "Estrategia Multi-Ubicación",
-    slug: "multi-location",
-    posts: [{ title: "Gestión Bulk", slug: "bulk" }]
-  }
-];
-
-// Filtramos para evitar que se duplique "Web Local" si ya viene de Sanity
-const filteredManual = manualClusters.filter(mc => 
-  !sanityClusters.some((sc: any) => sc.slug === mc.slug)
-);
-
-const allClusters = [...sanityClusters, ...filteredManual].slice(0, 9);
 ---
 
 <Layout title="Masterclass SEO Local - Domina el Mapa">
@@ -77,12 +27,16 @@ const allClusters = [...sanityClusters, ...filteredManual].slice(0, 9);
 
     <div class="grid-container">
       {allClusters.map((cluster: any) => (
-        <div class="card">
+        <article class="card">
           <div class="card-content">
             <a href={`/${cluster.slug}`} class="title-link">
               <h2 class="card-title">{cluster.title}</h2>
             </a>
             
+            <p class="cluster-description">
+              {cluster.description ? cluster.description.substring(0, 100) + '...' : 'Explora nuestra guía completa sobre este pilar del SEO Local.'}
+            </p>
+
             <div class="pilar-section">
               <span class="label">Página Pilar</span>
               <a href={`/${cluster.slug}`} class="pilar-link">
@@ -93,46 +47,62 @@ const allClusters = [...sanityClusters, ...filteredManual].slice(0, 9);
             <div class="support-section">
               <span class="label">Artículos de Soporte</span>
               <ul class="support-list">
-                {cluster.posts && cluster.posts.map((post: any) => (
-                  <li>
-                    <a href={`/${cluster.slug}/${post.slug}`}>
-                      {post.title}
-                    </a>
-                  </li>
-                ))}
+                {cluster.posts && cluster.posts.length > 0 ? (
+                  cluster.posts.map((post: any) => (
+                    <li>
+                      <a href={`/${cluster.slug}/${post.slug}`}>
+                        {post.title}
+                      </a>
+                    </li>
+                  ))
+                ) : (
+                  <li class="no-posts">Próximamente nuevos artículos</li>
+                )}
               </ul>
             </div>
           </div>
-        </div>
+        </article>
       ))}
     </div>
 
-    <div class="cta-container">
-       <h3>¿Buscas resultados reales en Google Maps?</h3>
-       <a href="/contactame" class="cta-button">Solicitar Auditoría SEO</a>
-    </div>
+    <section class="cta-container">
+        <h3>¿Buscas resultados reales en Google Maps?</h3>
+        <p>Optimiza tu presencia local con estrategias probadas.</p>
+        <a href="/contactame" class="cta-button">Solicitar Auditoría SEO</a>
+    </section>
   </main>
 </Layout>
 
 <style>
   .home-container { max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; }
   .hero { text-align: center; margin-bottom: 4rem; }
-  h1 { font-size: 3.5rem; font-weight: 800; }
+  h1 { font-size: clamp(2.5rem, 8vw, 3.5rem); font-weight: 800; line-height: 1.1; margin-bottom: 1rem; }
   .text-gradient { background: linear-gradient(45deg, #0070f3, #00dfd8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
-  .card { background: white; border: 1px solid #eaeaea; border-radius: 16px; transition: 0.3s; height: 100%; }
-  .card:hover { transform: translateY(-5px); border-color: #0070f3; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-  .card-content { padding: 2rem; }
+  
+  .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
+  
+  .card { background: white; border: 1px solid #eaeaea; border-radius: 16px; transition: all 0.3s ease; display: flex; flex-direction: column; }
+  .card:hover { transform: translateY(-5px); border-color: #0070f3; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+  .card-content { padding: 2rem; display: flex; flex-direction: column; height: 100%; }
+  
   .title-link { text-decoration: none; color: inherit; }
-  .title-link:hover .card-title { color: #0070f3; }
-  .card-title { font-size: 1.4rem; border-left: 4px solid #0070f3; padding-left: 1rem; margin-bottom: 1.5rem; transition: color 0.2s; }
-  .label { font-size: 0.7rem; color: #888; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 0.5rem; }
-  .pilar-link { color: #0070f3; font-weight: bold; text-decoration: none; display: block; margin-bottom: 1rem; }
-  .support-list { list-style: none; padding: 0; }
-  .support-list li { margin-bottom: 0.5rem; font-size: 0.9rem; padding-left: 1rem; position: relative; }
-  .support-list li::before { content: "•"; position: absolute; left: 0; color: #0070f3; }
-  .support-list a { color: #555; text-decoration: none; }
+  .card-title { font-size: 1.4rem; border-left: 4px solid #0070f3; padding-left: 1rem; margin-bottom: 1rem; transition: color 0.2s; }
+  .cluster-description { font-size: 0.95rem; color: #666; margin-bottom: 1.5rem; line-height: 1.5; }
+  
+  .label { font-size: 0.7rem; color: #999; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 0.5rem; letter-spacing: 0.05em; }
+  .pilar-link { color: #0070f3; font-weight: bold; text-decoration: none; display: block; margin-bottom: 1.5rem; font-size: 1rem; }
+  .pilar-link:hover { text-decoration: underline; }
+  
+  .support-list { list-style: none; padding: 0; margin: 0; }
+  .support-list li { margin-bottom: 0.6rem; font-size: 0.9rem; padding-left: 1.2rem; position: relative; line-height: 1.3; }
+  .support-list li::before { content: "→"; position: absolute; left: 0; color: #0070f3; font-weight: bold; }
+  .support-list a { color: #444; text-decoration: none; transition: color 0.2s; }
   .support-list a:hover { color: #0070f3; }
-  .cta-container { text-align: center; margin-top: 4rem; padding: 4rem; background: #f0f7ff; border-radius: 24px; }
-  .cta-button { background: #0070f3; color: white; padding: 1.2rem 2.5rem; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 1rem; }
+  .no-posts { color: #bbb !important; font-style: italic; }
+  .no-posts::before { content: "" !important; }
+
+  .cta-container { text-align: center; margin-top: 5rem; padding: 4rem 2rem; background: #f0f7ff; border-radius: 32px; }
+  .cta-container h3 { font-size: 1.8rem; margin-bottom: 0.5rem; color: #111; }
+  .cta-button { background: #0070f3; color: white; padding: 1rem 2.5rem; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 1.5rem; transition: background 0.2s; }
+  .cta-button:hover { background: #0056b3; }
 </style>
