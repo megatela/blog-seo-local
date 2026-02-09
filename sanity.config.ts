@@ -1,7 +1,7 @@
 import { defineConfig } from 'sanity'
 import { deskTool } from 'sanity/desk'
-// Añadimos /index para asegurar que Vite encuentre el archivo dentro de la carpeta
-import { schemaTypes } from './schemaTypes/index' 
+// RUTA CORRECTA: Desde la raíz entra a studio y luego a schemaTypes
+import { schemaTypes } from './studio/schemaTypes' 
 
 export default defineConfig({
   name: 'default',
