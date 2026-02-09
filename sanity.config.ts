@@ -1,24 +1,43 @@
 import { defineConfig } from 'sanity'
 import { deskTool } from 'sanity/desk'
-import { visionTool } from '@sanity/vision' // <--- 1. Importación añadida
-import { schemaTypes } from './studio/schemaTypes'
+// ... tus otras importaciones
 
 export default defineConfig({
-  name: 'default',
-  title: 'Local SEO Architect Admin',
-  projectId: 'qv6q15su', 
-  dataset: 'production',
+  // ... tu projectId, dataset, etc.
+
   plugins: [
-    deskTool(), 
-    visionTool(), // <--- 2. Plugin activado
+    deskTool({
+      structure: (S) => S.defaults(),
+    }),
   ],
-  schema: {
-    types: schemaTypes,
+
+  document: {
+    // Aquí es donde ocurre la magia del botón de Preview
+    productionUrl: async (prev, context) => {
+      const { document } = context
+      
+      // Solo queremos el botón para los posts
+      if (document._type === 'post') {
+        const slug = (document.slug as any)?.current
+        const cluster = (document.cluster as any)?._ref 
+          ? await context.getClient({apiVersion: '2023-01-01'}).fetch(
+              `*[_id == $id][0].slug.current`, 
+              { id: (document.cluster as any)._ref }
+            )
+          : 'sin-categoria'
+
+        if (!slug) return prev
+
+        // Cambia 'http://localhost:4321' por tu dominio real en producción si es necesario
+        const params = new URLSearchParams()
+        const baseUrl = window.location.hostname === 'localhost' 
+          ? 'http://localhost:4321' 
+          : 'https://tu-dominio-real.com'
+
+        return `${baseUrl}/${cluster}/${slug}`
+      }
+
+      return prev
+    },
   },
-  // Mantenemos tu configuración para Vercel
-  form: {
-    components: {
-      input: (props) => props.renderDefault(props),
-    }
-  }
 })
