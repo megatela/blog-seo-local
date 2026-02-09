@@ -1,12 +1,13 @@
 import { defineConfig } from 'sanity'
 import { deskTool } from 'sanity/desk'
-import { schemaTypes } from './schemas' // Asegúrate de que esta ruta sea la correcta en tu proyecto
+// Ruta corregida según tu estructura de carpetas: /studio/schemaTypes/
+import { schemaTypes } from './schemaTypes' 
 
 export default defineConfig({
   name: 'default',
   title: 'Local SEO Architect Admin',
 
-  // Datos extraídos de tus variables de entorno
+  // Credenciales verificadas de tu captura
   projectId: 'qv6q15su', 
   dataset: 'production',
 
@@ -26,12 +27,10 @@ export default defineConfig({
 
       if (!slug) return prev
 
-      // Configuración de la URL base (Local vs Producción)
       const baseUrl = window.location.hostname === 'localhost' 
         ? 'http://localhost:4321' 
         : 'https://blog-seo-local.vercel.app'
 
-      // Lógica para Posts de Blog
       if (document._type === 'post') {
         const clusterSlug = await client.fetch(
           `*[_id == $id][0].slug.current`, 
@@ -41,9 +40,8 @@ export default defineConfig({
         return `${baseUrl}/${clusterPath}/${slug}`
       }
 
-      // Lógica para Casos de Éxito
+      // Ajustado al nombre exacto que aparece en tu captura de Sanity: "Caso de Éxito"
       if (document._type === 'casoDeExito') {
-        // Asumiendo que la ruta en tu Astro es /casos-de-exito/[slug]
         return `${baseUrl}/casos-de-exito/${slug}`
       }
 
