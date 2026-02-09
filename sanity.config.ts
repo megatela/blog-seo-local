@@ -1,13 +1,11 @@
 import { defineConfig } from 'sanity'
 import { deskTool } from 'sanity/desk'
-// Ruta corregida según tu estructura de carpetas: /studio/schemaTypes/
-import { schemaTypes } from './schemaTypes' 
+// Añadimos /index para asegurar que Vite encuentre el archivo dentro de la carpeta
+import { schemaTypes } from './schemaTypes/index' 
 
 export default defineConfig({
   name: 'default',
   title: 'Local SEO Architect Admin',
-
-  // Credenciales verificadas de tu captura
   projectId: 'qv6q15su', 
   dataset: 'production',
 
@@ -40,7 +38,6 @@ export default defineConfig({
         return `${baseUrl}/${clusterPath}/${slug}`
       }
 
-      // Ajustado al nombre exacto que aparece en tu captura de Sanity: "Caso de Éxito"
       if (document._type === 'casoDeExito') {
         return `${baseUrl}/casos-de-exito/${slug}`
       }
