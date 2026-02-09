@@ -1,0 +1,21 @@
+---
+// Forzamos que sea dinámico para que lea los cambios de Sanity al instante
+export const prerender = false;
+
+const { slug } = Astro.params;
+
+// Aquí es donde Astro buscaría los datos en Sanity (ejemplo básico)
+if (!slug) {
+  return Astro.redirect('/404');
+}
+---
+
+<html>
+  <head>
+    <title>Caso de Éxito | {slug}</title>
+  </head>
+  <body>
+    <h1>Visualizando: {slug}</h1>
+    <p>Si ves esto, el error de redirección ha desaparecido.</p>
+  </body>
+</html>
