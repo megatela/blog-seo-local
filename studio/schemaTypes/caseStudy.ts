@@ -11,6 +11,16 @@ export default defineType({
       type: 'string',
       description: 'Ej: Cómo duplicamos las citas de una Clínica Dental en Valencia' 
     }),
+    defineField({
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      options: {
+        source: 'title',
+        maxLength: 96,
+      },
+      validation: (Rule) => Rule.required(),
+    }),
     defineField({ 
       name: 'clientName', 
       title: 'Nombre del Cliente', 
@@ -20,15 +30,12 @@ export default defineType({
       name: 'mainImage',
       title: 'Imagen del Proyecto',
       type: 'image',
-      options: { 
-        hotspot: true // Permite elegir el foco de la imagen si se recorta
-      },
+      options: { hotspot: true },
       fields: [
         {
           name: 'alt',
           type: 'string',
           title: 'Texto Alternativo (SEO)',
-          description: 'Importante para Google. Describe la imagen (ej: Crecimiento SEO clínica dental)'
         }
       ]
     }),
@@ -39,8 +46,8 @@ export default defineType({
       of: [{
         type: 'object',
         fields: [
-          { name: 'label', type: 'string', title: 'Métrica (ej: Llamadas)' },
-          { name: 'value', type: 'string', title: 'Valor (ej: +150%)' }
+          { name: 'label', type: 'string', title: 'Métrica' },
+          { name: 'value', type: 'string', title: 'Valor' }
         ]
       }]
     }),
@@ -48,7 +55,6 @@ export default defineType({
       name: 'body',
       title: 'Descripción del éxito',
       type: 'text',
-      description: 'Explica la estrategia: qué hiciste y qué resultados lograste.'
     }),
   ],
 })
