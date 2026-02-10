@@ -1,5 +1,5 @@
 ---
-import { client, urlFor } from '../lib/sanity';
+import { client } from '../lib/sanity';
 import { PortableText } from '@portabletext/react';
 import Layout from '../layouts/Layout.astro';
 import { createElement } from 'react';
@@ -8,52 +8,44 @@ export const prerender = false;
 
 const { cluster: slug } = Astro.params;
 
-// 1. QUERY CORREGIDA: Buscamos específicamente por el nombre del campo en tu Sanity
+// 1. QUERY UNIVERSAL: Traemos todos los campos que puedan contener una imagen
 const data = await client.fetch(
-  `{
-    "cluster": *[_type == "cluster" && slug.current == $slug][0]{
-      title,
-      description,
-      content,
-      // Probamos con los nombres de campo más comunes para imágenes
-      "imageFromMain": mainImage.asset->url,
-      "imageFromPortada": imagenPortada.asset->url,
-      "rawImage": mainImage
-    },
-    "posts": *[_type == "post" && cluster->slug.current == $slug] | order(_createdAt asc)
+  `*[_type == "cluster" && slug.current == $slug][0]{
+    title,
+    content,
+    "imageUrl": mainImage.asset->url,
+    "imagePortadaUrl": imagenPortada.asset->url,
+    "imageFallback": image.asset->url,
+    "allPosts": *[_type == "post" && cluster->slug.current == $slug] | order(_createdAt desc)
   }`,
   { slug }
 );
 
-if (!data.cluster) return Astro.redirect('/404');
+if (!data) return Astro.redirect('/404');
 
-// 2. Lógica de selección de imagen
-const finalImage = data.cluster.imageFromMain || 
-                   data.cluster.imageFromPortada || 
-                   (data.cluster.rawImage ? urlFor(data.cluster.rawImage).url() : null);
+// 2. Selección de la URL (Prioridad)
+const finalImage = data.imageUrl || data.imagePortadaUrl || data.imageFallback;
 
 const components = {
   block: {
-    h2: ({children}: any) => createElement('h2', { className: 'text-3xl font-black text-slate-900 mt-16 mb-6 border-l-4 border-blue-600 pl-4' }, children),
+    h2: ({children}: any) => createElement('h2', { className: 'text-3xl font-black text-slate-900 mt-12 mb-6' }, children),
     normal: ({children}: any) => createElement('p', { className: 'text-lg text-slate-600 leading-relaxed mb-6' }, children),
   },
 };
 ---
 
-<Layout title={data.cluster.title}>
+<Layout title={data.title}>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
   <article class="bg-white min-h-screen">
-    <header class="bg-slate-900 pt-32 pb-20 px-6 relative overflow-hidden">
-      <div class="max-w-4xl mx-auto relative z-10">
-        <nav class="flex items-center space-x-2 text-blue-400 text-xs font-black uppercase mb-10">
-          <a href="/" class="hover:text-white transition">Inicio</a>
-          <span class="text-slate-600">/</span>
-          <span class="text-slate-400">Guía Pilar</span>
+    <header class="bg-slate-900 pt-32 pb-20 px-6">
+      <div class="max-w-4xl mx-auto">
+        <nav class="text-blue-400 text-xs font-black uppercase mb-10">
+          <a href="/">Inicio</a> / <span class="text-slate-400">Guía Pilar</span>
         </nav>
         
         <h1 class="text-5xl md:text-8xl font-black text-white leading-none mb-10 tracking-tighter">
-          {data.cluster.title}
+          {data.title}
         </h1>
 
         <div class="relative mt-16">
@@ -61,14 +53,13 @@ const components = {
             <div class="rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-slate-800">
               <img 
                 src={finalImage} 
-                alt={data.cluster.title}
+                alt={data.title}
                 class="w-full h-[350px] md:h-[550px] object-cover"
               />
             </div>
           ) : (
-            <div class="h-[300px] bg-slate-800 rounded-[2.5rem] flex flex-col items-center justify-center border-2 border-dashed border-slate-700 text-slate-400 font-bold px-10 text-center">
-               <span class="text-4xl mb-4">🖼️</span>
-               <p>Imagen no detectada. Revisa en Sanity que el campo <br/> "Imagen de Portada" esté publicado.</p>
+            <div class="h-[300px] bg-slate-800 rounded-[2.5rem] flex items-center justify-center border-2 border-dashed border-slate-700 text-slate-400 font-bold px-10 text-center">
+               <p>No se encontró la imagen en Sanity.<br/>Asegúrate de que el campo de imagen esté lleno y publicado.</p>
             </div>
           )}
         </div>
@@ -77,16 +68,15 @@ const components = {
 
     <main class="max-w-4xl mx-auto py-24 px-6">
       <div class="prose max-w-none">
-        <PortableText value={data.cluster.content} components={components} />
+        <PortableText value={data.content} components={components} />
       </div>
 
       <section class="mt-40 border-t pt-20">
-        <h2 class="text-4xl font-black text-slate-900 mb-12 uppercase tracking-tighter">Contenido del Clúster</h2>
+        <h2 class="text-4xl font-black text-slate-900 mb-12 uppercase tracking-tighter">Artículos del Clúster</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-          {data.posts.map((post) => (
+          {data.allPosts?.map((post: any) => (
             <a href={`/${slug}/${post.slug.current}`} class="group bg-slate-50 p-10 rounded-[2rem] hover:bg-white hover:shadow-2xl transition-all border border-transparent hover:border-slate-100">
               <h3 class="text-2xl font-black text-slate-800 group-hover:text-blue-600 mb-4">{post.title}</h3>
-              <p class="text-slate-500 mb-6">Guía estratégica sobre {post.title}.</p>
               <span class="text-blue-600 font-bold text-xs uppercase tracking-widest">Explorar →</span>
             </a>
           ))}
