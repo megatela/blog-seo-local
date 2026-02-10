@@ -5,32 +5,23 @@ export const prerender = false;
 
 // 1. Consultas a Sanity
 const mainCase = await sanityClient.fetch(`*[_type == "caseStudy" && slug.current == "clinica-dental-sonrisas-valencia"][0]`);
-const clusterPosts = await sanityClient.fetch(`*[_type == "post"] | order(_createdAt desc)`);
 
-// 2. Mapeo Rectificado: 9 Iconos para las 9 Páginas Pilares
+// IMPORTANTE: Cambiamos "post" por "cluster" para traer los 9 elementos de tu captura
+const clusters = await sanityClient.fetch(`*[_type == "cluster"] | order(_createdAt asc)`);
+
+// 2. Mapeo de Iconos exacto para tus 9 clústeres de la imagen
 const getIcon = (title) => {
   const t = title.toLowerCase();
-  
-  // 1. Guía Pilar / Novedades
-  if (t.includes('guía pilar') || t.includes('novedades')) return '🏛️';
-  // 2. Reseñas / IA
-  if (t.includes('reseñas') || t.includes('ia')) return '🤖';
-  // 3. Google Maps / Local Pack
-  if (t.includes('maps') || t.includes('local pack')) return '📍';
-  // 4. Messages / Chat
-  if (t.includes('messages') || t.includes('chat')) return '💬';
-  // 5. Errores / Suspensiones / Soporte
-  if (t.includes('recuperar') || t.includes('suspensiones') || t.includes('errores')) return '⚠️';
-  // 6. Estadísticas / Insights / Métricas
-  if (t.includes('métricas') || t.includes('insights') || t.includes('estadísticas')) return '📊';
-  // 7. Link Building Local
-  if (t.includes('link building') || t.includes('enlaces')) return '🔗';
-  // 8. NAP / Citaciones / Directorios
-  if (t.includes('nap') || t.includes('directorios') || t.includes('citaciones')) return '📋';
-  // 9. Auditoría / Schema / Web Local
-  if (t.includes('audit') || t.includes('schema') || t.includes('markup')) return '🔍';
-
-  return '📄'; // Por si hay algún post extra
+  if (t.includes('link building')) return '🔗';
+  if (t.includes('factores de ranking')) return '📈';
+  if (t.includes('herramientas')) return '🔍';
+  if (t.includes('sge') || t.includes('ai')) return '🧠';
+  if (t.includes('social proof') || t.includes('live')) return '📱';
+  if (t.includes('lead magnet')) return '🗺️';
+  if (t.includes('web local')) return '💻';
+  if (t.includes('nichos')) return '💰';
+  if (t.includes('business profile')) return '🏢';
+  return '📁';
 };
 ---
 
@@ -38,53 +29,39 @@ const getIcon = (title) => {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Local SEO Architect | Estrategia Maestra 2026</title>
+    <title>Local SEO Architect | Home</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   </head>
-  <body class="bg-gray-50 text-gray-900 font-sans">
+  <body class="bg-gray-50 text-gray-900">
 
-    <header class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 text-white py-24 px-6 overflow-hidden">
-      <div class="max-w-5xl mx-auto text-center relative z-10">
-        <span class="bg-blue-500/20 text-blue-300 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest mb-8 inline-block border border-blue-500/30">
-            Resultados Comprobados
-        </span>
-        <h1 class="text-4xl md:text-6xl font-black mb-10 leading-tight">
-          Cómo duplicamos las citas de una Clínica Dental en Valencia en 4 meses
+    <header class="bg-blue-900 text-white py-20 px-6 text-center">
+      <div class="max-w-4xl mx-auto">
+        <span class="bg-blue-600 text-xs font-bold px-3 py-1 rounded mb-6 inline-block uppercase">Caso de Éxito</span>
+        <h1 class="text-3xl md:text-5xl font-extrabold mb-8 leading-tight">
+          Cómo duplicamos las citas de una Clínica Dental en el centro de Valencia en 4 meses
         </h1>
-        <div class="flex flex-col sm:flex-row justify-center gap-5">
-          <a href={`/casos-de-exito/${mainCase?.slug?.current}`} class="bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-xl font-bold text-lg transition shadow-2xl shadow-blue-500/20">
-            Ver Caso de Éxito
-          </a>
-          <a href="/casos-de-exito" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-10 py-4 rounded-xl font-bold text-lg backdrop-blur-md transition">
-            Ver Todos los Éxitos
-          </a>
+        <div class="flex flex-col sm:row justify-center gap-4">
+          <a href={`/casos-de-exito/${mainCase?.slug?.current}`} class="bg-blue-600 px-8 py-3 rounded-md font-bold hover:bg-blue-500 transition">Ver Caso de Éxito</a>
+          <a href="/casos-de-exito" class="bg-white text-blue-900 px-8 py-3 rounded-md font-bold hover:bg-gray-100 transition">Ver todos los casos</a>
         </div>
       </div>
     </header>
 
-    <main class="max-w-7xl mx-auto py-24 px-6">
-      <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-        <div>
-            <h2 class="text-4xl font-black text-slate-800">Base de Conocimiento</h2>
-            <p class="text-slate-500 text-xl mt-3 font-medium">9 Pilares estratégicos para dominar el SEO Local.</p>
-        </div>
-        <div class="hidden md:block h-1.5 w-32 bg-blue-600 rounded-full"></div>
+    <main class="max-w-7xl mx-auto py-16 px-6">
+      <div class="mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 uppercase tracking-tighter">Our Knowledge Base: Content Cluster</h2>
+        <p class="text-gray-500">Explora nuestros clústeres de expertos en SEO Local.</p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {clusterPosts.map((post) => (
-          <a href={`/blog/${post.slug.current}`} class="group bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:border-blue-400 transition-all duration-500 flex flex-col h-full">
-            <div class="text-5xl mb-8 transform group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300">
-                {getIcon(post.title)}
-            </div>
-            <h3 class="text-2xl font-extrabold mb-4 text-slate-800 group-hover:text-blue-600 transition-colors leading-tight">
-              {post.title}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {clusters.map((item) => (
+          <a href={`/cluster/${item.slug.current}`} class="group bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-xl transition-all flex flex-col items-start">
+            <div class="text-5xl mb-6">{getIcon(item.title)}</div>
+            <h3 class="text-xl font-bold text-gray-800 group-hover:text-blue-600 mb-4 transition-colors">
+              {item.title}
             </h3>
-            <p class="text-slate-500 line-clamp-3 mb-8 flex-grow leading-relaxed">
-              {post.excerpt || "Descubre cómo optimizar este pilar fundamental para escalar posiciones en el Local Pack y atraer más clientes."}
-            </p>
-            <div class="flex items-center text-blue-600 font-black text-sm uppercase tracking-tighter">
-              Explorar Guía <span class="ml-3 transform group-hover:translate-x-3 transition-transform duration-300">→</span>
+            <div class="mt-auto text-blue-600 font-bold text-sm flex items-center">
+              EXPLORAR <span class="ml-2">→</span>
             </div>
           </a>
         ))}
