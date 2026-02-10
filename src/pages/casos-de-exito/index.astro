@@ -1,0 +1,53 @@
+---
+import { sanityClient } from "sanity:client";
+
+// Forzamos que sea dinámico para que se actualice cada vez que publiques un caso en Sanity
+export const prerender = false;
+
+// Consultamos todos los documentos de tipo caseStudy
+const query = `*[_type == "caseStudy"] | order(_createdAt desc) {
+  title,
+  "slug": slug.current,
+  clientName
+}`;
+
+const projects = await sanityClient.fetch(query);
+---
+
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Casos de Éxito | Local SEO Architect</title>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 800px; margin: 4rem auto; padding: 0 1rem; line-height: 1.6; color: #1a202c; }
+      h1 { color: #0070f3; border-bottom: 2px solid #eaeaea; padding-bottom: 1rem; }
+      ul { list-style: none; padding: 0; }
+      li { margin-bottom: 1.5rem; padding: 1.5rem; border: 1px solid #eaeaea; border-radius: 12px; transition: transform 0.2s; }
+      li:hover { transform: translateY(-2px); border-color: #0070f3; }
+      a { text-decoration: none; font-size: 1.25rem; font-weight: bold; color: #0070f3; }
+      .client { color: #666; font-size: 0.9rem; margin-top: 0.5rem; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="/" style="font-size: 0.9rem;">← Volver al Blog</a>
+    </header>
+    
+    <h1>Nuestros Casos de Éxito</h1>
+    
+    {projects.length === 0 ? (
+      <p>Próximamente publicaremos nuestros resultados.</p>
+    ) : (
+      <ul>
+        {projects.map((project) => (
+          <li>
+            <a href={`/casos-de-exito/${project.slug}`}>
+              {project.title}
+            </a>
+            <div class="client">Empresa: {project.clientName}</div>
+          </li>
+        ))}
+      </ul>
+    )}
+  </body>
+</html>
