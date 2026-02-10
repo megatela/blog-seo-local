@@ -1,21 +1,69 @@
 ---
-// Forzamos que sea dinámico para que lea los cambios de Sanity al instante
+import { useSanityClient } from "@sanity/astro";
+
+// 1. Configuración de renderizado dinámico
 export const prerender = false;
 
 const { slug } = Astro.params;
 
-// Aquí es donde Astro buscaría los datos en Sanity (ejemplo básico)
-if (!slug) {
+// 2. Consulta a Sanity para obtener los datos del caso de éxito
+const query = `*[_type == "caseStudy" && slug.current == $slug][0]{
+  title,
+  clientName,
+  mainImage,
+  metrics,
+  body
+}`;
+
+let project;
+try {
+  project = await useSanityClient().fetch(query, { slug });
+} catch (error) {
+  console.error("Error al obtener el caso de éxito:", error);
+}
+
+// 3. Si no existe el proyecto, redirigimos a 404
+if (!project) {
   return Astro.redirect('/404');
 }
 ---
 
-<html>
+<html lang="es">
   <head>
-    <title>Caso de Éxito | {slug}</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{project.title} | Local SEO Architect</title>
+    <style>
+      body { font-family: system-ui, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 2rem; color: #333; }
+      .metric-card { background: #f4f7f6; padding: 1rem; border-radius: 8px; display: inline-block; margin-right: 1rem; border-left: 4px solid #0070f3; }
+      h1 { color: #0070f3; }
+      .client { font-weight: bold; color: #666; }
+    </style>
   </head>
   <body>
-    <h1>Visualizando: {slug}</h1>
-    <p>Si ves esto, el error de redirección ha desaparecido.</p>
+    <a href="/admin" style="text-decoration: none; color: #0070f3;">← Volver al panel</a>
+    
+    <h1>{project.title}</h1>
+    <p class="client">Cliente: {project.clientName}</p>
+
+    <hr />
+
+    <section>
+      <h2>Resultados Clave</h2>
+      {project.metrics && project.metrics.map((metric) => (
+        <div class="metric-card">
+          <strong>{metric.label}</strong>: {metric.value}
+        </div>
+      ))}
+    </section>
+
+    <section style="margin-top: 2rem;">
+      <h2>Sobre el Proyecto</h2>
+      <p>{project.body}</p>
+    </section>
+
+    <footer style="margin-top: 4rem; font-size: 0.8rem; color: #999;">
+      ID del documento: {slug}
+    </footer>
   </body>
 </html>
