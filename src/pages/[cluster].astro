@@ -8,13 +8,13 @@ export const prerender = false;
 
 const { cluster: slug } = Astro.params;
 
-// 1. Query robusta: Obtenemos el objeto mainImage completo para procesarlo con urlFor
+// 1. QUERY BLINDADA: Pedimos el asset expandido
 const data = await client.fetch(
   `{
     "cluster": *[_type == "cluster" && slug.current == $slug][0]{
       title,
       description,
-      mainImage, 
+      "mainImage": mainImage.asset->url, // Obtenemos la URL directa para mayor seguridad
       content
     },
     "posts": *[_type == "post" && cluster->slug.current == $slug] | order(_createdAt desc)
@@ -24,22 +24,13 @@ const data = await client.fetch(
 
 if (!data.cluster) return Astro.redirect('/404');
 
-// 2. Componentes para un diseño premium del texto enriquecido
+// Componentes PortableText... (mantén los anteriores)
 const components = {
   block: {
     h2: ({children}: any) => createElement('h2', { className: 'text-3xl md:text-4xl font-black text-slate-900 mt-16 mb-6 tracking-tight border-b pb-4' }, children),
     h3: ({children}: any) => createElement('h3', { className: 'text-2xl font-bold text-slate-800 mt-10 mb-4' }, children),
     normal: ({children}: any) => createElement('p', { className: 'text-lg text-slate-600 leading-relaxed mb-6' }, children),
-  },
-  list: {
-    bullet: ({children}: any) => createElement('ul', { className: 'list-none space-y-4 mb-8 ml-2' }, children),
-  },
-  listItem: {
-    bullet: ({children}: any) => createElement('li', { className: 'flex items-start text-lg text-slate-600' }, [
-      createElement('span', { className: 'text-blue-500 mr-3 font-bold' }, '•'),
-      createElement('span', {}, children)
-    ]),
-  },
+  }
 };
 ---
 
@@ -59,14 +50,18 @@ const components = {
           {data.cluster.title}
         </h1>
 
-        {data.cluster.mainImage && (
-          <div class="relative mt-12 group">
-            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-[2rem] blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+        {data.cluster.mainImage ? (
+          <div class="relative mt-12">
             <img 
-              src={urlFor(data.cluster.mainImage).width(1200).height(600).url()} 
+              src={data.cluster.mainImage} 
               alt={data.cluster.title}
-              class="relative rounded-[2rem] shadow-2xl w-full object-cover h-[300px] md:h-[500px]"
+              class="rounded-[2rem] shadow-2xl w-full object-cover h-[300px] md:h-[500px]"
             />
+          </div>
+        ) : (
+          /* Caja de depuración por si la imagen sigue fallando */
+          <div class="mt-12 p-8 bg-slate-800 rounded-[2rem] border-2 border-dashed border-slate-700 text-slate-500 text-center">
+             La imagen no se está cargando. Revisa que el campo 'mainImage' tenga una imagen subida en Sanity.
           </div>
         )}
       </div>
@@ -77,41 +72,6 @@ const components = {
         <PortableText value={data.cluster.content} components={components} />
       </div>
 
-      <section class="mt-32 pt-16 border-t border-slate-100">
-        <div class="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-4">
-          <div>
-            <h2 class="text-3xl font-black text-slate-900 uppercase tracking-tighter">Estrategias Específicas</h2>
-            <p class="text-slate-500 text-lg">Artículos detallados del clúster {data.cluster.title}</p>
-          </div>
-        </div>
-
-        {data.posts.length > 0 ? (
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {data.posts.map((post) => (
-              <a href={`/${slug}/${post.slug.current}`} class="group bg-slate-50 p-8 rounded-3xl border border-transparent hover:border-blue-500 hover:bg-white hover:shadow-2xl transition-all duration-300">
-                <h3 class="text-xl font-bold text-slate-800 group-hover:text-blue-600 mb-4 transition-colors">
-                  {post.title}
-                </h3>
-                <div class="flex items-center text-blue-600 font-bold text-sm tracking-widest uppercase">
-                  Leer Guía <span class="ml-2 group-hover:translate-x-2 transition-transform">→</span>
-                </div>
-              </a>
-            ))}
-          </div>
-        ) : (
-          <div class="bg-blue-50 p-12 rounded-[2rem] text-center">
-            <p class="text-blue-700 font-bold">Estamos redactando nuevas guías para este clúster. ¡Vuelve pronto!</p>
-          </div>
-        )}
-      </section>
-    </main>
+      </main>
   </article>
 </Layout>
-
-<style>
-  /* Optimizaciones de lectura */
-  .rich-text-container :global(strong) {
-    color: #1e293b;
-    font-weight: 800;
-  }
-</style>
