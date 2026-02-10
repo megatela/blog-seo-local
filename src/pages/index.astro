@@ -3,22 +3,34 @@ import { sanityClient } from "sanity:client";
 
 export const prerender = false;
 
-// 1. Datos de Sanity
+// 1. Consultas a Sanity
 const mainCase = await sanityClient.fetch(`*[_type == "caseStudy" && slug.current == "clinica-dental-sonrisas-valencia"][0]`);
 const clusterPosts = await sanityClient.fetch(`*[_type == "post"] | order(_createdAt desc)`);
 
-// 2. Mapeo de Iconos exacto para tus 6 posts pilares + adicionales
+// 2. Mapeo Rectificado: 9 Iconos para las 9 Páginas Pilares
 const getIcon = (title) => {
   const t = title.toLowerCase();
-  if (t.includes('reseñas con ia')) return '🤖';
-  if (t.includes('google maps') || t.includes('local pack')) return '📍';
-  if (t.includes('business messages') || t.includes('chat')) return '💬';
-  if (t.includes('errores') || t.includes('suspensiones')) return '⚠️';
-  if (t.includes('estadísticas') || t.includes('insights')) return '📊';
-  if (t.includes('guía pilar') || t.includes('conceptos generales')) return '🏛️';
-  if (t.includes('link building')) return '🔗';
-  if (t.includes('audit')) return '🔍';
-  return '📄'; // Icono por defecto
+  
+  // 1. Guía Pilar / Novedades
+  if (t.includes('guía pilar') || t.includes('novedades')) return '🏛️';
+  // 2. Reseñas / IA
+  if (t.includes('reseñas') || t.includes('ia')) return '🤖';
+  // 3. Google Maps / Local Pack
+  if (t.includes('maps') || t.includes('local pack')) return '📍';
+  // 4. Messages / Chat
+  if (t.includes('messages') || t.includes('chat')) return '💬';
+  // 5. Errores / Suspensiones / Soporte
+  if (t.includes('recuperar') || t.includes('suspensiones') || t.includes('errores')) return '⚠️';
+  // 6. Estadísticas / Insights / Métricas
+  if (t.includes('métricas') || t.includes('insights') || t.includes('estadísticas')) return '📊';
+  // 7. Link Building Local
+  if (t.includes('link building') || t.includes('enlaces')) return '🔗';
+  // 8. NAP / Citaciones / Directorios
+  if (t.includes('nap') || t.includes('directorios') || t.includes('citaciones')) return '📋';
+  // 9. Auditoría / Schema / Web Local
+  if (t.includes('audit') || t.includes('schema') || t.includes('markup')) return '🔍';
+
+  return '📄'; // Por si hay algún post extra
 };
 ---
 
@@ -26,47 +38,53 @@ const getIcon = (title) => {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Local SEO Architect | Home</title>
+    <title>Local SEO Architect | Estrategia Maestra 2026</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   </head>
   <body class="bg-gray-50 text-gray-900 font-sans">
 
-    <header class="relative bg-blue-900 text-white py-20 px-6 overflow-hidden">
+    <header class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 text-white py-24 px-6 overflow-hidden">
       <div class="max-w-5xl mx-auto text-center relative z-10">
-        <span class="bg-blue-500/30 text-blue-200 px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase border border-blue-500/50 mb-6 inline-block">
-            Caso de Éxito
+        <span class="bg-blue-500/20 text-blue-300 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest mb-8 inline-block border border-blue-500/30">
+            Resultados Comprobados
         </span>
-        <h1 class="text-3xl md:text-5xl font-extrabold mb-8 leading-tight">
-          Cómo duplicamos las citas de una Clínica Dental en el centro de Valencia en 4 meses
+        <h1 class="text-4xl md:text-6xl font-black mb-10 leading-tight">
+          Cómo duplicamos las citas de una Clínica Dental en Valencia en 4 meses
         </h1>
-        <div class="flex flex-col md:row justify-center gap-4">
-          <a href={`/casos-de-exito/${mainCase?.slug?.current}`} class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-lg font-bold transition shadow-lg">
-            Ver Resultado Detallado
+        <div class="flex flex-col sm:flex-row justify-center gap-5">
+          <a href={`/casos-de-exito/${mainCase?.slug?.current}`} class="bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-xl font-bold text-lg transition shadow-2xl shadow-blue-500/20">
+            Ver Caso de Éxito
           </a>
-          <a href="/casos-de-exito" class="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-8 py-3 rounded-lg font-bold backdrop-blur-sm transition">
-            Todos los Casos
+          <a href="/casos-de-exito" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-10 py-4 rounded-xl font-bold text-lg backdrop-blur-md transition">
+            Ver Todos los Éxitos
           </a>
         </div>
       </div>
     </header>
 
-    <main class="max-w-7xl mx-auto py-16 px-6">
-      <div class="mb-12 border-l-4 border-blue-600 pl-4">
-        <h2 class="text-3xl font-bold">Base de Conocimiento</h2>
-        <p class="text-gray-600">Estrategias y SEO Local 2026</p>
+    <main class="max-w-7xl mx-auto py-24 px-6">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+        <div>
+            <h2 class="text-4xl font-black text-slate-800">Base de Conocimiento</h2>
+            <p class="text-slate-500 text-xl mt-3 font-medium">9 Pilares estratégicos para dominar el SEO Local.</p>
+        </div>
+        <div class="hidden md:block h-1.5 w-32 bg-blue-600 rounded-full"></div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {clusterPosts.map((post) => (
-          <a href={`/blog/${post.slug.current}`} class="group bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl hover:border-blue-500 transition-all flex flex-col h-full">
-            <div class="text-4xl mb-4 transform group-hover:scale-110 transition-transform">
+          <a href={`/blog/${post.slug.current}`} class="group bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:border-blue-400 transition-all duration-500 flex flex-col h-full">
+            <div class="text-5xl mb-8 transform group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300">
                 {getIcon(post.title)}
             </div>
-            <h3 class="text-lg font-bold mb-4 text-gray-800 group-hover:text-blue-600 flex-grow">
+            <h3 class="text-2xl font-extrabold mb-4 text-slate-800 group-hover:text-blue-600 transition-colors leading-tight">
               {post.title}
             </h3>
-            <div class="text-blue-600 font-bold text-xs flex items-center mt-4 tracking-widest">
-              LEER MÁS <span class="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+            <p class="text-slate-500 line-clamp-3 mb-8 flex-grow leading-relaxed">
+              {post.excerpt || "Descubre cómo optimizar este pilar fundamental para escalar posiciones en el Local Pack y atraer más clientes."}
+            </p>
+            <div class="flex items-center text-blue-600 font-black text-sm uppercase tracking-tighter">
+              Explorar Guía <span class="ml-3 transform group-hover:translate-x-3 transition-transform duration-300">→</span>
             </div>
           </a>
         ))}
