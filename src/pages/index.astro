@@ -1,108 +1,87 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { client } from '../lib/sanity';
+import { sanityClient } from "sanity:client";
 
-/**
- * 1. FETCH DINÁMICO TOTAL
- * Traemos todos los clústers creados en Sanity y sus respectivos posts.
- * Esto elimina la necesidad de la lista "manualClusters" y evita duplicados.
- */
-const allClusters = await client.fetch(`*[_type == "cluster"] | order(_createdAt asc) {
-  title,
-  "slug": slug.current,
-  description,
-  "posts": *[_type == "post" && references(^._id)] | order(_createdAt desc) [0...4] {
-    title,
-    "slug": slug.current
-  }
-}`);
+export const prerender = false;
+
+// 1. Datos del Caso de Éxito y Posts
+const mainCase = await sanityClient.fetch(`*[_type == "caseStudy" && slug.current == "clinica-dental-sonrisas-valencia"][0]`);
+const clusterPosts = await sanityClient.fetch(`*[_type == "post"] | order(_createdAt desc) [0...10]`);
+
+// 2. Mapeo de Iconos (SVG) según palabras clave en el título
+const getIcon = (title) => {
+  const t = title.toLowerCase();
+  if (t.includes('maps') || t.includes('local pack')) return '📍';
+  if (t.includes('ia') || t.includes('inteligencia')) return '🤖';
+  if (t.includes('link') || t.includes('enlaces')) return '🔗';
+  if (t.includes('audit') || t.includes('auditoria')) return '🔍';
+  if (t.includes('perfil') || t.includes('business')) return '🏢';
+  if (t.includes('nap') || t.includes('consistencia')) return '📋';
+  if (t.includes('schema') || t.includes('markup')) return '⚡';
+  if (t.includes('mensaje') || t.includes('chat')) return '💬';
+  return '📝'; // Icono por defecto
+};
 ---
 
-<Layout title="Masterclass SEO Local - Domina el Mapa">
-  <main class="home-container">
-    <header class="hero">
-      <h1>Masterclass <span class="text-gradient">SEO Local</span></h1>
-      <p>La guía definitiva para dominar el algoritmo de Google Maps.</p>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Local SEO Architect | Resultados Reales</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+
+    <header class="relative bg-slate-900 py-24 px-6 overflow-hidden">
+      <div class="absolute inset-0 opacity-20">
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
+      </div>
+
+      <div class="relative z-10 max-w-5xl mx-auto text-center">
+        <span class="inline-block bg-blue-500/20 text-blue-400 px-4 py-1 rounded-full text-sm font-bold mb-6 border border-blue-500/30">
+          CASO DE ÉXITO DESTACADO
+        </span>
+        <h1 class="text-4xl md:text-6xl font-black text-white mb-8 leading-tight">
+          Cómo duplicamos las citas de una Clínica Dental en el centro de Valencia en 4 meses
+        </h1>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href={`/casos-de-exito/${mainCase?.slug?.current}`} class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all shadow-lg shadow-blue-900/20">
+            Ver Resultado Detallado
+          </a>
+          <a href="/casos-de-exito" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-8 py-4 rounded-xl font-bold text-lg transition-all border border-slate-700">
+            Todos los Casos de Éxito
+          </a>
+        </div>
+      </div>
     </header>
 
-    <div class="grid-container">
-      {allClusters.map((cluster: any) => (
-        <article class="card">
-          <div class="card-content">
-            <a href={`/${cluster.slug}`} class="title-link">
-              <h2 class="card-title">{cluster.title}</h2>
-            </a>
+    <main class="max-w-7xl mx-auto py-20 px-6">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+        <div>
+          <h2 class="text-3xl font-bold text-slate-900">Base de Conocimiento</h2>
+          <p class="text-slate-500 mt-2 text-lg">Explora nuestro clúster de expertos en SEO Local.</p>
+        </div>
+        <div class="h-1 w-24 bg-blue-600 rounded-full hidden md:block"></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {clusterPosts.map((post) => (
+          <a href={`/blog/${post.slug.current}`} class="group bg-white border border-slate-200 p-6 rounded-2xl hover:border-blue-500 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 flex flex-col justify-between">
+            <div>
+              <div class="text-4xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                {getIcon(post.title)}
+              </div>
+              <h3 class="font-bold text-xl text-slate-800 group-hover:text-blue-600 transition-colors leading-snug">
+                {post.title}
+              </h3>
+            </div>
             
-            <p class="cluster-description">
-              {cluster.description ? cluster.description.substring(0, 100) + '...' : 'Explora nuestra guía completa sobre este pilar del SEO Local.'}
-            </p>
-
-            <div class="pilar-section">
-              <span class="label">Página Pilar</span>
-              <a href={`/${cluster.slug}`} class="pilar-link">
-                Guía Completa →
-              </a>
+            <div class="mt-8 pt-4 border-t border-slate-50 flex items-center justify-between text-sm font-bold text-slate-400 group-hover:text-blue-600 transition-colors">
+              LEER ARTÍCULO
+              <span class="transform group-hover:translate-x-2 transition-transform">→</span>
             </div>
+          </a>
+        ))}
+      </div>
+    </main>
 
-            <div class="support-section">
-              <span class="label">Artículos de Soporte</span>
-              <ul class="support-list">
-                {cluster.posts && cluster.posts.length > 0 ? (
-                  cluster.posts.map((post: any) => (
-                    <li>
-                      <a href={`/${cluster.slug}/${post.slug}`}>
-                        {post.title}
-                      </a>
-                    </li>
-                  ))
-                ) : (
-                  <li class="no-posts">Próximamente nuevos artículos</li>
-                )}
-              </ul>
-            </div>
-          </div>
-        </article>
-      ))}
-    </div>
-
-    <section class="cta-container">
-        <h3>¿Buscas resultados reales en Google Maps?</h3>
-        <p>Optimiza tu presencia local con estrategias probadas.</p>
-        <a href="/contactame" class="cta-button">Solicitar Auditoría SEO</a>
-    </section>
-  </main>
-</Layout>
-
-<style>
-  .home-container { max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; }
-  .hero { text-align: center; margin-bottom: 4rem; }
-  h1 { font-size: clamp(2.5rem, 8vw, 3.5rem); font-weight: 800; line-height: 1.1; margin-bottom: 1rem; }
-  .text-gradient { background: linear-gradient(45deg, #0070f3, #00dfd8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  
-  .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
-  
-  .card { background: white; border: 1px solid #eaeaea; border-radius: 16px; transition: all 0.3s ease; display: flex; flex-direction: column; }
-  .card:hover { transform: translateY(-5px); border-color: #0070f3; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-  .card-content { padding: 2rem; display: flex; flex-direction: column; height: 100%; }
-  
-  .title-link { text-decoration: none; color: inherit; }
-  .card-title { font-size: 1.4rem; border-left: 4px solid #0070f3; padding-left: 1rem; margin-bottom: 1rem; transition: color 0.2s; }
-  .cluster-description { font-size: 0.95rem; color: #666; margin-bottom: 1.5rem; line-height: 1.5; }
-  
-  .label { font-size: 0.7rem; color: #999; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 0.5rem; letter-spacing: 0.05em; }
-  .pilar-link { color: #0070f3; font-weight: bold; text-decoration: none; display: block; margin-bottom: 1.5rem; font-size: 1rem; }
-  .pilar-link:hover { text-decoration: underline; }
-  
-  .support-list { list-style: none; padding: 0; margin: 0; }
-  .support-list li { margin-bottom: 0.6rem; font-size: 0.9rem; padding-left: 1.2rem; position: relative; line-height: 1.3; }
-  .support-list li::before { content: "→"; position: absolute; left: 0; color: #0070f3; font-weight: bold; }
-  .support-list a { color: #444; text-decoration: none; transition: color 0.2s; }
-  .support-list a:hover { color: #0070f3; }
-  .no-posts { color: #bbb !important; font-style: italic; }
-  .no-posts::before { content: "" !important; }
-
-  .cta-container { text-align: center; margin-top: 5rem; padding: 4rem 2rem; background: #f0f7ff; border-radius: 32px; }
-  .cta-container h3 { font-size: 1.8rem; margin-bottom: 0.5rem; color: #111; }
-  .cta-button { background: #0070f3; color: white; padding: 1rem 2.5rem; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 1.5rem; transition: background 0.2s; }
-  .cta-button:hover { background: #0056b3; }
-</style>
+  </body>
+</html>
