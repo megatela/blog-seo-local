@@ -6,23 +6,46 @@ export const prerender = false;
 
 const { cluster: slug } = Astro.params;
 
-// Buscamos los datos del clúster en Sanity
-const cluster = await client.fetch(
-  `*[_type == "cluster" && slug.current == $slug][0]`,
+// 1. Buscamos el clúster Y todos los posts que tengan este clúster asignado
+const data = await client.fetch(
+  `{
+    "cluster": *[_type == "cluster" && slug.current == $slug][0],
+    "posts": *[_type == "post" && cluster->slug.current == $slug] | order(_createdAt desc)
+  }`,
   { slug }
 );
 
-if (!cluster) return Astro.redirect('/404');
+if (!data.cluster) return Astro.redirect('/404');
 ---
 
-<Layout title={cluster.title}>
-  <main class="max-w-4xl mx-auto py-20 px-6">
-    <h1 class="text-5xl font-black mb-8">{cluster.title}</h1>
-    <div class="prose lg:prose-xl text-gray-700 leading-relaxed">
-      {cluster.description || "Contenido estratégico para este clúster en preparación."}
-    </div>
-    <div class="mt-12">
-        <a href="/" class="text-blue-600 font-bold">← Volver al Inicio</a>
-    </div>
+<Layout title={data.cluster.title}>
+  <main class="max-w-6xl mx-auto py-20 px-6">
+    <header class="mb-16 border-b pb-12">
+      <a href="/" class="text-blue-600 font-bold mb-8 inline-block">← Volver al Inicio</a>
+      <h1 class="text-5xl md:text-6xl font-black text-gray-900 mb-6">{data.cluster.title}</h1>
+      <p class="text-xl text-gray-600 max-w-3xl leading-relaxed">
+        {data.cluster.description || "Estrategias avanzadas y guías detalladas sobre este pilar de SEO Local."}
+      </p>
+    </header>
+
+    <section>
+      <h2 class="text-2xl font-bold mb-8 uppercase tracking-widest text-gray-400">Artículos en este Clúster</h2>
+      
+      {data.posts.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {data.posts.map((post) => (
+            <a href={`/${slug}/${post.slug.current}`} class="group bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
+              <h3 class="text-xl font-bold group-hover:text-blue-600 mb-2">{post.title}</h3>
+              <p class="text-gray-500 line-clamp-2 text-sm">{post.excerpt || "Haz clic para leer la guía completa."}</p>
+              <span class="text-blue-600 font-bold text-xs mt-4 inline-block tracking-widest">LEER ARTÍCULO →</span>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <div class="bg-blue-50 p-8 rounded-xl text-blue-700">
+          Actualmente estamos redactando el contenido para este clúster. ¡Vuelve pronto!
+        </div>
+      )}
+    </section>
   </main>
 </Layout>
