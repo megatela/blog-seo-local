@@ -5,11 +5,9 @@ export const prerender = false;
 
 // 1. Consultas a Sanity
 const mainCase = await sanityClient.fetch(`*[_type == "caseStudy" && slug.current == "clinica-dental-sonrisas-valencia"][0]`);
-
-// IMPORTANTE: Cambiamos "post" por "cluster" para traer los 9 elementos de tu captura
 const clusters = await sanityClient.fetch(`*[_type == "cluster"] | order(_createdAt asc)`);
 
-// 2. Mapeo de Iconos exacto para tus 9 clústeres de la imagen
+// 2. Mapeo de Iconos
 const getIcon = (title) => {
   const t = title.toLowerCase();
   if (t.includes('link building')) return '🔗';
@@ -40,7 +38,7 @@ const getIcon = (title) => {
         <h1 class="text-3xl md:text-5xl font-extrabold mb-8 leading-tight">
           Cómo duplicamos las citas de una Clínica Dental en el centro de Valencia en 4 meses
         </h1>
-        <div class="flex flex-col sm:row justify-center gap-4">
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
           <a href={`/casos-de-exito/${mainCase?.slug?.current}`} class="bg-blue-600 px-8 py-3 rounded-md font-bold hover:bg-blue-500 transition">Ver Caso de Éxito</a>
           <a href="/casos-de-exito" class="bg-white text-blue-900 px-8 py-3 rounded-md font-bold hover:bg-gray-100 transition">Ver todos los casos</a>
         </div>
@@ -55,7 +53,8 @@ const getIcon = (title) => {
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {clusters.map((item) => (
-          <a href={`/cluster/${item.slug.current}`} class="group bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-xl transition-all flex flex-col items-start">
+          /* CAMBIO CLAVE: Se elimina /cluster/ de la URL */
+          <a href={`/${item.slug.current}`} class="group bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-xl transition-all flex flex-col items-start">
             <div class="text-5xl mb-6">{getIcon(item.title)}</div>
             <h3 class="text-xl font-bold text-gray-800 group-hover:text-blue-600 mb-4 transition-colors">
               {item.title}
