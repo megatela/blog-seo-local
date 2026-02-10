@@ -10,27 +10,19 @@ export default defineConfig({
 
   plugins: [
     deskTool({
-      // Esta es la forma más robusta de habilitar el botón de previsualización
-      resolveProductionUrl: async (prev, context) => {
-        const { document } = context
+      // Forzamos la URL directamente en el plugin de escritorio
+      resolveProductionUrl: (prev, { document }) => {
         const slug = (document.slug as any)?.current
-
         if (!slug) return prev
 
-        const baseUrl = window.location.hostname === 'localhost' 
-          ? 'http://localhost:4321' 
-          : 'https://blog-seo-local.vercel.app'
-
-        // Rutas según el tipo de documento
-        if (document._type === 'post') {
-          // Usamos /blog/ como base para evitar conflictos de rutas
-          return `${baseUrl}/blog/${slug}`
-        }
+        const baseUrl = 'https://blog-seo-local.vercel.app'
 
         if (document._type === 'caseStudy') {
           return `${baseUrl}/casos-de-exito/${slug}`
         }
-
+        if (document._type === 'post') {
+          return `${baseUrl}/blog/${slug}`
+        }
         return prev
       },
     }),
