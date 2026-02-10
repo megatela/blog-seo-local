@@ -1,12 +1,13 @@
 ---
-import { useSanityClient } from "@sanity/astro";
+// Importamos sanityClient (el nombre correcto para la versión actual)
+import { sanityClient } from "sanity:client";
 
-// 1. Configuración de renderizado dinámico
+// Forzamos renderizado en el servidor para evitar el aviso de getStaticPaths
 export const prerender = false;
 
 const { slug } = Astro.params;
 
-// 2. Consulta a Sanity para obtener los datos del caso de éxito
+// Consulta a Sanity
 const query = `*[_type == "caseStudy" && slug.current == $slug][0]{
   title,
   clientName,
@@ -17,12 +18,11 @@ const query = `*[_type == "caseStudy" && slug.current == $slug][0]{
 
 let project;
 try {
-  project = await useSanityClient().fetch(query, { slug });
+  project = await sanityClient.fetch(query, { slug });
 } catch (error) {
-  console.error("Error al obtener el caso de éxito:", error);
+  console.error("Error en Sanity Fetch:", error);
 }
 
-// 3. Si no existe el proyecto, redirigimos a 404
 if (!project) {
   return Astro.redirect('/404');
 }
@@ -31,39 +31,33 @@ if (!project) {
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{project.title} | Local SEO Architect</title>
+    <title>{project.title}</title>
     <style>
-      body { font-family: system-ui, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 2rem; color: #333; }
-      .metric-card { background: #f4f7f6; padding: 1rem; border-radius: 8px; display: inline-block; margin-right: 1rem; border-left: 4px solid #0070f3; }
+      body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; line-height: 1.6; color: #333; }
+      .metric { background: #f0f4f8; padding: 10px; border-radius: 5px; margin: 10px 0; border-left: 5px solid #0070f3; }
       h1 { color: #0070f3; }
-      .client { font-weight: bold; color: #666; }
     </style>
   </head>
   <body>
-    <a href="/admin" style="text-decoration: none; color: #0070f3;">← Volver al panel</a>
+    <header>
+      <a href="/admin">← Volver al Panel</a>
+    </header>
     
     <h1>{project.title}</h1>
-    <p class="client">Cliente: {project.clientName}</p>
+    <p><strong>Cliente:</strong> {project.clientName}</p>
 
-    <hr />
-
-    <section>
-      <h2>Resultados Clave</h2>
-      {project.metrics && project.metrics.map((metric) => (
-        <div class="metric-card">
-          <strong>{metric.label}</strong>: {metric.value}
+    <div class="results">
+      <h2>Resultados:</h2>
+      {project.metrics?.map((m) => (
+        <div class="metric">
+          <strong>{m.label}:</strong> {m.value}
         </div>
       ))}
-    </section>
+    </div>
 
-    <section style="margin-top: 2rem;">
-      <h2>Sobre el Proyecto</h2>
+    <div class="content">
+      <h2>Estrategia:</h2>
       <p>{project.body}</p>
-    </section>
-
-    <footer style="margin-top: 4rem; font-size: 0.8rem; color: #999;">
-      ID del documento: {slug}
-    </footer>
+    </div>
   </body>
 </html>
