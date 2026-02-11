@@ -19,7 +19,6 @@ const data = await client.fetch(
 if (!data.cluster) return Astro.redirect('/404');
 
 // --- LÓGICA DE DETECCIÓN REFORZADA ---
-// Filtramos para que NO tome el contenido largo del post como descripción
 const allStrings = Object.values(data.cluster).filter(v => typeof v === 'string');
 const detectedDesc = data.cluster.description || data.cluster.seoDescription || data.cluster.descriptionSEO || 
                      allStrings.find(v => v.length > 35 && v.length < 500 && v !== data.cluster.title) || "";
@@ -36,7 +35,7 @@ const components = {
 };
 ---
 
-<Layout title={data.cluster.title}>
+<Layout title={data.cluster.title} description={detectedDesc}>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
   <article class="bg-white min-h-screen">
