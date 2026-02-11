@@ -3,7 +3,7 @@ import { sanityClient } from "sanity:client";
 
 export const prerender = false;
 
-// 1. Traemos TODO del clúster para no fallar
+// 1. CONSULTA COMPLETA: Traemos la imagen y sus metadatos (alt)
 const mainCase = await sanityClient.fetch(`*[_type == "caseStudy" && slug.current == "clinica-dental-sonrisas-valencia"][0]`);
 const clusters = await sanityClient.fetch(`*[_type == "cluster"] | order(_createdAt asc)`);
 
@@ -33,35 +33,38 @@ const getIcon = (title) => {
 
     <header class="bg-blue-900 text-white py-20 px-6 text-center relative">
       <nav class="absolute top-8 right-8">
-        <a href="/contactame" class="text-blue-200 hover:text-white font-bold text-sm uppercase tracking-widest transition">
-          Contacto
-        </a>
+        <a href="/contactame" class="text-blue-200 hover:text-white font-bold text-sm uppercase tracking-widest transition">Contacto</a>
       </nav>
       <div class="max-w-4xl mx-auto">
         <span class="bg-blue-600 text-xs font-bold px-3 py-1 rounded mb-6 inline-block uppercase">Caso de Éxito</span>
-        <h1 class="text-3xl md:text-5xl font-extrabold mb-8 leading-tight">
-          Cómo duplicamos las citas de una Clínica Dental en el centro de Valencia en 4 meses
-        </h1>
+        <h1 class="text-3xl md:text-5xl font-extrabold mb-8 leading-tight">Cómo duplicamos las citas de una Clínica Dental</h1>
       </div>
     </header>
 
     <main class="max-w-7xl mx-auto py-24 px-6">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {clusters.map((item) => {
-          // DETECTOR DE CAMPO: Buscamos la descripción en cualquier lugar posible
-          const desc = item.description || item.seoDescription || item.excerpt || "Guía estratégica para SEO Local.";
+          // Lógica para DESCRIPCIÓN SEO (múltiples alias)
+          const desc = item.seoDescription || item.descriptionSEO || item.description || item.excerpt || "Guía estratégica para SEO Local.";
           
+          // Lógica para ALT TEXT (buscamos dentro del objeto imagen)
+          // Sanity suele guardarlo en mainImage.alt o mainImage.altText
+          const altText = item.mainImage?.alt || item.mainImage?.altText || item.mainImage?.textAlt || item.title || "Icono de clúster";
+
           return (
             <a href={`/${item.slug?.current}`} class="group bg-white p-10 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all flex flex-col items-start">
-              <div class="text-5xl mb-6">{getIcon(item.title)}</div>
+              <div class="text-5xl mb-6" aria-label={altText}>{getIcon(item.title)}</div>
+              
               <h3 class="text-xl font-bold text-gray-800 group-hover:text-blue-600 mb-4 uppercase">
                 {item.title}
               </h3>
+              
               <p class="text-gray-500 mb-6 line-clamp-3">
                 {desc}
               </p>
-              <div class="mt-auto text-blue-600 font-bold text-xs tracking-widest">
-                EXPLORAR →
+
+              <div class="mt-auto text-blue-600 font-bold text-sm tracking-widest uppercase">
+                Explorar Clúster →
               </div>
             </a>
           );
@@ -69,12 +72,15 @@ const getIcon = (title) => {
       </div>
     </main>
 
-    <section class="bg-white py-20 text-center border-t border-gray-100">
-        <h2 class="text-3xl font-black mb-8 uppercase">¿Hablamos de tu negocio?</h2>
-        <a href="/contactame" class="bg-blue-600 text-white px-10 py-4 rounded-full font-bold uppercase text-sm tracking-widest">
-          Empezar Ahora
-        </a>
+    <section class="bg-white py-24 text-center border-t border-gray-100">
+      <h2 class="text-4xl font-black text-gray-900 mb-8 uppercase tracking-tighter">¿Listo para dominar el Local Pack?</h2>
+      <a href="/contactame" class="inline-block bg-blue-600 text-white font-black px-10 py-4 rounded-full hover:bg-blue-700 transition-all uppercase tracking-widest text-sm">
+        Empezar Ahora →
+      </a>
     </section>
 
+    <footer class="py-12 border-t border-gray-50 text-center text-gray-400 text-sm">
+      <p>&copy; 2026 Local SEO Architect. Todos los derechos reservados.</p>
+    </footer>
   </body>
 </html>
