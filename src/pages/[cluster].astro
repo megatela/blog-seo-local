@@ -8,7 +8,6 @@ export const prerender = false;
 
 const { cluster: slug } = Astro.params;
 
-// 1. QUERY: Traemos el clúster y sus posts relacionados
 const data = await client.fetch(
   `{
     "cluster": *[_type == "cluster" && slug.current == $slug][0],
@@ -19,17 +18,14 @@ const data = await client.fetch(
 
 if (!data.cluster) return Astro.redirect('/404');
 
-// --- LÓGICA DE DETECCIÓN INTELIGENTE (Igual que en la Home) ---
-
-// 1. Detectar Descripción (Busca cualquier texto largo en el objeto)
+// --- LÓGICA DE DETECCIÓN REFORZADA ---
+// Filtramos para que NO tome el contenido largo del post como descripción
 const allStrings = Object.values(data.cluster).filter(v => typeof v === 'string');
-const detectedDesc = allStrings.find(v => v.length > 35 && v !== data.cluster.title) || "";
+const detectedDesc = data.cluster.description || data.cluster.seoDescription || data.cluster.descriptionSEO || 
+                     allStrings.find(v => v.length > 35 && v.length < 500 && v !== data.cluster.title) || "";
 
-// 2. Detectar Imagen y URL
 const imgObj = data.cluster.mainImage || data.cluster.imagenPortada || data.cluster.image || {};
 const imageUrl = data.cluster.imageUrl || (imgObj.asset ? `https://cdn.sanity.io/images/qv6q15su/production/${imgObj.asset._ref.replace('image-', '').replace('-webp', '.webp').replace('-png', '.png').replace('-jpg', '.jpg')}` : null);
-
-// 3. Detectar Alt Text
 const detectedAlt = imgObj.alt || imgObj.altText || imgObj.textAlt || data.cluster.title;
 
 const components = {
@@ -40,38 +36,27 @@ const components = {
 };
 ---
 
-<Layout title={`${data.cluster.title} | Local SEO Architect`}>
+<Layout title={data.cluster.title}>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
   <article class="bg-white min-h-screen">
-    <header class="bg-slate-900 pt-32 pb-24 px-6 relative overflow-hidden">
-      <div class="max-w-5xl mx-auto relative z-10">
-        <nav class="flex items-center space-x-2 text-blue-400 text-xs font-black uppercase mb-12 tracking-[0.2em]">
-          <a href="/" class="hover:text-white transition-colors">Inicio</a>
-          <span class="text-slate-700">/</span>
-          <span class="text-slate-400">Knowledge Base</span>
+    <header class="bg-slate-900 pt-32 pb-24 px-6 relative">
+      <div class="max-w-5xl mx-auto">
+        <nav class="flex items-center space-x-2 text-blue-400 text-xs font-black uppercase mb-12 tracking-widest">
+          <a href="/">Inicio</a> <span class="text-slate-700">/</span> <span class="text-slate-400">Pilar</span>
         </nav>
         
-        <h1 class="text-5xl md:text-8xl font-black text-white leading-[0.9] mb-8 tracking-tighter uppercase">
-          {data.cluster.title}
-        </h1>
+        <h1 class="text-5xl md:text-8xl font-black text-white leading-none mb-8 tracking-tighter uppercase">{data.cluster.title}</h1>
 
         {detectedDesc && (
-          <p class="text-xl md:text-2xl text-slate-400 max-w-3xl mb-16 leading-relaxed font-light italic">
+          <p class="text-xl md:text-2xl text-slate-400 max-w-3xl mb-16 leading-relaxed italic font-light">
             {detectedDesc}
           </p>
         )}
 
         {imageUrl && (
-          <div class="relative mt-20 group">
-            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-[3rem] blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
-            <div class="relative rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-slate-800 bg-slate-800">
-              <img 
-                src={imageUrl} 
-                alt={detectedAlt}
-                class="w-full h-[400px] md:h-[600px] object-cover transform group-hover:scale-105 transition-transform duration-700"
-              />
-            </div>
+          <div class="relative mt-12 rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-slate-800">
+            <img src={imageUrl} alt={detectedAlt} class="w-full h-[400px] md:h-[600px] object-cover" />
           </div>
         )}
       </div>
@@ -82,38 +67,17 @@ const components = {
         <PortableText value={data.cluster.content} components={components} />
       </div>
 
-      <section class="mt-40 border-t border-slate-100 pt-24">
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
-          <h2 class="text-4xl md:text-6xl font-black text-slate-900 uppercase tracking-tighter">
-            Estrategias <br/> <span class="text-blue-600">Específicas</span>
-          </h2>
-          <p class="text-slate-400 font-medium uppercase tracking-widest text-sm pb-2">
-            Profundiza en {data.cluster.title}
-          </p>
-        </div>
-
+      <section class="mt-40 border-t pt-24">
+        <h2 class="text-4xl font-black text-slate-900 mb-12 uppercase tracking-tighter">Artículos Específicos</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           {data.posts.map((post: any) => (
-            <a href={`/${slug}/${post.slug.current}`} class="group bg-slate-50 p-10 rounded-[2.5rem] hover:bg-white hover:shadow-2xl transition-all duration-500 border border-transparent hover:border-slate-100 flex flex-col items-start">
-              <span class="bg-blue-100 text-blue-600 text-[10px] font-black px-3 py-1 rounded-full mb-6 uppercase tracking-widest">Post Informativo</span>
-              <h3 class="text-2xl font-black text-slate-800 group-hover:text-blue-600 mb-6 transition-colors leading-tight">{post.title}</h3>
-              <div class="mt-auto flex items-center text-blue-600 font-bold text-xs uppercase tracking-widest">
-                Leer artículo <span class="ml-2 transform group-hover:translate-x-2 transition-transform">→</span>
-              </div>
+            <a href={`/${slug}/${post.slug.current}`} class="group bg-slate-50 p-10 rounded-[2rem] hover:bg-white hover:shadow-2xl transition-all border border-transparent hover:border-slate-100">
+              <h3 class="text-2xl font-black text-slate-800 group-hover:text-blue-600 mb-6">{post.title}</h3>
+              <span class="text-blue-600 font-bold text-xs uppercase tracking-widest">Leer más →</span>
             </a>
           ))}
         </div>
       </section>
     </main>
-
-    <section class="bg-slate-50 py-32 px-6 text-center">
-        <div class="max-w-3xl mx-auto">
-            <h2 class="text-4xl font-black text-slate-900 mb-6 uppercase tracking-tighter">¿Necesitas ayuda con tu {data.cluster.title}?</h2>
-            <p class="text-lg text-slate-500 mb-10">Analizamos tu caso y diseñamos una estrategia a medida para tu negocio local.</p>
-            <a href="/contactame" class="inline-block bg-slate-900 text-white font-black px-12 py-5 rounded-full hover:bg-blue-600 transition-all uppercase tracking-widest text-sm">
-                Agendar Consultoría →
-            </a>
-        </div>
-    </section>
   </article>
 </Layout>
