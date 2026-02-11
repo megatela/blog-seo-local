@@ -27,23 +27,19 @@ const getIcon = (title) => {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Local SEO Architect | Home</title>
+    <title>Local SEO Architect | Estrategia de Posicionamiento Local</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   </head>
-  <body class="bg-gray-50 text-gray-900">
+  <body class="bg-gray-50 text-gray-900 font-sans">
 
-    <header class="bg-blue-900 text-white py-20 px-6 text-center">
-<header class="bg-blue-900 text-white py-20 px-6 text-center relative overflow-hidden">
-      <nav class="absolute top-8 right-8">
+    <header class="bg-blue-900 text-white py-20 px-6 text-center relative overflow-hidden">
+      <nav class="absolute top-8 right-8 z-10">
         <a href="/contactame" class="text-blue-200 hover:text-white font-bold text-sm uppercase tracking-widest transition">
           Contacto
         </a>
       </nav>
 
-      <div class="max-w-4xl mx-auto">
-        </div>
-    </header>
-      <div class="max-w-4xl mx-auto">
+      <div class="max-w-4xl mx-auto relative z-10">
         <span class="bg-blue-600 text-xs font-bold px-3 py-1 rounded mb-6 inline-block uppercase">Caso de Éxito</span>
         <h1 class="text-3xl md:text-5xl font-extrabold mb-8 leading-tight">
           Cómo duplicamos las citas de una Clínica Dental en el centro de Valencia en 4 meses
@@ -55,46 +51,53 @@ const getIcon = (title) => {
       </div>
     </header>
 
-    <main class="max-w-7xl mx-auto py-16 px-6">
-      <div class="mb-12">
-        <h2 class="text-3xl font-bold text-gray-800 uppercase tracking-tighter">Our Knowledge Base: Content Cluster</h2>
-        <p class="text-gray-500">Explora nuestros clústeres de expertos en SEO Local.</p>
+    <main class="max-w-7xl mx-auto py-24 px-6">
+      <div class="mb-16">
+        <h2 class="text-4xl font-black text-gray-900 uppercase tracking-tighter">Knowledge Base</h2>
+        <p class="text-xl text-gray-500 mt-2">Explora nuestros clústeres estratégicos de SEO Local.</p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {clusters.map((item) => (
-          /* CAMBIO CLAVE: Se elimina /cluster/ de la URL */
-          <a href={`/${item.slug.current}`} class="group bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-xl transition-all flex flex-col items-start">
-            <div class="text-5xl mb-6">{getIcon(item.title)}</div>
-            <h3 class="text-xl font-bold text-gray-800 group-hover:text-blue-600 mb-4 transition-colors">
+          <a href={`/${item.slug.current}`} class="group bg-white p-10 rounded-2xl shadow-sm border border-gray-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-start">
+            <div class="text-5xl mb-8 transform group-hover:scale-110 transition-transform">{getIcon(item.title)}</div>
+            
+            <h3 class="text-2xl font-bold text-gray-800 group-hover:text-blue-600 mb-4 transition-colors">
               {item.title}
             </h3>
-            <div class="mt-auto text-blue-600 font-bold text-sm flex items-center">
-              EXPLORAR <span class="ml-2">→</span>
+
+            <p class="text-gray-500 mb-8 leading-relaxed line-clamp-3">
+              {item.description || "Aprende las mejores estrategias de SEO Local para dominar este pilar fundamental."}
+            </p>
+
+            <div class="mt-auto text-blue-600 font-bold text-xs uppercase tracking-[0.2em] flex items-center">
+              Explorar Clúster <span class="ml-2 transform group-hover:translate-x-2 transition-transform">→</span>
             </div>
           </a>
         ))}
       </div>
     </main>
-<section class="bg-white py-24 px-6 border-t border-gray-100">
+
+    <section class="bg-white py-32 px-6 border-t border-gray-100">
       <div class="max-w-4xl mx-auto text-center">
-        <h2 class="text-4xl md:text-5xl font-black text-gray-900 mb-6 tracking-tighter uppercase">
-          ¿Listo para dominar el Local Pack?
+        <h2 class="text-4xl md:text-6xl font-black text-gray-900 mb-8 tracking-tighter uppercase leading-none">
+          ¿Listo para dominar <br/> el Local Pack?
         </h2>
-        <p class="text-xl text-gray-500 mb-10 max-w-2xl mx-auto">
-          Si buscas una estrategia de SEO Local que realmente convierta clics en clientes, hablemos.
+        <p class="text-xl text-gray-500 mb-12 max-w-2xl mx-auto leading-relaxed">
+          Si buscas una estrategia de SEO Local que realmente convierta clics en clientes reales, hablemos hoy mismo.
         </p>
         <a 
           href="/contactame" 
-          class="inline-block bg-blue-600 text-white font-black px-10 py-4 rounded-full hover:bg-blue-700 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 uppercase tracking-widest text-sm"
+          class="inline-block bg-blue-600 text-white font-black px-12 py-5 rounded-full hover:bg-blue-700 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 uppercase tracking-widest text-sm"
         >
           Empezar Ahora →
         </a>
       </div>
     </section>
 
-    <footer class="py-12 border-t border-gray-50 text-center text-gray-400 text-sm">
+    <footer class="py-16 border-t border-gray-50 text-center text-gray-400 text-sm tracking-widest uppercase">
       <p>&copy; 2026 Local SEO Architect. Todos los derechos reservados.</p>
     </footer>
+
   </body>
 </html>
