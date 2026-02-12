@@ -29,7 +29,10 @@ const getIcon = (title) => {
   <body class="bg-gray-50 text-gray-900 font-sans">
 
     <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 py-4 px-8 flex justify-between items-center">
-      <a href="/" class="font-black text-xl tracking-tighter uppercase">Local <span class="text-blue-600">Architect</span></a>
+      <div class="flex items-center gap-8">
+        <a href="/" class="font-black text-xl tracking-tighter uppercase">Local <span class="text-blue-600">Architect</span></a>
+        <a href="/casos-de-exito" class="hidden md:block text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-blue-600 transition-colors">Casos de Éxito</a>
+      </div>
       <a href="/contactame" class="bg-blue-600 text-white px-6 py-2 rounded-full font-bold text-sm hover:bg-slate-900 transition-all shadow-lg shadow-blue-200">
         Trabajemos Juntos
       </a>
@@ -37,27 +40,31 @@ const getIcon = (title) => {
 
     <header class="bg-slate-900 text-white pt-40 pb-24 px-6 text-center relative overflow-hidden">
       <div class="max-w-4xl mx-auto relative z-10">
-        <span class="bg-blue-600 text-[10px] font-black px-4 py-1 rounded-full mb-8 inline-block uppercase tracking-[0.2em]">Caso de Éxito Real</span>
+        <span class="bg-blue-600 text-[10px] font-black px-4 py-1 rounded-full mb-8 inline-block uppercase tracking-[0.2em]">Caso de Éxito Destacado</span>
         
         <h1 class="text-4xl md:text-6xl font-black mb-10 leading-none tracking-tighter uppercase">
           Dominando el Local Pack: <br/> <span class="text-blue-400 italic">Caso Clínica Dental</span>
         </h1>
 
-        <a href={`/casos-de-exito/${mainCase?.slug?.current}`} class="inline-block bg-blue-600 text-white px-10 py-4 rounded-full font-bold hover:bg-blue-700 transition-all uppercase text-sm tracking-widest shadow-xl">
-          Ver Estrategia Completa
-        </a>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href={`/casos-de-exito/${mainCase?.slug?.current}`} class="inline-block bg-blue-600 text-white px-10 py-4 rounded-full font-bold hover:bg-blue-700 transition-all uppercase text-sm tracking-widest shadow-xl">
+              Ver Estrategia Completa
+            </a>
+            <a href="/casos-de-exito" class="inline-block border-2 border-white/20 text-white px-10 py-4 rounded-full font-bold hover:bg-white hover:text-slate-900 transition-all uppercase text-sm tracking-widest">
+              Ver todos los casos
+            </a>
+        </div>
       </div>
     </header>
 
     <main class="max-w-7xl mx-auto py-32 px-6">
       <div class="mb-20">
         <h2 class="text-5xl font-black text-gray-900 uppercase tracking-tighter leading-none">Knowledge Base</h2>
-        <p class="text-xl text-gray-400 mt-4 font-light italic">Estrategias de SEO Local para dominar tu mercado.</p>
+        <p class="text-xl text-gray-400 mt-4 font-light italic">Metodologías para dominar la búsqueda local.</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         {clusters.map((item) => {
-          // Lógica de detección de descripción SEO (texto de longitud media)
           const allStrings = Object.values(item).filter(v => typeof v === 'string');
           const desc = item.description || item.seoDescription || 
                        allStrings.find(v => v.length > 35 && v.length < 400 && v !== item.title) || 
