@@ -3,11 +3,9 @@ import { sanityClient } from "sanity:client";
 
 export const prerender = false;
 
-// 1. Consultas a Sanity
 const mainCase = await sanityClient.fetch(`*[_type == "caseStudy" && slug.current == "clinica-dental-sonrisas-valencia"][0]`);
 const clusters = await sanityClient.fetch(`*[_type == "cluster"] | order(_createdAt asc)`);
 
-// 2. Mapeo de Iconos
 const getIcon = (title) => {
   const t = title?.toLowerCase() || '';
   if (t.includes('link building')) return '🔗';
@@ -50,7 +48,8 @@ const getIcon = (title) => {
             <a href={`/casos-de-exito/${mainCase?.slug?.current}`} class="inline-block bg-blue-600 text-white px-10 py-4 rounded-full font-bold hover:bg-blue-700 transition-all uppercase text-sm tracking-widest shadow-xl">
               Ver Estrategia Completa
             </a>
-            <a href="/casos-de-exito" class="inline-block border-2 border-white/20 text-white px-10 py-4 rounded-full font-bold hover:bg-white hover:text-slate-900 transition-all uppercase text-sm tracking-widest">
+            
+            <a href="/casos-de-exito" class="inline-block bg-blue-600 text-white px-10 py-4 rounded-full font-bold hover:bg-blue-700 transition-all uppercase text-sm tracking-widest shadow-xl">
               Ver todos los casos
             </a>
         </div>
@@ -89,9 +88,6 @@ const getIcon = (title) => {
         <h2 class="text-5xl md:text-7xl font-black mb-8 tracking-tighter uppercase leading-none">
           ¿Tu negocio no aparece <br/> en Google Maps?
         </h2>
-        <p class="text-xl md:text-2xl text-blue-100 mb-12 font-light max-w-2xl mx-auto">
-          Analizamos tu presencia local y diseñamos el mapa de ruta para tu crecimiento.
-        </p>
         <a href="/contactame" class="inline-block bg-white text-blue-600 font-black px-12 py-5 rounded-full hover:bg-slate-900 hover:text-white transition-all duration-300 uppercase tracking-widest text-sm shadow-xl">
           Solicitar Auditoría Local →
         </a>
