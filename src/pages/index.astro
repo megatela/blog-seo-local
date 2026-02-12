@@ -3,9 +3,11 @@ import { sanityClient } from "sanity:client";
 
 export const prerender = false;
 
+// 1. Consultas a Sanity
 const mainCase = await sanityClient.fetch(`*[_type == "caseStudy" && slug.current == "clinica-dental-sonrisas-valencia"][0]`);
 const clusters = await sanityClient.fetch(`*[_type == "cluster"] | order(_createdAt asc)`);
 
+// 2. Mapeo de Iconos
 const getIcon = (title) => {
   const t = title?.toLowerCase() || '';
   if (t.includes('link building')) return '🔗';
@@ -36,25 +38,26 @@ const getIcon = (title) => {
     <header class="bg-slate-900 text-white pt-40 pb-24 px-6 text-center relative overflow-hidden">
       <div class="max-w-4xl mx-auto relative z-10">
         <span class="bg-blue-600 text-[10px] font-black px-4 py-1 rounded-full mb-8 inline-block uppercase tracking-[0.2em]">Caso de Éxito Real</span>
+        
         <h1 class="text-4xl md:text-6xl font-black mb-10 leading-none tracking-tighter uppercase">
           Dominando el Local Pack: <br/> <span class="text-blue-400 italic">Caso Clínica Dental</span>
         </h1>
-        <a href={`/casos-de-exito/${mainCase?.slug?.current}`} class="inline-block border-2 border-white/20 hover:border-white px-10 py-4 rounded-full font-bold transition-all uppercase text-sm tracking-widest">
+
+        <a href={`/casos-de-exito/${mainCase?.slug?.current}`} class="inline-block bg-blue-600 text-white px-10 py-4 rounded-full font-bold hover:bg-blue-700 transition-all uppercase text-sm tracking-widest shadow-xl">
           Ver Estrategia Completa
         </a>
       </div>
     </header>
 
     <main class="max-w-7xl mx-auto py-32 px-6">
-      <div class="mb-20 flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <h2 class="text-5xl font-black text-gray-900 uppercase tracking-tighter leading-none">Knowledge Base</h2>
-          <p class="text-xl text-gray-400 mt-4 font-light italic">Metodologías SEO probadas para negocios locales.</p>
-        </div>
+      <div class="mb-20">
+        <h2 class="text-5xl font-black text-gray-900 uppercase tracking-tighter leading-none">Knowledge Base</h2>
+        <p class="text-xl text-gray-400 mt-4 font-light italic">Estrategias de SEO Local para dominar tu mercado.</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         {clusters.map((item) => {
+          // Lógica de detección de descripción SEO (texto de longitud media)
           const allStrings = Object.values(item).filter(v => typeof v === 'string');
           const desc = item.description || item.seoDescription || 
                        allStrings.find(v => v.length > 35 && v.length < 400 && v !== item.title) || 
@@ -74,13 +77,13 @@ const getIcon = (title) => {
       </div>
     </main>
 
-    <section class="bg-blue-600 py-32 px-6 text-center text-white relative overflow-hidden">
+    <section class="bg-blue-600 py-32 px-6 text-center text-white">
       <div class="max-w-4xl mx-auto">
         <h2 class="text-5xl md:text-7xl font-black mb-8 tracking-tighter uppercase leading-none">
           ¿Tu negocio no aparece <br/> en Google Maps?
         </h2>
         <p class="text-xl md:text-2xl text-blue-100 mb-12 font-light max-w-2xl mx-auto">
-          Diseñamos la arquitectura SEO que necesitas para liderar tu zona de influencia.
+          Analizamos tu presencia local y diseñamos el mapa de ruta para tu crecimiento.
         </p>
         <a href="/contactame" class="inline-block bg-white text-blue-600 font-black px-12 py-5 rounded-full hover:bg-slate-900 hover:text-white transition-all duration-300 uppercase tracking-widest text-sm shadow-xl">
           Solicitar Auditoría Local →
@@ -91,5 +94,6 @@ const getIcon = (title) => {
     <footer class="py-20 bg-white text-center text-gray-400 text-[10px] font-bold uppercase tracking-[0.5em]">
       <p>&copy; 2026 Local SEO Architect</p>
     </footer>
+
   </body>
 </html>
