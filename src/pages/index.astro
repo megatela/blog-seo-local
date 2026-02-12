@@ -12,7 +12,6 @@ const getIcon = (title) => {
   if (t.includes('factores')) return '📈';
   if (t.includes('herramientas')) return '🔍';
   if (t.includes('sge') || t.includes('ai')) return '🧠';
-  if (t.includes('social proof')) return '📱';
   if (t.includes('business profile')) return '🏢';
   return '📁';
 };
@@ -22,51 +21,74 @@ const getIcon = (title) => {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Local SEO Architect | Estrategia</title>
+    <title>Local SEO Architect | Estrategia de Posicionamiento</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   </head>
   <body class="bg-gray-50 text-gray-900 font-sans">
 
-    <header class="bg-blue-900 text-white py-20 px-6 text-center relative">
-      <nav class="absolute top-8 right-8">
-        <a href="/contactame" class="text-blue-200 hover:text-white font-bold text-sm uppercase tracking-widest transition">Contacto</a>
-      </nav>
-      <div class="max-w-4xl mx-auto">
-        <span class="bg-blue-600 text-xs font-bold px-3 py-1 rounded mb-6 inline-block uppercase">Caso de Éxito</span>
-        <h1 class="text-3xl md:text-5xl font-extrabold mb-8 leading-tight">Clínica Dental Sonrisas Valencia: Duplicando citas</h1>
-        <a href={`/casos-de-exito/${mainCase?.slug?.current}`} class="bg-blue-600 px-8 py-3 rounded-md font-bold hover:bg-blue-500 transition">Ver Caso de Éxito</a>
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 py-4 px-8 flex justify-between items-center">
+      <a href="/" class="font-black text-xl tracking-tighter uppercase">Local <span class="text-blue-600">Architect</span></a>
+      <a href="/contactame" class="bg-blue-600 text-white px-6 py-2 rounded-full font-bold text-sm hover:bg-slate-900 transition-all shadow-lg shadow-blue-200">
+        Trabajemos Juntos
+      </a>
+    </nav>
+
+    <header class="bg-slate-900 text-white pt-40 pb-24 px-6 text-center relative overflow-hidden">
+      <div class="max-w-4xl mx-auto relative z-10">
+        <span class="bg-blue-600 text-[10px] font-black px-4 py-1 rounded-full mb-8 inline-block uppercase tracking-[0.2em]">Caso de Éxito Real</span>
+        <h1 class="text-4xl md:text-6xl font-black mb-10 leading-none tracking-tighter uppercase">
+          Dominando el Local Pack: <br/> <span class="text-blue-400 italic">Caso Clínica Dental</span>
+        </h1>
+        <a href={`/casos-de-exito/${mainCase?.slug?.current}`} class="inline-block border-2 border-white/20 hover:border-white px-10 py-4 rounded-full font-bold transition-all uppercase text-sm tracking-widest">
+          Ver Estrategia Completa
+        </a>
       </div>
     </header>
 
-    <main class="max-w-7xl mx-auto py-24 px-6">
-      <div class="mb-16">
-        <h2 class="text-4xl font-black text-gray-900 uppercase tracking-tighter italic">Knowledge Base</h2>
+    <main class="max-w-7xl mx-auto py-32 px-6">
+      <div class="mb-20 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <h2 class="text-5xl font-black text-gray-900 uppercase tracking-tighter leading-none">Knowledge Base</h2>
+          <p class="text-xl text-gray-400 mt-4 font-light italic">Metodologías SEO probadas para negocios locales.</p>
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         {clusters.map((item) => {
-          // LÓGICA CORREGIDA: Buscamos campos de texto de longitud media (descripciones)
           const allStrings = Object.values(item).filter(v => typeof v === 'string');
-          const desc = item.description || item.seoDescription || item.descriptionSEO || 
+          const desc = item.description || item.seoDescription || 
                        allStrings.find(v => v.length > 35 && v.length < 400 && v !== item.title) || 
-                       "Guía estratégica de posicionamiento local.";
-
-          const img = item.mainImage || item.imagenPortada || item.image || {};
-          const alt = img.alt || img.altText || img.textAlt || item.title;
+                       "Guía técnica sobre optimización y visibilidad local.";
 
           return (
-            <a href={`/${item.slug?.current}`} class="group bg-white p-10 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all flex flex-col items-start">
-              <div class="text-5xl mb-6" title={alt}>{getIcon(item.title)}</div>
-              <h3 class="text-2xl font-bold text-gray-800 group-hover:text-blue-600 mb-4 uppercase">{item.title}</h3>
-              <p class="text-gray-500 mb-8 leading-relaxed line-clamp-3 italic">{desc}</p>
-              <div class="mt-auto text-blue-600 font-bold text-xs tracking-widest uppercase">Explorar →</div>
+            <a href={`/${item.slug?.current}`} class="group bg-white p-12 rounded-[2.5rem] shadow-sm border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col items-start">
+              <div class="text-6xl mb-10 transform group-hover:scale-110 transition-transform duration-500">{getIcon(item.title)}</div>
+              <h3 class="text-2xl font-black text-gray-800 group-hover:text-blue-600 mb-6 uppercase tracking-tight leading-tight transition-colors">{item.title}</h3>
+              <p class="text-gray-500 mb-10 leading-relaxed italic font-light line-clamp-3 text-lg">{desc}</p>
+              <div class="mt-auto text-blue-600 font-black text-xs tracking-[0.3em] uppercase flex items-center">
+                Entrar al clúster <span class="ml-2 transform group-hover:translate-x-3 transition-transform">→</span>
+              </div>
             </a>
           );
         })}
       </div>
     </main>
 
-    <footer class="py-12 border-t text-center text-gray-400 text-sm uppercase tracking-widest">
+    <section class="bg-blue-600 py-32 px-6 text-center text-white relative overflow-hidden">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-5xl md:text-7xl font-black mb-8 tracking-tighter uppercase leading-none">
+          ¿Tu negocio no aparece <br/> en Google Maps?
+        </h2>
+        <p class="text-xl md:text-2xl text-blue-100 mb-12 font-light max-w-2xl mx-auto">
+          Diseñamos la arquitectura SEO que necesitas para liderar tu zona de influencia.
+        </p>
+        <a href="/contactame" class="inline-block bg-white text-blue-600 font-black px-12 py-5 rounded-full hover:bg-slate-900 hover:text-white transition-all duration-300 uppercase tracking-widest text-sm shadow-xl">
+          Solicitar Auditoría Local →
+        </a>
+      </div>
+    </section>
+
+    <footer class="py-20 bg-white text-center text-gray-400 text-[10px] font-bold uppercase tracking-[0.5em]">
       <p>&copy; 2026 Local SEO Architect</p>
     </footer>
   </body>
