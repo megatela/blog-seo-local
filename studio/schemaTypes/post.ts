@@ -52,6 +52,15 @@ export default defineType({
       title: "Contenido", 
       type: "array", 
       of: [{ type: "block" }] 
+    }),
+    // CAMPO PARA CONTROL SEO MANUAL
+    defineField({
+      name: "relatedPosts",
+      title: "Artículos Relacionados (Control Manual SEO)",
+      type: "array",
+      description: "Selecciona a mano los posts que quieres enlazar al final de este artículo.",
+      of: [{ type: "reference", to: [{ type: "post" }] }],
+      validation: Rule => Rule.max(3).warning("Seleccionar más de 3 puede diluir el link equity.")
     })
   ]
 });
