@@ -8,7 +8,7 @@ export const prerender = false;
 
 const { cluster, slug } = Astro.params;
 
-// QUERY: Traemos el post y los relacionados con campos para variar el Anchor Text
+// QUERY: Traemos el post y los relacionados
 const data = await client.fetch(`{
   "post": *[_type == "post" && slug.current == $slug][0]{
     title,
@@ -18,10 +18,10 @@ const data = await client.fetch(`{
     "clusterName": cluster->title,
     "clusterSlug": cluster->slug.current
   },
-  "related": *[_type == "post" && cluster->slug.current == $cluster && slug.current != $slug][0...3]{
+  "related": *[_type == "post" && cluster->slug.current == $cluster && slug.current != $slug][0...2]{
     title,
     slug,
-    "anchorText": coalesce(excerpt, metaDescription, title) 
+    "excerpt": coalesce(excerpt, metaDescription)
   }
 }`, { cluster, slug });
 
@@ -29,12 +29,31 @@ if (!data.post) return Astro.redirect('/404');
 
 const { post, related } = data;
 
-// Configuración de PortableText (Sin cambios aquí para mantener tu diseño)
+// FUNCIÓN PARA GENERAR ANCHOR TEXTS DINÁMICOS Y DIVERSOS
+const getDynamicAnchor = (title: string, index: number) => {
+  const variations = [
+    `Guía maestra sobre ${title}`,
+    `Cómo dominar ${title} en 2026`,
+    `Todo sobre ${title}`,
+    `Estrategia avanzada: ${title}`
+  ];
+  return variations[index % variations.length];
+};
+
 const components = {
   block: {
     h2: ({children}: any) => createElement('h2', {}, children),
     h3: ({children}: any) => createElement('h3', {}, children),
     normal: ({children}: any) => createElement('p', {}, children),
+  },
+  marks: {
+    link: (props: any) => {
+      const {children, value} = props;
+      return createElement('a', {
+        href: value.href,
+        className: "text-blue-600 underline font-bold hover:text-slate-900 transition-colors"
+      }, children);
+    }
   }
 };
 ---
@@ -53,7 +72,8 @@ const components = {
       )}
 
       <header>
-        <h1 class="text-4xl font-black mb-4 uppercase tracking-tighter">{post.title}</h1>
+        <h1 class="text-4xl md:text-5xl font-black mb-4 uppercase tracking-tighter leading-none">{post.title}</h1>
+        <p class="text-gray-500 italic">Expertise en <span class="text-blue-600 font-bold">{post.clusterName}</span></p>
       </header>
 
       <hr class="divider" />
@@ -64,16 +84,16 @@ const components = {
 
       {related.length > 0 && (
         <section class="related-section">
-          <h2 class="related-title">Artículos relacionados <br/> <span>para dominar el SEO Local</span></h2>
+          <h2 class="related-title">Lecturas recomendadas <br/> <span>para tu estrategia local</span></h2>
           <div class="related-grid">
-            {related.map((rel) => (
-              <a href={`/${post.clusterSlug}/${rel.slug.current}`} class="related-card">
-                <span class="card-tag">Lectura recomendada</span>
+            {related.map((rel, index) => (
+              <a href={`/${post.clusterSlug}/${rel.slug.current}`} class="related-card group">
+                <span class="card-tag">Siguiente Paso</span>
                 <h3 class="card-title">
-                  {/* Si el texto es igual al título, le añadimos contexto para variar el SEO */}
-                  {rel.anchorText === rel.title ? `Guía sobre ${rel.title}` : rel.anchorText}
+                  {/* Aquí aplicamos la diversidad de Anchor Text */}
+                  {getDynamicAnchor(rel.title, index)}
                 </h3>
-                <span class="card-arrow">Continuar leyendo →</span>
+                <span class="card-arrow group-hover:translate-x-2 transition-transform inline-block">Ver metodología →</span>
               </a>
             ))}
           </div>
@@ -84,14 +104,17 @@ const components = {
 </Layout>
 
 <style>
-  /* Mantenemos tus estilos, asegurando que la sección de relacionados sea limpia */
-  .related-section { margin-top: 4rem; padding-top: 3rem; border-top: 2px solid #f0f0f0; }
-  .related-title { font-size: 1.8rem; font-weight: 900; text-transform: uppercase; margin-bottom: 2rem; line-height: 1.1; }
+  /* ... (Tus estilos anteriores se mantienen) ... */
+  .related-section { margin-top: 5rem; padding-top: 3rem; border-top: 4px solid #f8fafc; }
+  .related-title { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; line-height: 1; margin-bottom: 2.5rem; }
   .related-title span { color: #2563eb; }
-  .related-grid { display: grid; gap: 1rem; }
-  .related-card { background: #f9fafb; padding: 1.5rem; border-radius: 15px; text-decoration: none; transition: 0.3s; border: 1px solid #eee; }
-  .related-card:hover { border-color: #2563eb; background: #fff; transform: scale(1.02); }
-  .card-tag { font-size: 0.65rem; font-weight: 800; color: #2563eb; text-transform: uppercase; margin-bottom: 0.5rem; display: block; }
-  .card-title { font-size: 1.2rem; font-weight: 800; color: #111; margin-bottom: 0.5rem; }
-  .card-arrow { font-size: 0.8rem; font-weight: 700; color: #2563eb; }
+  .related-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+  .related-card { background: #f1f5f9; padding: 2.5rem; border-radius: 24px; text-decoration: none; border: 1px solid transparent; }
+  .related-card:hover { background: #2563eb; }
+  .card-tag { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #2563eb; letter-spacing: 0.1em; display: block; margin-bottom: 0.8rem; }
+  .related-card:hover .card-tag { color: #bfdbfe; }
+  .card-title { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 1.5rem; line-height: 1.2; }
+  .related-card:hover .card-title { color: white; }
+  .card-arrow { font-size: 0.9rem; font-weight: 700; color: #2563eb; }
+  .related-card:hover .card-arrow { color: white; }
 </style>
