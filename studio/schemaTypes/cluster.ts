@@ -29,13 +29,12 @@ export default defineType({
       description: 'Este texto aparecerá en la caja de la página de inicio.',
     }),
     defineField({
-      name: 'image',
+      name: 'image', // <--- Este es el nombre que usaremos en Astro
       title: 'Imagen de Portada',
       type: 'image',
       options: {
         hotspot: true,
       },
-      // Campos adicionales para la imagen (SEO)
       fields: [
         {
           name: 'alt',
@@ -77,7 +76,6 @@ export default defineType({
           type: 'image',
           options: { hotspot: true },
           title: 'Imagen interna',
-          // También permitimos Texto Alt en imágenes dentro del texto
           fields: [
             {
               name: 'alt',
