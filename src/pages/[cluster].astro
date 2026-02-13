@@ -7,12 +7,17 @@ import { createElement } from 'react';
 export const prerender = false;
 const { cluster } = Astro.params;
 
-// QUERY: Mantenemos todos los campos recuperados
+// QUERY: Traemos el clúster y sus posts dependientes
 const data = await client.fetch(`*[_type == "cluster" && slug.current == $cluster][0]{
   title,
   description,
   image,
-  content
+  content,
+  "posts": *[_type == "post" && references(^._id)]{
+    title,
+    "slug": slug.current,
+    metaDescription
+  }
 }`, { cluster });
 
 if (!data) return Astro.redirect('/404');
@@ -24,6 +29,8 @@ const components = {
     normal: ({children}: any) => createElement('p', { className: 'text-lg md:text-xl text-slate-600 leading-relaxed mb-8' }, children),
   }
 };
+
+const labels = ["Metodología Exclusiva", "Continúa tu formación", "Estrategia de Crecimiento", "Análisis de Experto"];
 ---
 
 <Layout title={data.title} description={data.description}>
@@ -61,10 +68,27 @@ const components = {
 
       <hr class="post-divider" />
 
-      {data.content && (
-        <div class="article-body mb-20">
-          <PortableText value={data.content} components={components} />
-        </div>
+      <div class="article-body mb-20">
+        {data.content && <PortableText value={data.content} components={components} />}
+      </div>
+
+      {data.posts && data.posts.length > 0 && (
+        <section class="related-area">
+          <h2 class="related-heading tracking-tighter">Guías de <br/> <span class="text-blue-600">Especialización</span></h2>
+          <div class="related-grid">
+            {data.posts.map((post: any) => {
+              const randomLabel = labels[Math.floor(Math.random() * labels.length)];
+              return (
+                <a href={`/${cluster}/${post.slug}`} class="rel-card group">
+                  <span class="rel-tag">{randomLabel}</span>
+                  <h3 class="rel-title group-hover:text-blue-600 transition-colors">{post.title}</h3>
+                  <p class="text-slate-500 mb-6 leading-snug">{post.metaDescription}</p>
+                  <span class="rel-link">Acceder ahora →</span>
+                </a>
+              );
+            })}
+          </div>
+        </section>
       )}
     </main>
   </article>
@@ -87,21 +111,21 @@ const components = {
   .reading-progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 6px; z-index: 9999; background: #f1f5f9; }
   .progress-bar { height: 100%; background: #2563eb; width: 0%; transition: width 0.1s ease-out; }
 
-  /* ESTILO DE LAS MIGAS DE PAN */
-  .post-nav { 
-    background: #fafafa; 
-    padding: 1.2rem 0; 
-    border-bottom: 1px solid #eee; 
-    margin-bottom: 2rem; 
-    font-size: 0.85rem; 
-    font-weight: 700; 
-    text-transform: uppercase; 
-    color: #888; 
-    letter-spacing: 1px; 
-  }
+  .post-nav { background: #fafafa; padding: 1.2rem 0; border-bottom: 1px solid #eee; margin-bottom: 2rem; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: #888; letter-spacing: 1px; }
   .current-crumb { color: #ccc; }
 
   .main-image-hero { width: 100%; border-radius: 40px; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.15); object-fit: cover; }
   .post-divider { border: 0; border-top: 3px solid #f1f5f9; margin: 4rem 0; max-width: 100px; }
+  
   .article-body :global(p) { margin-bottom: 2.5rem; font-size: 1.25rem; color: #475569; line-height: 1.8; }
+
+  /* SECCIÓN RELACIONADOS */
+  .related-area { margin-top: 6rem; border-top: 1px solid #eee; padding-top: 5rem; }
+  .related-heading { font-size: 3rem; font-weight: 900; text-transform: uppercase; margin-bottom: 4rem; line-height: 0.9; }
+  .related-grid { display: grid; gap: 2rem; }
+  .rel-card { background: #f8fafc; padding: 3rem; border-radius: 40px; text-decoration: none; border: 2px solid transparent; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  .rel-card:hover { border-color: #2563eb; background: white; transform: translateY(-10px); box-shadow: 0 30px 60px rgba(0,0,0,0.05); }
+  .rel-tag { color: #2563eb; font-weight: 900; text-transform: uppercase; font-size: 0.75rem; display: block; margin-bottom: 1rem; letter-spacing: 1px; }
+  .rel-title { font-size: 1.8rem; font-weight: 800; color: #0f172a; margin-bottom: 1rem; line-height: 1.2; }
+  .rel-link { font-weight: 700; color: #2563eb; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px; }
 </style>
