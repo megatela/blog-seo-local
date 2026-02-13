@@ -6,42 +6,28 @@ import { createElement } from 'react';
 
 export const prerender = false;
 
-const { cluster, slug } = Astro.params;
+const { slug } = Astro.params;
 
-// 1. QUERY CON PROTECCIÓN: Trae post actual y relacionados del mismo silo
-let data;
+// QUERY SIMPLIFICADA: Solo traemos el post actual
+let post;
 try {
-  data = await client.fetch(`{
-    "post": *[_type == "post" && slug.current == $slug][0]{
-      title,
-      metaDescription, 
-      mainImage, 
-      content, 
-      "clusterName": cluster->title,
-      "clusterSlug": cluster->slug.current
-    },
-    "related": *[_type == "post" && cluster->slug.current == $cluster && slug.current != $slug][0...2]{
-      title,
-      slug
-    }
-  }`, { cluster, slug });
+  post = await client.fetch(`*[_type == "post" && slug.current == $slug][0]{
+    title,
+    metaDescription, 
+    mainImage, 
+    content, 
+    "clusterName": cluster->title,
+    "clusterSlug": cluster->slug.current
+  }`, { slug });
 } catch (e) {
   console.error("Error en Sanity Fetch:", e);
 }
 
-if (!data || !data.post) {
+if (!post) {
   return Astro.redirect('/404');
 }
 
-const { post, related = [] } = data;
-
-// 2. LÓGICA DE SEO: Diversidad de textos ancla para el interlinking
-const getDynamicAnchor = (title: string, index: number) => {
-  const variations = ["Guía técnica de", "Estrategia para", "Análisis de", "Claves sobre"];
-  return `${variations[index % variations.length]} ${title}`;
-};
-
-// 3. CONFIGURACIÓN DE COMPONENTES DEL CONTENIDO
+// CONFIGURACIÓN DE COMPONENTES DEL CONTENIDO
 const components = {
   block: {
     h2: ({children}: any) => createElement('h2', { className: 'text-3xl md:text-5xl font-black text-slate-900 mt-16 mb-8 uppercase tracking-tighter border-l-8 border-blue-600 pl-6' }, children),
@@ -103,21 +89,6 @@ const components = {
       <div class="article-body">
         <PortableText value={post.content} components={components} />
       </div>
-
-      {related.length > 0 && (
-        <section class="related-area">
-          <h2 class="related-heading">Lecturas recomendadas <br/> <span class="text-blue-600">para tu estrategia local</span></h2>
-          <div class="related-cards-stack">
-            {related.map((rel: any, index: number) => (
-              <a href={`/${post.clusterSlug}/${rel.slug.current}`} class="rel-card group">
-                <span class="rel-tag">Siguiente Paso</span>
-                <h3 class="rel-title">{getDynamicAnchor(rel.title, index)}</h3>
-                <span class="rel-link">Continuar →</span>
-              </a>
-            ))}
-          </div>
-        </section>
-      )}
     </main>
   </article>
 
@@ -134,37 +105,20 @@ const components = {
 </Layout>
 
 <style>
-  /* CONFIGURACIÓN BASE Y CENTRADO */
-  .post-wrapper { background: white; min-height: 100vh; padding-bottom: 5rem; }
+  .post-wrapper { background: white; min-height: 100vh; padding-bottom: 8rem; }
   .content-limit { max-width: 850px; margin: 0 auto; padding: 0 1.5rem; }
 
-  /* BARRA DE PROGRESO */
   .reading-progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 5px; z-index: 9999; background: transparent; }
   .progress-bar { height: 100%; background: #2563eb; width: 0%; transition: width 0.1s ease-out; }
 
-  /* BREADCRUMBS */
   .post-nav { background: #fafafa; padding: 1.2rem 0; border-bottom: 1px solid #eee; margin-bottom: 4rem; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #888; }
-  .post-nav a { hover: color: #2563eb; transition: color 0.2s; }
   .current-crumb { color: #ccc; }
 
-  /* IMAGEN Y CABECERA */
   .image-container { margin-bottom: 4rem; }
   .main-image-hero { width: 100%; border-radius: 40px; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.15); object-fit: cover; }
   .post-header-info { text-align: center; margin-bottom: 4rem; }
   .post-divider { border: 0; border-top: 3px solid #f1f5f9; margin: 4rem auto; max-width: 100px; }
 
-  /* CUERPO DEL TEXTO Y SEPARACIÓN (CLAVE) */
   .article-body { text-align: left; }
-  /* Forzamos la separación entre párrafos que vienen de PortableText */
   .article-body :global(p) { margin-bottom: 2.5rem; }
-  
-  /* RELACIONADOS */
-  .related-area { margin-top: 8rem; border-top: 1px solid #eee; padding-top: 4rem; }
-  .related-heading { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; line-height: 1.1; margin-bottom: 3rem; text-align: center; }
-  .related-cards-stack { display: grid; gap: 1.5rem; }
-  .rel-card { background: #f8fafc; padding: 2.5rem; border-radius: 30px; text-decoration: none; border: 2px solid transparent; transition: all 0.3s; display: block; }
-  .rel-card:hover { background: white; border-color: #2563eb; transform: translateY(-8px); shadow: 0 20px 40px rgba(0,0,0,0.05); }
-  .rel-tag { color: #2563eb; font-weight: 800; text-transform: uppercase; font-size: 0.75rem; display: block; margin-bottom: 0.5rem; }
-  .rel-title { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 1rem; }
-  .rel-link { font-weight: 700; color: #2563eb; }
 </style>
