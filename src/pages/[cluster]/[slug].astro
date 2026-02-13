@@ -1,5 +1,53 @@
 ---
-// ... (mantenemos tus imports de sanity y react igual)
+import { client, urlFor } from '../../lib/sanity';
+import { PortableText } from '@portabletext/react';
+import Layout from '../../layouts/Layout.astro';
+import { createElement } from 'react';
+
+export const prerender = false;
+
+const { cluster, slug } = Astro.params;
+
+// 1. QUERY CON PROTECCIÓN (GROQ)
+let data;
+try {
+  data = await client.fetch(`{
+    "post": *[_type == "post" && slug.current == $slug][0]{
+      title,
+      metaDescription, 
+      mainImage, 
+      content, 
+      "clusterName": cluster->title,
+      "clusterSlug": cluster->slug.current
+    },
+    "related": *[_type == "post" && cluster->slug.current == $cluster && slug.current != $slug][0...2]{
+      title,
+      slug
+    }
+  }`, { cluster, slug });
+} catch (e) {
+  console.error("Error fetching data:", e);
+}
+
+if (!data || !data.post) {
+  return Astro.redirect('/404');
+}
+
+const { post, related = [] } = data;
+
+// FUNCIÓN DE ANCHOR TEXT
+const getDynamicAnchor = (title: string, index: number) => {
+  const variations = ["Guía sobre", "Estrategia de", "Todo acerca de", "Claves de"];
+  return `${variations[index % variations.length]} ${title}`;
+};
+
+const components = {
+  block: {
+    h2: ({children}: any) => createElement('h2', {}, children),
+    h3: ({children}: any) => createElement('h3', {}, children),
+    normal: ({children}: any) => createElement('p', {}, children),
+  }
+};
 ---
 
 <Layout title={post.title} description={post.metaDescription || ""}>
@@ -11,19 +59,19 @@
     </nav>
 
     <main class="post-content">
-      {post.mainImage && (
+      {post.mainImage && post.mainImage.asset && (
         <div class="image-wrapper">
-          <img src={urlFor(post.mainImage).width(1200).url()} alt={post.title} class="main-image" />
+          <img 
+            src={urlFor(post.mainImage).width(1200).url()} 
+            alt={post.title} 
+            class="main-image" 
+          />
         </div>
       )}
 
       <header class="post-header">
-        <h1 class="text-4xl md:text-6xl font-black mb-6 uppercase tracking-tighter leading-none">
-          {post.title}
-        </h1>
-        <p class="text-gray-500 italic text-xl">
-          Estrategia en <span class="text-blue-600 font-bold">{post.clusterName}</span>
-        </p>
+        <h1 class="text-4xl md:text-6xl font-black mb-6 uppercase tracking-tighter leading-none">{post.title}</h1>
+        <p class="text-gray-500 italic text-xl">Estrategia en <span class="text-blue-600 font-bold">{post.clusterName}</span></p>
       </header>
 
       <hr class="divider" />
@@ -32,12 +80,12 @@
         <PortableText value={post.content} components={components} />
       </div>
 
-      {related.length > 0 && (
+      {related && related.length > 0 && (
         <section class="related-section">
-          <h2 class="related-title text-center">Lecturas recomendadas para tu <br/> <span class="text-blue-600">estrategia local</span></h2>
+          <h2 class="related-title">Lecturas recomendadas <br/> <span class="text-blue-600">para tu estrategia local</span></h2>
           <div class="related-grid">
-            {related.map((rel, index) => (
-              <a href={`/${post.clusterSlug}/${rel.slug.current}`} class="related-card group">
+            {related.map((rel: any, index: number) => (
+              <a href={`/${post.clusterSlug}/${rel.slug.current}`} class="related-card">
                 <span class="card-tag">Siguiente Paso</span>
                 <h3 class="card-title">{getDynamicAnchor(rel.title, index)}</h3>
                 <span class="card-arrow">Ver metodología →</span>
@@ -51,70 +99,21 @@
 </Layout>
 
 <style>
-  /* 1. Contenedor General */
   .post-container { background: white; min-height: 100vh; width: 100%; }
-  
-  /* 2. Envoltorio de contenido centrado (La clave) */
-  .content-wrapper, .post-content {
-    max-width: 850px; /* Ancho ideal para lectura */
-    margin: 0 auto;   /* Centrado horizontal */
-    padding: 0 1.5rem;
-  }
-
-  .breadcrumbs { background: #fdfdfd; padding: 1.5rem 0; border-bottom: 1px solid #f0f0f0; margin-bottom: 3rem; }
-
-  /* 3. Estética de la Imagen */
+  .content-wrapper, .post-content { max-width: 850px; margin: 0 auto; padding: 0 1.5rem; }
+  .breadcrumbs { background: #fdfdfd; padding: 1.5rem 0; border-bottom: 1px solid #f0f0f0; margin-bottom: 3rem; font-size: 0.9rem; color: #666; }
   .image-wrapper { margin-bottom: 4rem; width: 100%; }
-  .main-image { 
-    width: 100%; 
-    height: auto; 
-    border-radius: 32px; 
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); 
-  }
-
-  /* 4. Encabezado */
+  .main-image { width: 100%; height: auto; border-radius: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
   .post-header { text-align: center; margin-bottom: 3rem; }
-  .divider { border: 0; border-top: 2px solid #f1f5f9; margin: 4rem auto; max-width: 200px; }
-
-  /* 5. SEPARACIÓN DE PÁRRAFOS Y TEXTOS (Crucial) */
-  .rich-text-content {
-    line-height: 1.8;
-    font-size: 1.25rem;
-    color: #334155;
-    text-align: left; /* El texto debe estar a la izquierda pero dentro del bloque centrado */
-  }
-
-  /* Forzamos espacio entre cada elemento que viene de Sanity */
-  .rich-text-content :global(p) {
-    margin-bottom: 2.2rem; /* Separación clara entre párrafos */
-  }
-
-  .rich-text-content :global(h2) {
-    font-size: 2.5rem;
-    font-weight: 900;
-    margin-top: 4.5rem;
-    margin-bottom: 1.5rem;
-    color: #0f172a;
-    line-height: 1.1;
-  }
-
-  .rich-text-content :global(h3) {
-    font-size: 1.8rem;
-    font-weight: 800;
-    margin-top: 3rem;
-    margin-bottom: 1.2rem;
-    color: #1e293b;
-  }
-
-  /* 6. Relacionados */
-  .related-section { margin-top: 8rem; padding-bottom: 6rem; }
-  .related-grid { display: grid; gap: 1.5rem; margin-top: 3rem; }
-  .related-card { 
-    background: #f8fafc; 
-    padding: 2.5rem; 
-    border-radius: 24px; 
-    text-decoration: none; 
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  .related-card:hover { transform: translateY(-10px); background: #2563eb; }
+  .divider { border: 0; border-top: 2px solid #f1f5f9; margin: 4rem auto; max-width: 150px; }
+  .rich-text-content { line-height: 1.8; font-size: 1.25rem; color: #334155; }
+  .rich-text-content :global(p) { margin-bottom: 2.2rem; }
+  .rich-text-content :global(h2) { font-size: 2.5rem; font-weight: 900; margin-top: 4.5rem; margin-bottom: 1.5rem; color: #0f172a; line-height: 1.1; text-transform: uppercase; }
+  .related-section { margin-top: 8rem; padding-bottom: 6rem; border-top: 1px solid #eee; pt-10; }
+  .related-grid { display: grid; gap: 1.5rem; margin-top: 2rem; }
+  .related-card { background: #f8fafc; padding: 2.5rem; border-radius: 24px; text-decoration: none; border: 1px solid transparent; transition: all 0.3s; display: block;}
+  .related-card:hover { transform: translateY(-5px); border-color: #2563eb; background: white; }
+  .card-tag { color: #2563eb; font-weight: 800; text-transform: uppercase; font-size: 0.7rem; display: block; margin-bottom: 0.5rem; }
+  .card-title { font-size: 1.4rem; font-weight: 800; color: #1e293b; margin-bottom: 1rem; }
+  .card-arrow { color: #2563eb; font-weight: 700; }
 </style>
