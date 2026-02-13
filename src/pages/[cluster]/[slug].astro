@@ -8,7 +8,7 @@ export const prerender = false;
 
 const { cluster, slug } = Astro.params;
 
-// 1. QUERY CON PROTECCIÓN (GROQ)
+// 1. QUERY CON PROTECCIÓN: Trae post actual y relacionados del mismo silo
 let data;
 try {
   data = await client.fetch(`{
@@ -26,7 +26,7 @@ try {
     }
   }`, { cluster, slug });
 } catch (e) {
-  console.error("Error fetching data:", e);
+  console.error("Error en Sanity Fetch:", e);
 }
 
 if (!data || !data.post) {
@@ -35,60 +35,84 @@ if (!data || !data.post) {
 
 const { post, related = [] } = data;
 
-// FUNCIÓN DE ANCHOR TEXT
+// 2. LÓGICA DE SEO: Diversidad de textos ancla para el interlinking
 const getDynamicAnchor = (title: string, index: number) => {
-  const variations = ["Guía sobre", "Estrategia de", "Todo acerca de", "Claves de"];
+  const variations = ["Guía técnica de", "Estrategia para", "Análisis de", "Claves sobre"];
   return `${variations[index % variations.length]} ${title}`;
 };
 
+// 3. CONFIGURACIÓN DE COMPONENTES DEL CONTENIDO
 const components = {
   block: {
-    h2: ({children}: any) => createElement('h2', {}, children),
-    h3: ({children}: any) => createElement('h3', {}, children),
-    normal: ({children}: any) => createElement('p', {}, children),
+    h2: ({children}: any) => createElement('h2', { className: 'text-3xl md:text-5xl font-black text-slate-900 mt-16 mb-8 uppercase tracking-tighter border-l-8 border-blue-600 pl-6' }, children),
+    h3: ({children}: any) => createElement('h3', { className: 'text-2xl font-bold text-slate-800 mt-12 mb-6' }, children),
+    normal: ({children}: any) => createElement('p', { className: 'text-lg md:text-xl text-slate-600 leading-relaxed mb-8' }, children),
+  },
+  marks: {
+    strong: ({children}: any) => createElement('strong', { className: 'font-extrabold text-slate-900' }, children),
+    link: ({value, children}: any) => {
+      const isExternal = value?.href?.startsWith('http');
+      return createElement('a', {
+        href: value.href,
+        target: isExternal ? "_blank" : undefined,
+        rel: isExternal ? "noopener noreferrer" : undefined,
+        className: "text-blue-600 underline decoration-blue-200 hover:decoration-blue-600 transition-all font-bold"
+      }, children);
+    }
   }
 };
 ---
 
-<Layout title={post.title} description={post.metaDescription || ""}>
-  <article class="post-container">
-    <nav class="breadcrumbs">
-      <div class="content-wrapper">
-        <a href="/">Inicio</a> / <a href={`/${post.clusterSlug}`}>{post.clusterName}</a> / <span class="current">{post.title}</span>
+<Layout title={post.title} description={post.metaDescription || "Estrategia de SEO Local"}>
+  
+  <div class="reading-progress-container">
+    <div class="progress-bar" id="readingBar"></div>
+  </div>
+
+  <article class="post-wrapper">
+    <nav class="post-nav">
+      <div class="content-limit">
+        <a href="/">Inicio</a> / 
+        <a href={`/${post.clusterSlug}`}>{post.clusterName}</a> / 
+        <span class="current-crumb">{post.title}</span>
       </div>
     </nav>
 
-    <main class="post-content">
-      {post.mainImage && post.mainImage.asset && (
-        <div class="image-wrapper">
+    <main class="content-limit">
+      {post.mainImage && (
+        <div class="image-container">
           <img 
             src={urlFor(post.mainImage).width(1200).url()} 
             alt={post.title} 
-            class="main-image" 
+            class="main-image-hero" 
           />
         </div>
       )}
 
-      <header class="post-header">
-        <h1 class="text-4xl md:text-6xl font-black mb-6 uppercase tracking-tighter leading-none">{post.title}</h1>
-        <p class="text-gray-500 italic text-xl">Estrategia en <span class="text-blue-600 font-bold">{post.clusterName}</span></p>
+      <header class="post-header-info">
+        <h1 class="text-4xl md:text-7xl font-black mb-6 uppercase tracking-tighter leading-[0.9] text-slate-900">
+          {post.title}
+        </h1>
+        <p class="text-gray-400 italic text-xl">
+          Silo: <span class="text-blue-600 font-bold not-italic">{post.clusterName}</span>
+        </p>
       </header>
 
-      <hr class="divider" />
+      <hr class="post-divider" />
 
-      <div class="rich-text-content">
+      <div class="article-body">
         <PortableText value={post.content} components={components} />
       </div>
 
-      {related && related.length > 0 && (
-        <section class="related-section">
-          <h2 class="related-title">Lecturas recomendadas <br/> <span class="text-blue-600">para tu estrategia local</span></h2>
-          <div class="related-grid">
+      {related.length > 0 && (
+        <section class="related-area">
+          <h2 class="related-heading">Lecturas recomendadas <br/> <span class="text-blue-600">para tu estrategia local</span></h2>
+          <div class="related-cards-stack">
             {related.map((rel: any, index: number) => (
-              <a href={`/${post.clusterSlug}/${rel.slug.current}`} class="related-card">
-                <span class="card-tag">Siguiente Paso</span>
-                <h3 class="card-title">{getDynamicAnchor(rel.title, index)}</h3>
-                <span class="card-arrow">Ver metodología →</span>
+              <a href={`/${post.clusterSlug}/${rel.slug.current}`} class="rel-card group">
+                <span class="rel-tag">Siguiente Paso</span>
+                <h3 class="rel-title">{getDynamicAnchor(rel.title, index)}</h3>
+                <span class="rel-link">Continuar →</span>
               </a>
             ))}
           </div>
@@ -96,24 +120,51 @@ const components = {
       )}
     </main>
   </article>
+
+  <script is:inline>
+    window.onscroll = function() {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      const bar = document.getElementById("readingBar");
+      if (bar) bar.style.width = scrolled + "%";
+    };
+  </script>
+
 </Layout>
 
 <style>
-  .post-container { background: white; min-height: 100vh; width: 100%; }
-  .content-wrapper, .post-content { max-width: 850px; margin: 0 auto; padding: 0 1.5rem; }
-  .breadcrumbs { background: #fdfdfd; padding: 1.5rem 0; border-bottom: 1px solid #f0f0f0; margin-bottom: 3rem; font-size: 0.9rem; color: #666; }
-  .image-wrapper { margin-bottom: 4rem; width: 100%; }
-  .main-image { width: 100%; height: auto; border-radius: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-  .post-header { text-align: center; margin-bottom: 3rem; }
-  .divider { border: 0; border-top: 2px solid #f1f5f9; margin: 4rem auto; max-width: 150px; }
-  .rich-text-content { line-height: 1.8; font-size: 1.25rem; color: #334155; }
-  .rich-text-content :global(p) { margin-bottom: 2.2rem; }
-  .rich-text-content :global(h2) { font-size: 2.5rem; font-weight: 900; margin-top: 4.5rem; margin-bottom: 1.5rem; color: #0f172a; line-height: 1.1; text-transform: uppercase; }
-  .related-section { margin-top: 8rem; padding-bottom: 6rem; border-top: 1px solid #eee; pt-10; }
-  .related-grid { display: grid; gap: 1.5rem; margin-top: 2rem; }
-  .related-card { background: #f8fafc; padding: 2.5rem; border-radius: 24px; text-decoration: none; border: 1px solid transparent; transition: all 0.3s; display: block;}
-  .related-card:hover { transform: translateY(-5px); border-color: #2563eb; background: white; }
-  .card-tag { color: #2563eb; font-weight: 800; text-transform: uppercase; font-size: 0.7rem; display: block; margin-bottom: 0.5rem; }
-  .card-title { font-size: 1.4rem; font-weight: 800; color: #1e293b; margin-bottom: 1rem; }
-  .card-arrow { color: #2563eb; font-weight: 700; }
+  /* CONFIGURACIÓN BASE Y CENTRADO */
+  .post-wrapper { background: white; min-height: 100vh; padding-bottom: 5rem; }
+  .content-limit { max-width: 850px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* BARRA DE PROGRESO */
+  .reading-progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 5px; z-index: 9999; background: transparent; }
+  .progress-bar { height: 100%; background: #2563eb; width: 0%; transition: width 0.1s ease-out; }
+
+  /* BREADCRUMBS */
+  .post-nav { background: #fafafa; padding: 1.2rem 0; border-bottom: 1px solid #eee; margin-bottom: 4rem; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #888; }
+  .post-nav a { hover: color: #2563eb; transition: color 0.2s; }
+  .current-crumb { color: #ccc; }
+
+  /* IMAGEN Y CABECERA */
+  .image-container { margin-bottom: 4rem; }
+  .main-image-hero { width: 100%; border-radius: 40px; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.15); object-fit: cover; }
+  .post-header-info { text-align: center; margin-bottom: 4rem; }
+  .post-divider { border: 0; border-top: 3px solid #f1f5f9; margin: 4rem auto; max-width: 100px; }
+
+  /* CUERPO DEL TEXTO Y SEPARACIÓN (CLAVE) */
+  .article-body { text-align: left; }
+  /* Forzamos la separación entre párrafos que vienen de PortableText */
+  .article-body :global(p) { margin-bottom: 2.5rem; }
+  
+  /* RELACIONADOS */
+  .related-area { margin-top: 8rem; border-top: 1px solid #eee; padding-top: 4rem; }
+  .related-heading { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; line-height: 1.1; margin-bottom: 3rem; text-align: center; }
+  .related-cards-stack { display: grid; gap: 1.5rem; }
+  .rel-card { background: #f8fafc; padding: 2.5rem; border-radius: 30px; text-decoration: none; border: 2px solid transparent; transition: all 0.3s; display: block; }
+  .rel-card:hover { background: white; border-color: #2563eb; transform: translateY(-8px); shadow: 0 20px 40px rgba(0,0,0,0.05); }
+  .rel-tag { color: #2563eb; font-weight: 800; text-transform: uppercase; font-size: 0.75rem; display: block; margin-bottom: 0.5rem; }
+  .rel-title { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 1rem; }
+  .rel-link { font-weight: 700; color: #2563eb; }
 </style>
