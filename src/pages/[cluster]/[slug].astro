@@ -7,7 +7,7 @@ import { createElement } from 'react';
 export const prerender = false;
 const { slug } = Astro.params;
 
-// QUERY: Extraemos la referencia del post y el anchor text personalizado
+// QUERY: Traemos el post y expandimos los objetos de la sección manual
 let post;
 try {
   post = await client.fetch(`*[_type == "post" && slug.current == $slug][0]{
@@ -30,36 +30,61 @@ try {
 
 if (!post) return Astro.redirect('/404');
 
+// CONFIGURACIÓN DE COMPONENTES PARA EL CUERPO DEL TEXTO
 const components = {
   block: {
     h2: ({children}: any) => createElement('h2', { className: 'text-3xl md:text-5xl font-black text-slate-900 mt-16 mb-8 uppercase tracking-tighter border-l-8 border-blue-600 pl-6' }, children),
     h3: ({children}: any) => createElement('h3', { className: 'text-2xl font-bold text-slate-800 mt-12 mb-6' }, children),
     normal: ({children}: any) => createElement('p', { className: 'text-lg md:text-xl text-slate-600 leading-relaxed mb-8' }, children),
+  },
+  marks: {
+    strong: ({children}: any) => createElement('strong', { className: 'font-extrabold text-slate-900' }, children),
+    link: ({value, children}: any) => {
+      const isExternal = value?.href?.startsWith('http');
+      return createElement('a', {
+        href: value.href,
+        target: isExternal ? "_blank" : undefined,
+        rel: isExternal ? "noopener noreferrer" : undefined,
+        className: "text-blue-600 underline decoration-blue-200 hover:decoration-blue-600 transition-all font-bold"
+      }, children);
+    }
   }
 };
 ---
 
 <Layout title={post.title} description={post.metaDescription || "Estrategia de SEO Local"}>
   
-  <div class="reading-progress-container"><div class="progress-bar" id="readingBar"></div></div>
+  <div class="reading-progress-container">
+    <div class="progress-bar" id="readingBar"></div>
+  </div>
 
   <article class="post-wrapper">
     <nav class="post-nav">
       <div class="content-limit">
-        <a href="/">Inicio</a> / <a href={`/${post.clusterSlug}`}>{post.clusterName}</a> / <span class="current-crumb">{post.title}</span>
+        <a href="/" class="hover:text-blue-600">Inicio</a> / 
+        <a href={`/${post.clusterSlug}`} class="hover:text-blue-600">{post.clusterName}</a> / 
+        <span class="current-crumb">{post.title}</span>
       </div>
     </nav>
 
     <main class="content-limit">
       {post.mainImage && (
         <div class="image-container">
-          <img src={urlFor(post.mainImage).width(1200).url()} alt={post.mainImage.alt || post.title} class="main-image-hero" />
+          <img 
+            src={urlFor(post.mainImage).width(1200).url()} 
+            alt={post.mainImage.alt || post.title} 
+            class="main-image-hero" 
+          />
         </div>
       )}
 
       <header class="post-header-info">
-        <h1 class="text-4xl md:text-7xl font-black mb-6 uppercase tracking-tighter leading-[0.9] text-slate-900">{post.title}</h1>
-        <p class="text-gray-400 italic text-xl">Expertise en <span class="text-blue-600 font-bold not-italic">{post.clusterName}</span></p>
+        <h1 class="text-4xl md:text-7xl font-black mb-6 uppercase tracking-tighter leading-[0.9] text-slate-900">
+          {post.title}
+        </h1>
+        <p class="text-gray-400 italic text-xl">
+          Silo Estratégico: <span class="text-blue-600 font-bold not-italic">{post.clusterName}</span>
+        </p>
       </header>
 
       <hr class="post-divider" />
@@ -70,18 +95,21 @@ const components = {
 
       {post.manualRelated && post.manualRelated.length > 0 && (
         <section class="related-area">
-          <h2 class="related-heading">Artículos relacionados <br/> <span class="text-blue-600">para dominar el SEO Local</span></h2>
+          <h2 class="related-heading">Siguientes pasos <br/> <span class="text-blue-600">para dominar tu mercado</span></h2>
           <div class="related-grid">
-            {post.manualRelated.map((rel: any) => (
-              <a href={`/${rel.clusterSlug}/${rel.slug}`} class="rel-card group">
-                <span class="rel-tag">Estrategia Recomendada</span>
-                <h3 class="rel-title">
-                  {/* Prioriza el texto manual sobre el título del post */}
-                  {rel.customAnchor || rel.title}
-                </h3>
-                <span class="rel-link">Seguir leyendo →</span>
-              </a>
-            ))}
+            {post.manualRelated.map((rel: any, index: number) => {
+              // Lógica de rotación de etiquetas para Autoridad + Conversión
+              const labels = ["Metodología Exclusiva", "Continúa tu formación", "Estrategia de Crecimiento"];
+              const label = labels[index % labels.length];
+
+              return (
+                <a href={`/${rel.clusterSlug}/${rel.slug}`} class="rel-card group">
+                  <span class="rel-tag">{label}</span>
+                  <h3 class="rel-title">{rel.customAnchor || rel.title}</h3>
+                  <span class="rel-link">Acceder ahora →</span>
+                </a>
+              );
+            })}
           </div>
         </section>
       )}
@@ -101,22 +129,33 @@ const components = {
 </Layout>
 
 <style>
+  /* ESTRUCTURA Y BARRA DE LECTURA */
   .post-wrapper { background: white; min-height: 100vh; padding-bottom: 8rem; }
   .content-limit { max-width: 850px; margin: 0 auto; padding: 0 1.5rem; }
-  .reading-progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 5px; z-index: 9999; }
+  .reading-progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 6px; z-index: 9999; background: #f1f5f9; }
   .progress-bar { height: 100%; background: #2563eb; width: 0%; transition: width 0.1s ease-out; }
-  .post-nav { background: #fafafa; padding: 1.2rem 0; border-bottom: 1px solid #eee; margin-bottom: 4rem; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: #888; }
+
+  /* NAVEGACIÓN */
+  .post-nav { background: #fafafa; padding: 1.2rem 0; border-bottom: 1px solid #eee; margin-bottom: 4rem; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: #888; letter-spacing: 1px; }
+  .current-crumb { color: #ccc; }
+
+  /* DISEÑO DE POST */
   .image-container { margin-bottom: 4rem; }
   .main-image-hero { width: 100%; border-radius: 40px; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.15); object-fit: cover; }
   .post-header-info { text-align: center; margin-bottom: 4rem; }
   .post-divider { border: 0; border-top: 3px solid #f1f5f9; margin: 4rem auto; max-width: 100px; }
+  
+  /* TIPOGRAFÍA DEL CUERPO */
+  .article-body { text-align: left; }
   .article-body :global(p) { margin-bottom: 2.5rem; }
+
+  /* SECCIÓN DE RELACIONADOS DINÁMICA */
   .related-area { margin-top: 8rem; border-top: 1px solid #eee; padding-top: 4rem; }
-  .related-heading { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; text-align: center; margin-bottom: 3rem; line-height: 1.1; }
+  .related-heading { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; text-align: center; margin-bottom: 3.5rem; line-height: 1; }
   .related-grid { display: grid; gap: 1.5rem; }
-  .rel-card { background: #f8fafc; padding: 2.5rem; border-radius: 30px; text-decoration: none; border: 2px solid transparent; transition: 0.3s; }
-  .rel-card:hover { border-color: #2563eb; background: white; transform: translateY(-5px); }
-  .rel-tag { color: #2563eb; font-weight: 800; text-transform: uppercase; font-size: 0.75rem; display: block; margin-bottom: 0.5rem; }
-  .rel-title { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 1rem; }
-  .rel-link { font-weight: 700; color: #2563eb; }
+  .rel-card { background: #f8fafc; padding: 2.5rem; border-radius: 30px; text-decoration: none; border: 2px solid transparent; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  .rel-card:hover { border-color: #2563eb; background: white; transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+  .rel-tag { color: #2563eb; font-weight: 900; text-transform: uppercase; font-size: 0.75rem; display: block; margin-bottom: 0.75rem; letter-spacing: 1px; }
+  .rel-title { font-size: 1.6rem; font-weight: 800; color: #0f172a; margin-bottom: 1.2rem; line-height: 1.2; }
+  .rel-link { font-weight: 700; color: #2563eb; text-transform: uppercase; font-size: 0.8rem; }
 </style>
