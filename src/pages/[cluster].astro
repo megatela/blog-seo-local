@@ -7,11 +7,11 @@ import { createElement } from 'react';
 export const prerender = false;
 const { cluster } = Astro.params;
 
-// LA QUERY: Aseguramos pedir mainImage y content explícitamente 
+// QUERY CORREGIDA: Usamos 'image' en lugar de 'mainImage'
 const data = await client.fetch(`*[_type == "cluster" && slug.current == $cluster][0]{
   title,
   description,
-  mainImage,
+  image,
   content,
   "posts": *[_type == "post" && references(^._id)]{
     title,
@@ -39,11 +39,11 @@ const components = {
   <article class="post-wrapper">
     <main class="content-limit py-20">
       
-      {data.mainImage && (
+      {data.image?.asset && (
         <div class="image-container mb-12">
           <img 
-            src={urlFor(data.mainImage).width(1200).url()} 
-            alt={data.mainImage.alt || data.title} 
+            src={urlFor(data.image).width(1200).url()} 
+            alt={data.image.alt || data.title} 
             class="main-image-hero" 
           />
         </div>
@@ -69,7 +69,7 @@ const components = {
         <div class="related-grid">
           {data.posts.map((post: any) => (
             <a href={`/${cluster}/${post.slug.current}`} class="rel-card group">
-              <span class="rel-tag">Guía Especializada</span>
+              <span class="rel-tag">Estrategia Especializada</span>
               <h3 class="rel-title group-hover:text-blue-600">{post.title}</h3>
               <p class="text-slate-500 mb-4">{post.metaDescription}</p>
               <span class="rel-link">Leer artículo →</span>
@@ -92,7 +92,6 @@ const components = {
 </Layout>
 
 <style>
-  /* ESTILOS DE LA BARRA Y ESTRUCTURA */
   .post-wrapper { background: white; min-height: 100vh; }
   .content-limit { max-width: 850px; margin: 0 auto; padding: 0 1.5rem; }
   .reading-progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 6px; z-index: 9999; background: #f1f5f9; }
@@ -100,12 +99,9 @@ const components = {
   .main-image-hero { width: 100%; border-radius: 40px; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.15); object-fit: cover; }
   .post-divider { border: 0; border-top: 3px solid #f1f5f9; margin: 4rem 0; max-width: 100px; }
   .article-body :global(p) { margin-bottom: 2.5rem; font-size: 1.25rem; color: #475569; line-height: 1.8; }
-  .related-area { border-top: 1px solid #eee; padding-top: 4rem; }
-  .related-heading { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; margin-bottom: 3.5rem; }
   .related-grid { display: grid; gap: 2rem; }
   .rel-card { background: #f8fafc; padding: 2.5rem; border-radius: 30px; text-decoration: none; border: 2px solid transparent; transition: 0.4s; }
   .rel-card:hover { border-color: #2563eb; background: white; transform: translateY(-8px); }
   .rel-tag { color: #2563eb; font-weight: 900; text-transform: uppercase; font-size: 0.75rem; display: block; margin-bottom: 0.5rem; }
   .rel-title { font-size: 1.8rem; font-weight: 800; color: #0f172a; margin-bottom: 1rem; }
-  .rel-link { font-weight: 700; color: #2563eb; text-transform: uppercase; font-size: 0.8rem; }
 </style>
