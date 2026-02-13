@@ -1,132 +1,76 @@
 ---
 import { client } from '../lib/sanity';
-import { PortableText } from '@portabletext/react';
 import Layout from '../layouts/Layout.astro';
-import { createElement } from 'react';
 
 export const prerender = false;
+const { cluster } = Astro.params;
 
-const { cluster: slug } = Astro.params;
+// Query para obtener el clúster y sus posts
+const data = await client.fetch(`*[_type == "cluster" && slug.current == $cluster][0]{
+  title,
+  description,
+  "posts": *[_type == "post" && references(^._id)]{
+    title,
+    slug,
+    metaDescription
+  }
+}`, { cluster });
 
-// 1. QUERY: Traemos el clúster y sus posts relacionados
-const data = await client.fetch(
-  `{
-    "cluster": *[_type == "cluster" && slug.current == $slug][0],
-    "posts": *[_type == "post" && cluster->slug.current == $slug] | order(_createdAt asc)
-  }`,
-  { slug }
-);
-
-if (!data.cluster) return Astro.redirect('/404');
-
-// --- LÓGICA DE DETECCIÓN INTELIGENTE ---
-const allStrings = Object.values(data.cluster).filter(v => typeof v === 'string');
-const detectedDesc = data.cluster.description || data.cluster.seoDescription || data.cluster.descriptionSEO || 
-                     allStrings.find(v => v.length > 35 && v.length < 500 && v !== data.cluster.title) || "";
-
-// --- LÓGICA DE IMAGEN ---
-const imgObj = data.cluster.mainImage || data.cluster.imagenPortada || data.cluster.image || {};
-const imageUrl = data.cluster.imageUrl || (imgObj.asset ? `https://cdn.sanity.io/images/qv6q15su/production/${imgObj.asset._ref.replace('image-', '').replace('-webp', '.webp').replace('-png', '.png').replace('-jpg', '.jpg')}` : null);
-const detectedAlt = imgObj.alt || imgObj.altText || imgObj.textAlt || data.cluster.title;
-
-// --- CONFIGURACIÓN DE ESTILOS PARA EL CONTENIDO (H2, H3, LISTAS) ---
-const components = {
-  block: {
-    // H2: Estilo imponente y claro
-    h2: ({children}: any) => createElement('h2', { 
-      className: 'text-3xl md:text-5xl font-black text-slate-900 mt-16 mb-8 tracking-tighter uppercase leading-tight border-l-8 border-blue-600 pl-6' 
-    }, children),
-    
-    // H3: Destacado pero jerárquicamente menor
-    h3: ({children}: any) => createElement('h3', { 
-      className: 'text-2xl md:text-3xl font-bold text-slate-800 mt-12 mb-6 tracking-tight italic' 
-    }, children),
-    
-    // Párrafos: Lectura cómoda
-    normal: ({children}: any) => createElement('p', { 
-      className: 'text-lg md:text-xl text-slate-600 leading-relaxed mb-8' 
-    }, children),
-  },
-  list: {
-    // Listas: Viñetas visibles y ordenadas
-    bullet: ({children}: any) => createElement('ul', { 
-      className: 'list-disc ml-8 mb-10 space-y-4 text-slate-600 text-lg md:text-xl' 
-    }, children),
-  },
-  marks: {
-    // Negritas: Que resalten de verdad
-    strong: ({children}: any) => createElement('strong', { 
-      className: 'font-extrabold text-slate-900 underline decoration-blue-200 decoration-4 underline-offset-4' 
-    }, children),
-  },
-};
+if (!data) return Astro.redirect('/404');
 ---
 
-<Layout title={data.cluster.title} description={detectedDesc}>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<Layout title={data.title} description={data.description}>
+  
+  <div class="reading-progress-container">
+    <div class="progress-bar" id="readingBar"></div>
+  </div>
 
-  <article class="bg-white min-h-screen">
-    <header class="bg-slate-900 pt-32 pb-24 px-6 relative">
-      <div class="max-w-5xl mx-auto relative z-10">
-        <nav class="flex items-center space-x-2 text-blue-400 text-xs font-black uppercase mb-12 tracking-widest">
-          <a href="/" class="hover:text-white transition-colors">Inicio</a>
-          <span class="text-slate-700">/</span>
-          <span class="text-slate-400 tracking-normal capitalize">{data.cluster.title}</span>
-        </nav>
-        
-        <h1 class="text-5xl md:text-8xl font-black text-white leading-[0.9] mb-8 tracking-tighter uppercase">
-          {data.cluster.title}
-        </h1>
-
-        {detectedDesc && (
-          <p class="text-xl md:text-2xl text-slate-400 max-w-3xl mb-16 leading-relaxed italic font-light">
-            {detectedDesc}
-          </p>
-        )}
-
-        {imageUrl && (
-          <div class="relative mt-20 rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-slate-800">
-            <img 
-                src={imageUrl} 
-                alt={detectedAlt}
-                class="w-full h-[400px] md:h-[600px] object-cover"
-            />
-          </div>
-        )}
-      </div>
+  <main class="content-limit py-20">
+    <header class="mb-16">
+      <h1 class="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none mb-6">
+        {data.title}
+      </h1>
+      <p class="text-xl text-slate-600 max-w-2xl">{data.description}</p>
     </header>
 
-    <main class="max-w-4xl mx-auto py-24 px-6">
-      <div class="prose prose-slate prose-xl max-w-none">
-        <PortableText value={data.cluster.content} components={components} />
-      </div>
+    <div class="grid gap-8">
+      {data.posts.map((post: any) => (
+        <a href={`/${cluster}/${post.slug.current}`} class="group p-8 bg-slate-50 rounded-3xl border-2 border-transparent hover:border-blue-600 hover:bg-white transition-all">
+          <h2 class="text-2xl font-bold mb-2 group-hover:text-blue-600">{post.title}</h2>
+          <p class="text-slate-500">{post.metaDescription}</p>
+        </a>
+      ))}
+    </div>
+  </main>
 
-      <section class="mt-40 border-t border-slate-100 pt-24">
-        <h2 class="text-4xl md:text-6xl font-black text-slate-900 mb-16 uppercase tracking-tighter">
-            Estrategias <span class="text-blue-600">Locales</span>
-        </h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {data.posts.map((post: any) => (
-            <a href={`/${slug}/${post.slug.current}`} class="group bg-slate-50 p-10 rounded-[2.5rem] hover:bg-white hover:shadow-2xl transition-all duration-500 border border-transparent hover:border-slate-100 flex flex-col items-start">
-              <h3 class="text-2xl font-black text-slate-800 group-hover:text-blue-600 mb-6 transition-colors">{post.title}</h3>
-              <div class="mt-auto flex items-center text-blue-600 font-bold text-xs uppercase tracking-widest">
-                Saber más <span class="ml-2 transform group-hover:translate-x-2 transition-transform">→</span>
-              </div>
-            </a>
-          ))}
-        </div>
-      </section>
-    </main>
-
-    <section class="bg-slate-50 py-32 px-6 text-center">
-        <div class="max-w-3xl mx-auto">
-            <h2 class="text-4xl font-black text-slate-900 mb-6 uppercase tracking-tighter">¿Hablamos de tu {data.cluster.title}?</h2>
-            <p class="text-lg text-slate-500 mb-10 italic">Consultoría personalizada para escalar tu negocio local.</p>
-            <a href="/contactame" class="inline-block bg-blue-600 text-white font-black px-12 py-5 rounded-full hover:bg-slate-900 transition-all uppercase tracking-widest text-sm">
-                Agendar ahora →
-            </a>
-        </div>
-    </section>
-  </article>
+  <script is:inline>
+    window.onscroll = function() {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      const bar = document.getElementById("readingBar");
+      if (bar) bar.style.width = scrolled + "%";
+    };
+  </script>
 </Layout>
+
+<style>
+  .content-limit { max-width: 850px; margin: 0 auto; padding: 0 1.5rem; }
+  
+  /* ESTILOS DE LA BARRA (Copiados exactamente de los posts para consistencia) */
+  .reading-progress-container { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 6px; 
+    z-index: 9999; 
+    background: #f1f5f9; 
+  }
+  .progress-bar { 
+    height: 100%; 
+    background: #2563eb; 
+    width: 0%; 
+    transition: width 0.1s ease-out; 
+  }
+</style>
