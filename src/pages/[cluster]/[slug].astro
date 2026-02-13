@@ -7,7 +7,6 @@ import { createElement } from 'react';
 export const prerender = false;
 const { slug } = Astro.params;
 
-// QUERY: Traemos el post y expandimos los objetos de la sección manual
 let post;
 try {
   post = await client.fetch(`*[_type == "post" && slug.current == $slug][0]{
@@ -30,7 +29,6 @@ try {
 
 if (!post) return Astro.redirect('/404');
 
-// CONFIGURACIÓN DE COMPONENTES PARA EL CUERPO DEL TEXTO
 const components = {
   block: {
     h2: ({children}: any) => createElement('h2', { className: 'text-3xl md:text-5xl font-black text-slate-900 mt-16 mb-8 uppercase tracking-tighter border-l-8 border-blue-600 pl-6' }, children),
@@ -50,6 +48,16 @@ const components = {
     }
   }
 };
+
+// LISTA DE ETIQUETAS PARA ALEATORIEDAD
+const labels = [
+  "Metodología Exclusiva", 
+  "Continúa tu formación", 
+  "Estrategia de Crecimiento", 
+  "Análisis de Experto",
+  "Hoja de Ruta Avanzada",
+  "Claves de Conversión"
+];
 ---
 
 <Layout title={post.title} description={post.metaDescription || "Estrategia de SEO Local"}>
@@ -97,14 +105,13 @@ const components = {
         <section class="related-area">
           <h2 class="related-heading">Siguientes pasos <br/> <span class="text-blue-600">para dominar tu mercado</span></h2>
           <div class="related-grid">
-            {post.manualRelated.map((rel: any, index: number) => {
-              // Lógica de rotación de etiquetas para Autoridad + Conversión
-              const labels = ["Metodología Exclusiva", "Continúa tu formación", "Estrategia de Crecimiento"];
-              const label = labels[index % labels.length];
+            {post.manualRelated.map((rel: any) => {
+              // LÓGICA ALEATORIA REAL (SSR)
+              const randomLabel = labels[Math.floor(Math.random() * labels.length)];
 
               return (
                 <a href={`/${rel.clusterSlug}/${rel.slug}`} class="rel-card group">
-                  <span class="rel-tag">{label}</span>
+                  <span class="rel-tag">{randomLabel}</span>
                   <h3 class="rel-title">{rel.customAnchor || rel.title}</h3>
                   <span class="rel-link">Acceder ahora →</span>
                 </a>
@@ -129,27 +136,17 @@ const components = {
 </Layout>
 
 <style>
-  /* ESTRUCTURA Y BARRA DE LECTURA */
   .post-wrapper { background: white; min-height: 100vh; padding-bottom: 8rem; }
   .content-limit { max-width: 850px; margin: 0 auto; padding: 0 1.5rem; }
   .reading-progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 6px; z-index: 9999; background: #f1f5f9; }
   .progress-bar { height: 100%; background: #2563eb; width: 0%; transition: width 0.1s ease-out; }
-
-  /* NAVEGACIÓN */
   .post-nav { background: #fafafa; padding: 1.2rem 0; border-bottom: 1px solid #eee; margin-bottom: 4rem; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: #888; letter-spacing: 1px; }
   .current-crumb { color: #ccc; }
-
-  /* DISEÑO DE POST */
   .image-container { margin-bottom: 4rem; }
   .main-image-hero { width: 100%; border-radius: 40px; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.15); object-fit: cover; }
   .post-header-info { text-align: center; margin-bottom: 4rem; }
   .post-divider { border: 0; border-top: 3px solid #f1f5f9; margin: 4rem auto; max-width: 100px; }
-  
-  /* TIPOGRAFÍA DEL CUERPO */
-  .article-body { text-align: left; }
   .article-body :global(p) { margin-bottom: 2.5rem; }
-
-  /* SECCIÓN DE RELACIONADOS DINÁMICA */
   .related-area { margin-top: 8rem; border-top: 1px solid #eee; padding-top: 4rem; }
   .related-heading { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; text-align: center; margin-bottom: 3.5rem; line-height: 1; }
   .related-grid { display: grid; gap: 1.5rem; }
