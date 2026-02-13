@@ -23,7 +23,7 @@ export default defineType({
       title: "Meta Description (SEO)",
       type: "text",
       rows: 3,
-      description: "Descripción resumida para Google (recomendado: 140-160 caracteres).",
+      description: "Descripción resumida para Google (140-160 caracteres).",
       validation: Rule => Rule.max(160).warning("Es mejor no superar los 160 caracteres.")
     }),
     defineField({ 
@@ -53,14 +53,47 @@ export default defineType({
       type: "array", 
       of: [{ type: "block" }] 
     }),
-    // CAMPO PARA CONTROL SEO MANUAL
+    // SECCIÓN DE RELACIONADOS CON CONTROL QUIRÚRGICO DE ANCHOR TEXT
     defineField({
       name: "relatedPosts",
       title: "Artículos Relacionados (Control Manual SEO)",
       type: "array",
-      description: "Selecciona a mano los posts que quieres enlazar al final de este artículo.",
-      of: [{ type: "reference", to: [{ type: "post" }] }],
-      validation: Rule => Rule.max(3).warning("Seleccionar más de 3 puede diluir el link equity.")
+      description: "Selecciona el post y define un texto de enlace personalizado para mejorar el SEO.",
+      of: [
+        {
+          type: "object",
+          name: "relatedLink",
+          title: "Enlace Relacionado",
+          fields: [
+            {
+              name: "postReference",
+              title: "Seleccionar Post",
+              type: "reference",
+              to: [{ type: "post" }],
+              validation: Rule => Rule.required()
+            },
+            {
+              name: "customAnchorText",
+              title: "Texto del enlace personalizado (Anchor Text)",
+              type: "string",
+              description: "Escribe las palabras exactas para el enlace. Si queda vacío, usará el título del post."
+            }
+          ],
+          preview: {
+            select: {
+              title: 'postReference.title',
+              customText: 'customAnchorText'
+            },
+            prepare(selection) {
+              const { title, customText } = selection;
+              return {
+                title: customText || title || 'Post no seleccionado'
+              };
+            }
+          }
+        }
+      ],
+      validation: Rule => Rule.max(3).warning("No pongas más de 3 para no dispersar la autoridad (Link Equity).")
     })
   ]
 });
