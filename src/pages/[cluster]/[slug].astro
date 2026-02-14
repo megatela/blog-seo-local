@@ -5,62 +5,40 @@ import Layout from '../../layouts/Layout.astro';
 import { createElement } from 'react';
 
 export const prerender = false;
-const { slug } = Astro.params;
+const { cluster, slug } = Astro.params;
 
-let post;
-try {
-  post = await client.fetch(`*[_type == "post" && slug.current == $slug][0]{
+// QUERY: Incluye la referencia al Caso de Éxito y sus campos dinámicos
+const post = await client.fetch(`*[_type == "post" && slug.current == $slug][0]{
+  title,
+  metaDescription,
+  mainImage,
+  content,
+  "clusterName": cluster->title,
+  "clusterSlug": cluster->slug.current,
+  "caseStudy": relatedCaseStudy{
+    "anchor": customAnchor,
+    "slug": caseStudyReference->slug.current
+  },
+  "relatedPosts": *[_type == "post" && references(cluster._ref) && slug.current != $slug][0...3]{
     title,
-    metaDescription, 
-    mainImage, 
-    content, 
-    "clusterName": cluster->title,
-    "clusterSlug": cluster->slug.current,
-    "manualRelated": relatedPosts[]{
-      "customAnchor": customAnchorText,
-      "title": postReference->title,
-      "slug": postReference->slug.current,
-      "clusterSlug": postReference->cluster->slug.current
-    }
-  }`, { slug });
-} catch (e) {
-  console.error("Error en Sanity Fetch:", e);
-}
+    "slug": slug.current,
+    metaDescription
+  }
+}`, { slug });
 
 if (!post) return Astro.redirect('/404');
 
 const components = {
   block: {
     h2: ({children}: any) => createElement('h2', { className: 'text-3xl md:text-5xl font-black text-slate-900 mt-16 mb-8 uppercase tracking-tighter border-l-8 border-blue-600 pl-6' }, children),
-    h3: ({children}: any) => createElement('h3', { className: 'text-2xl font-bold text-slate-800 mt-12 mb-6' }, children),
     normal: ({children}: any) => createElement('p', { className: 'text-lg md:text-xl text-slate-600 leading-relaxed mb-8' }, children),
-  },
-  marks: {
-    strong: ({children}: any) => createElement('strong', { className: 'font-extrabold text-slate-900' }, children),
-    link: ({value, children}: any) => {
-      const isExternal = value?.href?.startsWith('http');
-      return createElement('a', {
-        href: value.href,
-        target: isExternal ? "_blank" : undefined,
-        rel: isExternal ? "noopener noreferrer" : undefined,
-        className: "text-blue-600 underline decoration-blue-200 hover:decoration-blue-600 transition-all font-bold"
-      }, children);
-    }
   }
 };
 
-// LISTA DE ETIQUETAS PARA ALEATORIEDAD
-const labels = [
-  "Metodología Exclusiva", 
-  "Continúa tu formación", 
-  "Estrategia de Crecimiento", 
-  "Análisis de Experto",
-  "Hoja de Ruta Avanzada",
-  "Claves de Conversión"
-];
+const labels = ["Metodología Exclusiva", "Continúa tu formación", "Estrategia de Crecimiento", "Análisis de Experto"];
 ---
 
-<Layout title={post.title} description={post.metaDescription || "Estrategia de SEO Local"}>
+<Layout title={post.title} description={post.metaDescription}>
   
   <div class="reading-progress-container">
     <div class="progress-bar" id="readingBar"></div>
@@ -69,57 +47,62 @@ const labels = [
   <article class="post-wrapper">
     <nav class="post-nav">
       <div class="content-limit">
-        <a href="/" class="hover:text-blue-600">Inicio</a> / 
-        <a href={`/${post.clusterSlug}`} class="hover:text-blue-600">{post.clusterName}</a> / 
+        <a href="/">Inicio</a> / 
+        <a href={`/${post.clusterSlug}`}>{post.clusterName}</a> / 
         <span class="current-crumb">{post.title}</span>
       </div>
     </nav>
 
-    <main class="content-limit">
+    <main class="content-limit py-10">
       {post.mainImage && (
-        <div class="image-container">
-          <img 
-            src={urlFor(post.mainImage).width(1200).url()} 
-            alt={post.mainImage.alt || post.title} 
-            class="main-image-hero" 
-          />
+        <div class="image-container mb-12">
+          <img src={urlFor(post.mainImage).width(1200).url()} alt={post.title} class="main-image-hero" />
         </div>
       )}
 
-      <header class="post-header-info">
-        <h1 class="text-4xl md:text-7xl font-black mb-6 uppercase tracking-tighter leading-[0.9] text-slate-900">
+      <header class="mb-16">
+        <h1 class="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-[0.8] mb-8 text-slate-900">
           {post.title}
         </h1>
-        <p class="text-gray-400 italic text-xl">
-          Silo Estratégico: <span class="text-blue-600 font-bold not-italic">{post.clusterName}</span>
-        </p>
+        <p class="text-2xl text-slate-500 font-medium">{post.metaDescription}</p>
       </header>
-
-      <hr class="post-divider" />
 
       <div class="article-body">
         <PortableText value={post.content} components={components} />
       </div>
 
-      {post.manualRelated && post.manualRelated.length > 0 && (
-        <section class="related-area">
-          <h2 class="related-heading">Siguientes pasos <br/> <span class="text-blue-600">para dominar tu mercado</span></h2>
-          <div class="related-grid">
-            {post.manualRelated.map((rel: any) => {
-              // LÓGICA ALEATORIA REAL (SSR)
-              const randomLabel = labels[Math.floor(Math.random() * labels.length)];
-
-              return (
-                <a href={`/${rel.clusterSlug}/${rel.slug}`} class="rel-card group">
-                  <span class="rel-tag">{randomLabel}</span>
-                  <h3 class="rel-title">{rel.customAnchor || rel.title}</h3>
-                  <span class="rel-link">Acceder ahora →</span>
-                </a>
-              );
-            })}
+      {post.caseStudy && post.caseStudy.slug && (
+        <section class="case-study-cta">
+          <div class="cta-content">
+            <span class="cta-label">Caso de Éxito Real</span>
+            <h2 class="cta-title">
+              <a href={`/casos-de-exito/${post.caseStudy.slug}`}>
+                {post.caseStudy.anchor}
+              </a>
+            </h2>
+            <a href={`/casos-de-exito/${post.caseStudy.slug}`} class="cta-button">
+              Ver resultados completos →
+            </a>
           </div>
         </section>
       )}
+
+      <section class="related-area">
+        <h2 class="related-heading tracking-tighter">Artículos <br/> <span class="text-blue-600">Relacionados</span></h2>
+        <div class="related-grid">
+          {post.relatedPosts.map((rel: any) => {
+            const randomLabel = labels[Math.floor(Math.random() * labels.length)];
+            return (
+              <a href={`/${post.clusterSlug}/${rel.slug}`} class="rel-card group">
+                <span class="rel-tag">{randomLabel}</span>
+                <h3 class="rel-title group-hover:text-blue-600">{rel.title}</h3>
+                <p class="text-slate-500 mb-6 line-clamp-2">{rel.metaDescription}</p>
+                <span class="rel-link">Leer artículo →</span>
+              </a>
+            )
+          })}
+        </div>
+      </section>
     </main>
   </article>
 
@@ -132,27 +115,48 @@ const labels = [
       if (bar) bar.style.width = scrolled + "%";
     };
   </script>
-
 </Layout>
 
 <style>
-  .post-wrapper { background: white; min-height: 100vh; padding-bottom: 8rem; }
+  .post-wrapper { background: white; min-height: 100vh; }
   .content-limit { max-width: 850px; margin: 0 auto; padding: 0 1.5rem; }
+  
+  /* PROGRESO */
   .reading-progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 6px; z-index: 9999; background: #f1f5f9; }
   .progress-bar { height: 100%; background: #2563eb; width: 0%; transition: width 0.1s ease-out; }
-  .post-nav { background: #fafafa; padding: 1.2rem 0; border-bottom: 1px solid #eee; margin-bottom: 4rem; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: #888; letter-spacing: 1px; }
+
+  /* NAV */
+  .post-nav { background: #fafafa; padding: 1.2rem 0; border-bottom: 1px solid #eee; margin-bottom: 2rem; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: #888; }
+  .post-nav a { text-decoration: none; color: inherit; transition: color 0.2s; }
+  .post-nav a:hover { color: #2563eb; }
   .current-crumb { color: #ccc; }
-  .image-container { margin-bottom: 4rem; }
-  .main-image-hero { width: 100%; border-radius: 40px; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.15); object-fit: cover; }
-  .post-header-info { text-align: center; margin-bottom: 4rem; }
-  .post-divider { border: 0; border-top: 3px solid #f1f5f9; margin: 4rem auto; max-width: 100px; }
-  .article-body :global(p) { margin-bottom: 2.5rem; }
-  .related-area { margin-top: 8rem; border-top: 1px solid #eee; padding-top: 4rem; }
-  .related-heading { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; text-align: center; margin-bottom: 3.5rem; line-height: 1; }
-  .related-grid { display: grid; gap: 1.5rem; }
-  .rel-card { background: #f8fafc; padding: 2.5rem; border-radius: 30px; text-decoration: none; border: 2px solid transparent; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-  .rel-card:hover { border-color: #2563eb; background: white; transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
-  .rel-tag { color: #2563eb; font-weight: 900; text-transform: uppercase; font-size: 0.75rem; display: block; margin-bottom: 0.75rem; letter-spacing: 1px; }
-  .rel-title { font-size: 1.6rem; font-weight: 800; color: #0f172a; margin-bottom: 1.2rem; line-height: 1.2; }
-  .rel-link { font-weight: 700; color: #2563eb; text-transform: uppercase; font-size: 0.8rem; }
+
+  /* CUERPO */
+  .main-image-hero { width: 100%; border-radius: 40px; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.15); }
+  .article-body :global(p) { margin-bottom: 2.5rem; font-size: 1.25rem; color: #475569; line-height: 1.8; }
+
+  /* CAJA CASO DE ÉXITO (NUEVO) */
+  .case-study-cta {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    padding: 3rem;
+    border-radius: 40px;
+    margin: 6rem 0;
+    color: white;
+    text-align: center;
+  }
+  .cta-label { color: #60a5fa; text-transform: uppercase; font-weight: 900; font-size: 0.75rem; letter-spacing: 2px; }
+  .cta-title { font-size: 2rem; font-weight: 800; margin: 1.5rem 0 2rem; line-height: 1.2; }
+  .cta-title a { color: white; text-decoration: none; border-bottom: 2px solid transparent; transition: 0.3s; }
+  .cta-title a:hover { border-bottom-color: #60a5fa; }
+  .cta-button { display: inline-block; background: #2563eb; color: white; padding: 1rem 2rem; border-radius: 12px; font-weight: 700; text-decoration: none; transition: 0.3s; }
+  .cta-button:hover { background: #1d4ed8; transform: translateY(-3px); }
+
+  /* RELACIONADOS */
+  .related-area { margin-top: 6rem; border-top: 1px solid #eee; padding-top: 5rem; }
+  .related-heading { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; margin-bottom: 3rem; line-height: 1; }
+  .related-grid { display: grid; gap: 2rem; }
+  .rel-card { background: #f8fafc; padding: 2.5rem; border-radius: 30px; text-decoration: none; border: 2px solid transparent; transition: 0.4s; }
+  .rel-card:hover { border-color: #2563eb; background: white; transform: translateY(-8px); }
+  .rel-tag { color: #2563eb; font-weight: 900; text-transform: uppercase; font-size: 0.7rem; display: block; margin-bottom: 0.5rem; }
+  .rel-title { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 0.5rem; }
 </style>
