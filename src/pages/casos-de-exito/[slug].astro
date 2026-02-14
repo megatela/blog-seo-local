@@ -2,7 +2,6 @@
 import { client, urlFor } from '../../lib/sanity'; 
 import { PortableText } from '@portabletext/react';
 import Layout from '../../layouts/Layout.astro';
-import { createElement } from 'react';
 
 export const prerender = false;
 const { slug } = Astro.params;
@@ -16,97 +15,183 @@ const caseStudy = await client.fetch(`*[_type == "caseStudy" && slug.current == 
 }`, { slug });
 
 if (!caseStudy) return Astro.redirect('/404');
-
-const components = {
-  block: {
-    h2: ({children}: any) => createElement('h2', { className: 'text-3xl font-black text-slate-900 mt-16 mb-6 tracking-tight border-l-8 border-blue-600 pl-6' }, children),
-    h3: ({children}: any) => createElement('h3', { className: 'text-xl font-bold text-blue-700 mt-10 mb-4' }, children),
-    normal: ({children}: any) => createElement('p', { className: 'text-lg text-slate-700 mb-8 leading-relaxed font-light' }, children),
-  },
-};
 ---
 
 <Layout title={caseStudy.title} description={caseStudy.metaDescription}>
-  <div id="reading-progress" class="fixed top-0 left-0 h-1.5 bg-blue-600 z-[9999] w-0 transition-all duration-100 ease-out"></div>
+  <div id="reading-progress"></div>
 
-  <article class="bg-white min-h-screen">
-    <nav class="bg-slate-50 border-b border-slate-100 py-6">
-      <div class="max-w-5xl mx-auto px-6 flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-slate-400">
-        <a href="/" class="hover:text-blue-600 transition-colors">Inicio</a>
-        <span class="text-slate-300">/</span>
-        <a href="/blog" class="hover:text-blue-600 transition-colors">Blog</a>
-        <span class="text-slate-300">/</span>
-        <span class="text-slate-900">Caso de Éxito Dental</span>
-      </div>
+  <article class="case-study-container">
+    <nav class="breadcrumbs">
+      <a href="/">Inicio</a> / <a href="/blog">Blog</a> / <span>Caso de Éxito</span>
     </nav>
 
-    <header class="pt-16 pb-12 md:pt-24 md:pb-20 max-w-5xl mx-auto px-6">
-      <div class="max-w-4xl">
-        <span class="bg-blue-600 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-8 inline-block">Resultados Auditados</span>
-        <h1 class="text-4xl md:text-6xl font-black text-slate-900 leading-[1.1] mb-8 tracking-tighter">
-          {caseStudy.title}
-        </h1>
-        <p class="text-xl md:text-2xl text-slate-500 font-medium leading-relaxed max-w-3xl border-l-4 border-slate-200 pl-8 italic">
-          {caseStudy.metaDescription}
-        </p>
-      </div>
+    <header class="case-header">
+      <span class="badge">Resultados Reales</span>
+      <h1>{caseStudy.title}</h1>
+      <p class="description">{caseStudy.metaDescription}</p>
     </header>
 
-    <div class="max-w-5xl mx-auto px-6 pb-32">
-      {caseStudy.mainImage && (
-        <div class="mb-20 rounded-[40px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100">
-          <img 
-            src={urlFor(caseStudy.mainImage.asset).width(1400).url()} 
-            alt={caseStudy.mainImage.alt || caseStudy.title} 
-            class="w-full h-auto"
-          />
-        </div>
-      )}
-
-      {caseStudy.metrics && (
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-24">
-          {caseStudy.metrics.map((m: any) => (
-            <div class="bg-white border-2 border-slate-50 p-8 rounded-[32px] shadow-sm hover:shadow-md transition-shadow">
-              <span class="block text-4xl font-black text-blue-600 mb-2 tracking-tighter">{m.value}</span>
-              <span class="block text-[11px] uppercase font-black text-slate-400 tracking-widest">{m.label}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div class="max-w-3xl mx-auto">
-        <div class="prose prose-slate prose-lg max-w-none 
-          prose-headings:tracking-tight 
-          prose-strong:text-slate-900 prose-strong:font-bold
-          prose-blockquote:border-blue-600 prose-blockquote:bg-blue-50 prose-blockquote:py-2 prose-blockquote:rounded-r-2xl">
-          <PortableText value={caseStudy.content} components={components} />
-        </div>
+    {caseStudy.mainImage && (
+      <div class="main-image-wrapper">
+        <img src={urlFor(caseStudy.mainImage.asset).width(1200).url()} alt={caseStudy.mainImage.alt} />
       </div>
+    )}
 
-      <section class="mt-32 p-12 md:p-20 bg-slate-900 rounded-[60px] text-center relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 blur-[120px] rounded-full"></div>
-        <div class="relative z-10">
-          <h2 class="text-3xl md:text-5xl font-black text-white mb-8 tracking-tight">¿Buscando resultados similares?</h2>
-          <p class="text-slate-400 text-lg md:text-xl mb-12 max-w-2xl mx-auto font-light leading-relaxed">
-            Aplicamos esta misma ingeniería de SEO Local para clínicas dentales. Analizamos tu caso en 24h.
-          </p>
-          <a href="/contactame" class="inline-flex items-center bg-blue-600 hover:bg-blue-500 text-white font-black px-12 py-6 rounded-2xl transition-all hover:scale-105 shadow-xl shadow-blue-900/40 uppercase tracking-widest text-sm">
-            Empezar Auditoría Gratuita <span class="ml-4 text-2xl">→</span>
-          </a>
-        </div>
-      </section>
+    {caseStudy.metrics && (
+      <div class="metrics-grid">
+        {caseStudy.metrics.map((m: any) => (
+          <div class="metric-card">
+            <span class="metric-value">{m.value}</span>
+            <span class="metric-label">{m.label}</span>
+          </div>
+        ))}
+      </div>
+    )}
+
+    <div class="content-wrapper">
+      <div class="prose">
+        <PortableText value={caseStudy.content} />
+      </div>
     </div>
+
+    <footer class="case-footer">
+      <h2>¿Quieres resultados similares?</h2>
+      <p>Analizamos tu negocio local y trazamos un plan de acción real.</p>
+      <a href="/contactame" class="cta-button">SOLICITAR AUDITORÍA GRATIS <span>→</span></a>
+    </footer>
   </article>
 </Layout>
 
+<style>
+  /* FIX DE ALINEACIÓN Y CENTRADO */
+  .case-study-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    font-family: system-ui, -apple-system, sans-serif;
+    color: #1a202c;
+  }
+
+  #reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 5px;
+    background: #2563eb;
+    z-index: 10000;
+    width: 0%;
+  }
+
+  .breadcrumbs {
+    font-size: 14px;
+    color: #718096;
+    margin-bottom: 40px;
+  }
+
+  .case-header {
+    margin-bottom: 60px;
+  }
+
+  .badge {
+    background: #ebf8ff;
+    color: #2b6cb0;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin: 20px 0;
+    letter-spacing: -0.02em;
+  }
+
+  .description {
+    font-size: 1.25rem;
+    color: #4a5568;
+    border-left: 4px solid #2563eb;
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  .main-image-wrapper img {
+    width: 100%;
+    border-radius: 24px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 60px;
+  }
+
+  /* GRID DE MÉTRICAS */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-bottom: 80px;
+  }
+
+  .metric-card {
+    background: #f7fafc;
+    border: 1px solid #edf2f7;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+  }
+
+  .metric-value {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #2563eb;
+  }
+
+  .metric-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* CONTENIDO */
+  .content-wrapper {
+    line-height: 1.8;
+    font-size: 1.15rem;
+  }
+
+  .case-footer {
+    margin-top: 100px;
+    background: #1a202c;
+    color: white;
+    padding: 60px 40px;
+    border-radius: 40px;
+    text-align: center;
+  }
+
+  .cta-button {
+    display: inline-flex;
+    align-items: center;
+    background: #2563eb;
+    color: white;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    margin-top: 30px;
+    transition: transform 0.2s;
+  }
+
+  .cta-button:hover { transform: scale(1.05); }
+</style>
+
 <script is:inline>
-  const updateProgress = () => {
+  window.addEventListener('scroll', () => {
     const bar = document.getElementById('reading-progress');
-    if (!bar) return;
-    const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    const progress = (window.scrollY / totalHeight) * 100;
-    bar.style.width = `${progress}%`;
-  };
-  window.addEventListener('scroll', updateProgress);
-  window.addEventListener('resize', updateProgress);
+    const scroll = window.scrollY;
+    const height = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (scroll / height) * 100 + '%';
+  });
 </script>
