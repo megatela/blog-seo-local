@@ -36,13 +36,21 @@ export default defineType({
       options: {
         hotspot: true,
       },
-      description: 'Imagen principal que se mostrará en el post y el listado.',
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Texto Alternativo (SEO)',
+          description: 'Describe la imagen para accesibilidad y Google Images.',
+          validation: (Rule) => Rule.required(),
+        }
+      ],
     }),
     defineField({
       name: 'content',
       title: 'Contenido del Caso de Éxito',
       type: 'array',
-      description: 'Editor completo para redactar la historia, metodología y resultados.',
+      description: 'Cuerpo completo del artículo (Historia, Estrategia y Conclusión).',
       of: [
         {
           type: 'block',
