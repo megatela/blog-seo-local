@@ -17,99 +17,101 @@ const caseStudy = await client.fetch(`*[_type == "caseStudy" && slug.current == 
 
 if (!caseStudy) return Astro.redirect('/404');
 
-// Estilos personalizados para el contenido
 const components = {
   block: {
-    // H2 simplificado, sin bordes inferiores pesados
-    h2: ({children}: any) => createElement('h2', { className: 'text-3xl font-bold text-slate-900 mt-12 mb-6' }, children),
-    h3: ({children}: any) => createElement('h3', { className: 'text-xl font-bold text-blue-600 mt-8 mb-4' }, children),
-    normal: ({children}: any) => createElement('p', { className: 'text-lg text-slate-700 leading-relaxed mb-6 font-light' }, children),
+    h2: ({children}: any) => createElement('h2', { className: 'text-2xl font-extrabold text-gray-900 mt-10 mb-4' }, children),
+    h3: ({children}: any) => createElement('h3', { className: 'text-xl font-bold text-blue-700 mt-6 mb-3' }, children),
+    normal: ({children}: any) => createElement('p', { className: 'text-lg text-gray-700 mb-6 leading-relaxed' }, children),
   },
-  types: {
-    image: ({value}: any) => createElement('img', { 
-      src: urlFor(value).url(), 
-      className: 'rounded-xl my-10 shadow-md w-full',
-      alt: value.alt || 'Evidencia del caso'
-    }),
-  }
 };
 ---
 
 <Layout title={caseStudy.title} description={caseStudy.metaDescription}>
-  <div id="progress-bar" class="fixed top-0 left-0 h-2 bg-blue-600 z-[100] transition-all duration-200 ease-out w-0"></div>
+  <div id="reading-progress" class="fixed top-0 left-0 h-1.5 bg-blue-600 z-[9999] w-0 transition-all duration-75"></div>
 
-  <article class="bg-white min-h-screen font-sans">
-    <nav class="bg-white border-b border-slate-100 py-4 sticky top-0 z-40">
-      <div class="max-w-4xl mx-auto px-6 flex items-center gap-2 text-sm text-slate-500">
-        <a href="/" class="hover:text-blue-600 transition-colors">Inicio</a>
-        <span class="text-slate-300">/</span>
-        <span class="text-slate-900 font-medium truncate">Caso de Éxito</span>
+  <article class="bg-white min-h-screen">
+    <div class="border-b border-gray-100 py-4">
+      <div class="max-w-4xl mx-auto px-6 flex items-center gap-2 text-sm text-gray-500 font-medium">
+        <a href="/" class="hover:text-blue-600">Inicio</a>
+        <span>›</span>
+        <a href="/blog" class="hover:text-blue-600">Blog</a>
+        <span>›</span>
+        <span class="text-gray-900 truncate">Caso de Éxito</span>
       </div>
-    </nav>
+    </div>
 
-    <header class="py-16 bg-white">
-      <div class="max-w-4xl mx-auto px-6">
-        <span class="text-blue-600 font-bold uppercase tracking-wider text-xs mb-4 block">Resultados Comprobados</span>
-        <h1 class="text-4xl md:text-5xl font-black text-slate-900 leading-tight mb-6">
-          {caseStudy.title}
-        </h1>
-        <p class="text-xl text-slate-600 font-light leading-relaxed max-w-3xl">
-          {caseStudy.metaDescription}
-        </p>
-      </div>
+    <header class="py-12 md:py-20 text-left max-w-4xl mx-auto px-6">
+      <span class="text-blue-600 font-bold text-xs uppercase tracking-widest mb-4 block">Resultados Verificados</span>
+      <h1 class="text-3xl md:text-5xl font-black text-gray-900 leading-tight mb-6">
+        {caseStudy.title}
+      </h1>
+      <p class="text-xl text-gray-600 font-normal leading-relaxed">
+        {caseStudy.metaDescription}
+      </p>
     </header>
 
-    <div class="max-w-4xl mx-auto px-6 pb-20">
+    <div class="max-w-4xl mx-auto px-6 pb-24">
       {caseStudy.mainImage && (
-        <div class="mb-16">
+        <div class="mb-12 rounded-2xl overflow-hidden shadow-xl border border-gray-100">
           <img 
             src={urlFor(caseStudy.mainImage.asset).width(1200).url()} 
             alt={caseStudy.mainImage.alt || caseStudy.title} 
-            class="w-full rounded-2xl shadow-lg"
+            class="w-full h-auto object-cover"
           />
         </div>
       )}
 
       {caseStudy.metrics && (
-        <section class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-          {caseStudy.metrics.map((metric: any) => (
-            <div class="bg-white p-6 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-slate-100 text-center">
-              <span class="block text-3xl md:text-4xl font-black text-blue-600 mb-2">{metric.value}</span>
-              <span class="block text-xs uppercase font-semibold text-slate-500 tracking-wider">{metric.label}</span>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+          {caseStudy.metrics.map((m: any) => (
+            <div class="bg-gray-50 border border-gray-100 p-6 rounded-xl text-center">
+              <span class="block text-2xl md:text-3xl font-black text-blue-600 mb-1">{m.value}</span>
+              <span class="block text-[10px] uppercase font-bold text-gray-500 tracking-wider">{m.label}</span>
             </div>
           ))}
-        </section>
+        </div>
       )}
 
-      <div class="prose prose-lg prose-slate max-w-none prose-headings:font-bold prose-a:text-blue-600 hover:prose-a:text-blue-500 prose-img:rounded-xl">
+      <div class="prose prose-blue prose-lg max-w-none">
         <PortableText value={caseStudy.content} components={components} />
       </div>
 
-      <footer class="mt-20 p-10 bg-slate-50 rounded-3xl text-center border border-slate-100">
-        <h2 class="text-2xl font-bold text-slate-900 mb-4">¿Quieres estos resultados para tu negocio?</h2>
-        <p class="text-slate-600 mb-8 text-lg font-light">Analizamos tu potencial de crecimiento local sin compromiso.</p>
-        <a href="/contacto" class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-4 rounded-xl transition-all shadow-md hover:shadow-lg group">
-          SOLICITAR AUDITORÍA GRATIS
-          <span class="ml-3 text-xl group-hover:translate-x-1 transition-transform">→</span>
+      <div class="mt-20 p-8 md:p-12 bg-gray-900 rounded-3xl text-center text-white">
+        <h2 class="text-2xl md:text-3xl font-bold mb-4">¿Quieres duplicar tus resultados?</h2>
+        <p class="text-gray-400 text-lg mb-8 max-w-xl mx-auto font-light">
+          Analizamos tu presencia en Google Business Profile y trazamos un plan de acción real.
+        </p>
+        <a href="/contactame" class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-4 rounded-xl transition-all">
+          EMPEZAR AHORA <span class="ml-2 text-xl">→</span>
         </a>
-      </footer>
+      </div>
     </div>
   </article>
 </Layout>
 
-<script>
-  // Script de la barra de progreso
-  function updateProgressBar() {
-    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+<script is:inline>
+  // Lógica robusta para la barra de progreso
+  const progressLine = document.getElementById('reading-progress');
+  
+  window.addEventListener('scroll', () => {
+    const windowScroll = window.scrollY;
     const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    const scrolled = (winScroll / height) * 100;
-    const progressBar = document.getElementById("progress-bar");
-    if (progressBar) {
-      progressBar.style.width = scrolled + "%";
+    const scrolled = (windowScroll / height) * 100;
+    
+    if (progressLine) {
+      progressLine.style.width = scrolled + '%';
     }
-  }
-
-  window.addEventListener('scroll', updateProgressBar);
-  // Llamada inicial por si la página ya está scrolleada al cargar
-  updateProgressBar();
+  });
 </script>
+
+<style is:global>
+  /* Estilos para limpiar el contenido enriquecido */
+  .prose blockquote {
+    border-left: 4px solid #2563eb !important;
+    background: #f8fafc;
+    padding: 1.5rem !important;
+    border-radius: 0.5rem;
+    font-style: italic;
+    color: #1e40af !important;
+  }
+</style>
