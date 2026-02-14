@@ -17,123 +17,99 @@ const caseStudy = await client.fetch(`*[_type == "caseStudy" && slug.current == 
 
 if (!caseStudy) return Astro.redirect('/404');
 
+// Estilos personalizados para el contenido
 const components = {
   block: {
-    h2: ({children}: any) => createElement('h2', { className: 'text-3xl font-black text-slate-900 mt-12 mb-6 uppercase tracking-tight border-b-4 border-blue-600 inline-block' }, children),
+    // H2 simplificado, sin bordes inferiores pesados
+    h2: ({children}: any) => createElement('h2', { className: 'text-3xl font-bold text-slate-900 mt-12 mb-6' }, children),
     h3: ({children}: any) => createElement('h3', { className: 'text-xl font-bold text-blue-600 mt-8 mb-4' }, children),
-    normal: ({children}: any) => createElement('p', { className: 'text-lg text-slate-700 leading-relaxed mb-6' }, children),
+    normal: ({children}: any) => createElement('p', { className: 'text-lg text-slate-700 leading-relaxed mb-6 font-light' }, children),
   },
   types: {
     image: ({value}: any) => createElement('img', { 
       src: urlFor(value).url(), 
-      className: 'rounded-2xl my-10 shadow-xl w-full border border-slate-200',
-      alt: value.alt || 'Imagen de evidencia del caso'
+      className: 'rounded-xl my-10 shadow-md w-full',
+      alt: value.alt || 'Evidencia del caso'
     }),
   }
 };
 ---
 
 <Layout title={caseStudy.title} description={caseStudy.metaDescription}>
-  <div id="progress-bar" class="fixed top-0 left-0 h-1.5 bg-blue-600 z-50 transition-all duration-150 w-0"></div>
+  <div id="progress-bar" class="fixed top-0 left-0 h-2 bg-blue-600 z-[100] transition-all duration-200 ease-out w-0"></div>
 
-  <article class="bg-white min-h-screen">
-    <nav class="bg-slate-50 border-b border-slate-200 py-4">
-      <div class="max-w-5xl mx-auto px-6 flex items-center gap-2 text-sm font-medium text-slate-500">
+  <article class="bg-white min-h-screen font-sans">
+    <nav class="bg-white border-b border-slate-100 py-4 sticky top-0 z-40">
+      <div class="max-w-4xl mx-auto px-6 flex items-center gap-2 text-sm text-slate-500">
         <a href="/" class="hover:text-blue-600 transition-colors">Inicio</a>
-        <span>/</span>
-        <a href="/blog" class="hover:text-blue-600 transition-colors">Blog</a>
-        <span>/</span>
-        <span class="text-slate-900 truncate">Caso de Éxito Dental</span>
+        <span class="text-slate-300">/</span>
+        <span class="text-slate-900 font-medium truncate">Caso de Éxito</span>
       </div>
     </nav>
 
-    <header class="py-16 md:py-24 bg-gradient-to-b from-slate-50 to-white">
-      <div class="max-w-4xl mx-auto px-6 text-center">
-        <span class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-6 inline-block">Resultados Verificados</span>
-        <h1 class="text-4xl md:text-7xl font-black text-slate-900 leading-tight mb-8 tracking-tighter">
+    <header class="py-16 bg-white">
+      <div class="max-w-4xl mx-auto px-6">
+        <span class="text-blue-600 font-bold uppercase tracking-wider text-xs mb-4 block">Resultados Comprobados</span>
+        <h1 class="text-4xl md:text-5xl font-black text-slate-900 leading-tight mb-6">
           {caseStudy.title}
         </h1>
-        <p class="text-xl md:text-2xl text-slate-600 font-medium max-w-3xl mx-auto leading-relaxed">
+        <p class="text-xl text-slate-600 font-light leading-relaxed max-w-3xl">
           {caseStudy.metaDescription}
         </p>
       </div>
     </header>
 
-    <div class="max-w-5xl mx-auto px-6 -mt-8">
+    <div class="max-w-4xl mx-auto px-6 pb-20">
       {caseStudy.mainImage && (
-        <div class="relative group">
-          <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-[45px] blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+        <div class="mb-16">
           <img 
             src={urlFor(caseStudy.mainImage.asset).width(1200).url()} 
             alt={caseStudy.mainImage.alt || caseStudy.title} 
-            class="relative w-full rounded-[40px] shadow-2xl border-4 border-white"
+            class="w-full rounded-2xl shadow-lg"
           />
         </div>
       )}
 
       {caseStudy.metrics && (
-        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 my-20">
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
           {caseStudy.metrics.map((metric: any) => (
-            <div class="bg-white border-2 border-slate-100 p-8 rounded-[32px] shadow-sm hover:border-blue-200 transition-all text-center">
-              <span class="text-4xl font-black text-blue-600 block mb-2">{metric.value}</span>
-              <span class="text-slate-500 font-bold uppercase tracking-widest text-xs">{metric.label}</span>
+            <div class="bg-white p-6 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-slate-100 text-center">
+              <span class="block text-3xl md:text-4xl font-black text-blue-600 mb-2">{metric.value}</span>
+              <span class="block text-xs uppercase font-semibold text-slate-500 tracking-wider">{metric.label}</span>
             </div>
           ))}
         </section>
       )}
 
-      <div class="max-w-3xl mx-auto">
-        <div class="prose prose-blue prose-lg case-content">
-          <PortableText value={caseStudy.content} components={components} />
-        </div>
+      <div class="prose prose-lg prose-slate max-w-none prose-headings:font-bold prose-a:text-blue-600 hover:prose-a:text-blue-500 prose-img:rounded-xl">
+        <PortableText value={caseStudy.content} components={components} />
       </div>
 
-      <section class="mt-24 mb-20 relative overflow-hidden bg-slate-900 rounded-[50px] p-12 md:p-20 text-center">
-        <div class="relative z-10">
-          <h2 class="text-3xl md:text-5xl font-black text-white mb-6">¿Tu clínica dental necesita más pacientes?</h2>
-          <p class="text-slate-400 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
-            Replicamos esta estrategia de Google Business Profile para tu ubicación. Resultados medibles en menos de 90 días.
-          </p>
-          <a href="/contacto" class="inline-flex items-center bg-blue-600 hover:bg-blue-500 text-white font-black px-10 py-5 rounded-2xl transition-all hover:scale-105 shadow-xl shadow-blue-900/20">
-            SOLICITAR AUDITORÍA LOCAL GRATIS
-            <svg class="w-5 h-5 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-          </a>
-        </div>
-      </section>
+      <footer class="mt-20 p-10 bg-slate-50 rounded-3xl text-center border border-slate-100">
+        <h2 class="text-2xl font-bold text-slate-900 mb-4">¿Quieres estos resultados para tu negocio?</h2>
+        <p class="text-slate-600 mb-8 text-lg font-light">Analizamos tu potencial de crecimiento local sin compromiso.</p>
+        <a href="/contacto" class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-4 rounded-xl transition-all shadow-md hover:shadow-lg group">
+          SOLICITAR AUDITORÍA GRATIS
+          <span class="ml-3 text-xl group-hover:translate-x-1 transition-transform">→</span>
+        </a>
+      </footer>
     </div>
   </article>
 </Layout>
 
 <script>
-  // Lógica de la barra de progreso de lectura
-  window.onscroll = function() {
+  // Script de la barra de progreso
+  function updateProgressBar() {
     const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
     const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
     const scrolled = (winScroll / height) * 100;
     const progressBar = document.getElementById("progress-bar");
-    if (progressBar) progressBar.style.width = scrolled + "%";
-  };
-</script>
+    if (progressBar) {
+      progressBar.style.width = scrolled + "%";
+    }
+  }
 
-<style>
-  .case-content :global(blockquote) {
-    background: #f0f7ff;
-    padding: 3rem;
-    border-radius: 40px;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #1e40af;
-    border: none;
-    position: relative;
-    margin: 4rem 0;
-  }
-  .case-content :global(blockquote::before) {
-    content: '"';
-    position: absolute;
-    top: -20px;
-    left: 20px;
-    font-size: 8rem;
-    color: #bfdbfe;
-    opacity: 0.5;
-  }
-</style>
+  window.addEventListener('scroll', updateProgressBar);
+  // Llamada inicial por si la página ya está scrolleada al cargar
+  updateProgressBar();
+</script>
