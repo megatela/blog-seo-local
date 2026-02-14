@@ -1,5 +1,4 @@
 ---
-// Corregido: La ruta correcta para subir desde src/pages/casos-de-exito/ es ../../
 import { client, urlFor } from '../../lib/sanity'; 
 import { PortableText } from '@portabletext/react';
 import Layout from '../../layouts/Layout.astro';
@@ -8,17 +7,21 @@ import { createElement } from 'react';
 export const prerender = false;
 const { slug } = Astro.params;
 
-// QUERY: Traemos todos los campos del esquema caseStudy
+// QUERY DEFINITIVA: Mapeo explícito de la imagen y su campo ALT anidado
 const caseStudy = await client.fetch(`*[_type == "caseStudy" && slug.current == $slug][0]{
   title,
   metaDescription,
-  mainImage,
+  mainImage {
+    asset,
+    alt
+  },
   content,
   metrics
 }`, { slug });
 
 if (!caseStudy) return Astro.redirect('/404');
 
+// Componentes para renderizar el contenido enriquecido (PortableText)
 const components = {
   block: {
     h2: ({children}: any) => createElement('h2', { className: 'text-3xl font-black text-slate-900 mt-12 mb-6 uppercase tracking-tight' }, children),
@@ -29,7 +32,7 @@ const components = {
     image: ({value}: any) => createElement('img', { 
       src: urlFor(value).url(), 
       className: 'rounded-2xl my-10 shadow-md w-full',
-      alt: 'Imagen del caso de éxito'
+      alt: value.alt || 'Imagen del caso de éxito'
     }),
   }
 };
@@ -40,7 +43,7 @@ const components = {
     
     <header class="bg-slate-50 border-b border-slate-200 py-16 mb-12">
       <div class="max-w-4xl mx-auto px-6">
-        <span class="text-blue-600 font-black uppercase tracking-widest text-sm mb-4 block">Resultados Reales</span>
+        <span class="text-blue-600 font-black uppercase tracking-widest text-sm mb-4 block">Caso de Éxito Real</span>
         <h1 class="text-4xl md:text-6xl font-black text-slate-900 leading-tight mb-6">
           {caseStudy.title}
         </h1>
@@ -54,8 +57,8 @@ const components = {
       {caseStudy.mainImage && (
         <div class="mb-12">
           <img 
-            src={urlFor(caseStudy.mainImage).width(1200).url()} 
-            alt={caseStudy.title} 
+            src={urlFor(caseStudy.mainImage.asset).width(1200).url()} 
+            alt={caseStudy.mainImage.alt || caseStudy.title} 
             class="w-full rounded-[40px] shadow-2xl"
           />
         </div>
@@ -78,9 +81,9 @@ const components = {
 
       <footer class="mt-20 p-10 bg-slate-900 rounded-[40px] text-center text-white">
         <h2 class="text-3xl font-bold mb-6">¿Quieres resultados similares?</h2>
-        <p class="text-slate-400 mb-8 text-lg">Aplicamos esta misma metodología de SEO Local adaptada a tu sector.</p>
+        <p class="text-slate-400 mb-8 text-lg">Impulsamos tu visibilidad local con estrategias probadas.</p>
         <a href="/contacto" class="inline-block bg-blue-600 hover:bg-blue-500 text-white font-black px-8 py-4 rounded-xl transition-all">
-          Hablar con un experto →
+          Solicitar auditoría gratuita →
         </a>
       </footer>
     </div>
