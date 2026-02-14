@@ -1,63 +1,100 @@
 ---
-// Importamos sanityClient (el nombre correcto para la versión actual)
-import { sanityClient } from "sanity:client";
+import { client, urlFor } from '../../../lib/sanity'; // Ajusta la ruta a tu cliente de Sanity
+import { PortableText } from '@portabletext/react';
+import Layout from '../../../layouts/Layout.astro';
+import { createElement } from 'react';
 
-// Forzamos renderizado en el servidor para evitar el aviso de getStaticPaths
 export const prerender = false;
-
 const { slug } = Astro.params;
 
-// Consulta a Sanity
-const query = `*[_type == "caseStudy" && slug.current == $slug][0]{
+// QUERY: Traemos todos los nuevos campos del esquema caseStudy
+const caseStudy = await client.fetch(`*[_type == "caseStudy" && slug.current == $slug][0]{
   title,
-  clientName,
+  metaDescription,
   mainImage,
-  metrics,
-  body
-}`;
+  content,
+  metrics
+}`, { slug });
 
-let project;
-try {
-  project = await sanityClient.fetch(query, { slug });
-} catch (error) {
-  console.error("Error en Sanity Fetch:", error);
-}
+if (!caseStudy) return Astro.redirect('/404');
 
-if (!project) {
-  return Astro.redirect('/404');
-}
+// Componentes personalizados para el contenido enriquecido (PortableText)
+const components = {
+  block: {
+    h2: ({children}: any) => createElement('h2', { className: 'text-3xl font-black text-slate-900 mt-12 mb-6 uppercase tracking-tight' }, children),
+    h3: ({children}: any) => createElement('h3', { className: 'text-xl font-bold text-blue-600 mt-8 mb-4' }, children),
+    normal: ({children}: any) => createElement('p', { className: 'text-lg text-slate-700 leading-relaxed mb-6' }, children),
+  },
+  types: {
+    image: ({value}: any) => createElement('img', { 
+      src: urlFor(value).url(), 
+      className: 'rounded-2xl my-10 shadow-md w-full',
+      alt: 'Imagen del caso de éxito'
+    }),
+  }
+};
 ---
 
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <title>{project.title}</title>
-    <style>
-      body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; line-height: 1.6; color: #333; }
-      .metric { background: #f0f4f8; padding: 10px; border-radius: 5px; margin: 10px 0; border-left: 5px solid #0070f3; }
-      h1 { color: #0070f3; }
-    </style>
-  </head>
-  <body>
-    <header>
-      <a href="/">← Volver al Blog</a>
-    </header>
+<Layout title={caseStudy.title} description={caseStudy.metaDescription}>
+  <article class="bg-white min-height-screen pb-20">
     
-    <h1>{project.title}</h1>
-    <p><strong>Cliente:</strong> {project.clientName}</p>
+    <header class="bg-slate-50 border-b border-slate-200 py-16 mb-12">
+      <div class="max-w-4xl mx-auto px-6">
+        <span class="text-blue-600 font-black uppercase tracking-widest text-sm mb-4 block">Resultados Reales</span>
+        <h1 class="text-4xl md:text-6xl font-black text-slate-900 leading-tight mb-6">
+          {caseStudy.title}
+        </h1>
+        <p class="text-xl text-slate-600 font-medium max-w-2xl italic border-l-4 border-blue-500 pl-6">
+          {caseStudy.metaDescription}
+        </p>
+      </div>
+    </header>
 
-    <div class="results">
-      <h2>Resultados:</h2>
-      {project.metrics?.map((m) => (
-        <div class="metric">
-          <strong>{m.label}:</strong> {m.value}
+    <div class="max-w-4xl mx-auto px-6">
+      {caseStudy.mainImage && (
+        <div class="mb-12">
+          <img 
+            src={urlFor(caseStudy.mainImage).width(1200).url()} 
+            alt={caseStudy.title} 
+            class="w-full rounded-[40px] shadow-2xl"
+          />
         </div>
-      ))}
-    </div>
+      )}
 
-    <div class="content">
-      <h2>Estrategia:</h2>
-      <p>{project.body}</p>
+      {caseStudy.metrics && caseStudy.metrics.length > 0 && (
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+          {caseStudy.metrics.map((metric: any) => (
+            <div class="bg-blue-600 p-6 rounded-3xl text-center text-white shadow-xl transform hover:-translate-y-1 transition-transform">
+              <span class="block text-3xl font-black mb-1">{metric.value}</span>
+              <span class="block text-xs uppercase font-bold tracking-tighter opacity-80">{metric.label}</span>
+            </div>
+          ))}
+        </section>
+      )}
+
+      <div class="case-content">
+        <PortableText value={caseStudy.content} components={components} />
+      </div>
+
+      <footer class="mt-20 p-10 bg-slate-900 rounded-[40px] text-center text-white">
+        <h2 class="text-3xl font-bold mb-6">¿Quieres resultados similares para tu negocio?</h2>
+        <p class="text-slate-400 mb-8 text-lg">Aplicamos esta misma metodología de SEO Local adaptada a tu sector.</p>
+        <a href="/contacto" class="inline-block bg-blue-600 hover:bg-blue-500 text-white font-black px-8 py-4 rounded-xl transition-all">
+          Hablar con un experto →
+        </a>
+      </footer>
     </div>
-  </body>
-</html>
+  </article>
+</Layout>
+
+<style>
+  .case-content :global(blockquote) {
+    background: #f8fafc;
+    padding: 2rem;
+    border-radius: 20px;
+    font-style: italic;
+    margin: 2rem 0;
+    color: #475569;
+    border-left: 8px solid #2563eb;
+  }
+</style>
