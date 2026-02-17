@@ -9,22 +9,32 @@ export default defineType({
       name: 'title', 
       title: 'Título del Caso de Éxito', 
       type: 'string',
-      description: 'Ej: Cómo duplicamos las citas de una Clínica Dental en Valencia' 
     }),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
-      options: {
-        source: 'title',
-        maxLength: 96,
-      },
+      options: { source: 'title', maxLength: 96 },
       validation: (Rule) => Rule.required(),
+    }),
+    // RECUERDA: Añadimos de nuevo la Meta Description para que no aparezca como error
+    defineField({
+      name: 'metaDescription',
+      title: 'Meta Description (SEO)',
+      type: 'text',
+      description: 'Resumen para los resultados de búsqueda de Google.',
+      validation: (Rule) => Rule.max(160),
     }),
     defineField({ 
       name: 'clientName', 
       title: 'Nombre del Cliente', 
       type: 'string' 
+    }),
+    defineField({
+      name: 'cluster',
+      title: 'Clúster Relacionado',
+      type: 'reference',
+      to: [{ type: 'cluster' }], // Asegúrate de que el tipo 'cluster' exista en tu proyecto
     }),
     defineField({
       name: 'mainImage',
@@ -52,11 +62,11 @@ export default defineType({
       }]
     }),
     defineField({
-      name: 'content', // Cambiado de 'body' a 'content' para Portable Text
+      name: 'content',
       title: 'Contenido del Caso de Éxito',
       type: 'array',
       of: [
-        { type: 'block' }, // Permite párrafos, títulos, listas
+        { type: 'block' },
         {
           type: 'image',
           options: { hotspot: true },
@@ -65,8 +75,7 @@ export default defineType({
               name: 'alt',
               type: 'string',
               title: 'Texto Alternativo (SEO)',
-              description: 'Importante para accesibilidad y Google.',
-              options: { isHighlighted: true } // Esto hace que aparezca visible sin entrar en menús
+              options: { isHighlighted: true }
             }
           ]
         }
