@@ -2,14 +2,14 @@ import { defineField, defineType } from 'sanity'
 
 export default defineType({
   name: 'caseStudy',
-  title: 'Casos de Éxito',
+  title: 'Caso de Éxito',
   type: 'document',
   fields: [
-    defineField({
-      name: 'title',
-      title: 'Título del Caso de Éxito',
+    defineField({ 
+      name: 'title', 
+      title: 'Título del Caso de Éxito', 
       type: 'string',
-      validation: (Rule) => Rule.required(),
+      description: 'Ej: Cómo duplicamos las citas de una Clínica Dental en Valencia' 
     }),
     defineField({
       name: 'slug',
@@ -21,66 +21,56 @@ export default defineType({
       },
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
-      name: 'metaDescription',
-      title: 'Meta Descripción (SEO)',
-      type: 'text',
-      rows: 3,
-      description: 'Breve resumen para Google (máx. 160 caracteres).',
-      validation: (Rule) => Rule.required().max(160),
+    defineField({ 
+      name: 'clientName', 
+      title: 'Nombre del Cliente', 
+      type: 'string' 
     }),
     defineField({
       name: 'mainImage',
-      title: 'Imagen Destacada',
+      title: 'Imagen de Portada',
       type: 'image',
-      options: {
-        hotspot: true,
-      },
+      options: { hotspot: true },
       fields: [
         {
           name: 'alt',
           type: 'string',
           title: 'Texto Alternativo (SEO)',
-          description: 'Describe la imagen para accesibilidad y Google Images.',
-          validation: (Rule) => Rule.required(),
         }
-      ],
-    }),
-    defineField({
-      name: 'content',
-      title: 'Contenido del Caso de Éxito',
-      type: 'array',
-      description: 'Cuerpo completo del artículo (Historia, Estrategia y Conclusión).',
-      of: [
-        {
-          type: 'block',
-          styles: [
-            { title: 'Normal', value: 'normal' },
-            { title: 'H2', value: 'h2' },
-            { title: 'H3', value: 'h3' },
-            { title: 'Cita', value: 'blockquote' },
-          ],
-        },
-        {
-          type: 'image',
-          options: { hotspot: true },
-        }
-      ],
+      ]
     }),
     defineField({
       name: 'metrics',
-      title: 'Métricas Rápidas',
+      title: 'Métricas Clave',
       type: 'array',
-      description: 'Añade datos clave (Ej: +115% llamadas, 4 meses, etc.)',
+      of: [{
+        type: 'object',
+        fields: [
+          { name: 'label', type: 'string', title: 'Métrica' },
+          { name: 'value', type: 'string', title: 'Valor' }
+        ]
+      }]
+    }),
+    defineField({
+      name: 'content', // Cambiado de 'body' a 'content' para Portable Text
+      title: 'Contenido del Caso de Éxito',
+      type: 'array',
       of: [
+        { type: 'block' }, // Permite párrafos, títulos, listas
         {
-          type: 'object',
+          type: 'image',
+          options: { hotspot: true },
           fields: [
-            { name: 'label', title: 'Etiqueta', type: 'string' },
-            { name: 'value', title: 'Valor/Dato', type: 'string' }
+            {
+              name: 'alt',
+              type: 'string',
+              title: 'Texto Alternativo (SEO)',
+              description: 'Importante para accesibilidad y Google.',
+              options: { isHighlighted: true } // Esto hace que aparezca visible sin entrar en menús
+            }
           ]
         }
-      ]
+      ],
     }),
   ],
 })
