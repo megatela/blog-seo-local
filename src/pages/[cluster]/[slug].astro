@@ -10,8 +10,8 @@ export const prerender = false;
 // 3. Capturamos los parámetros de la URL
 const { slug } = Astro.params;
 
-// 4. Traemos el post (Asegúrate de que el query traiga el contenido)
-const post = await client.fetch(`*[_type == "post" && slug.current == $slug][0]{
+// 4. Traemos el post (Cambiado a _type == "caseStudy" para coincidir con tu esquema)
+const post = await client.fetch(`*[_type == "caseStudy" && slug.current == $slug][0]{
   title,
   metaDescription, 
   "h1": title,
@@ -29,16 +29,14 @@ if (!post) {
   return Astro.redirect('/404');
 }
 
-// CONFIGURACIÓN DE COMPONENTES
+// CONFIGURACIÓN DE COMPONENTES PARA PORTABLE TEXT
 const components = {
-  // Manejo de bloques de texto
   block: {
     h2: ({children}: any) => createElement('h2', {}, children),
     h3: ({children}: any) => createElement('h3', {}, children),
     h4: ({children}: any) => createElement('h4', {}, children),
     normal: ({children}: any) => createElement('p', {}, children),
   },
-  // Manejo de enlaces
   marks: {
     link: (props: any) => {
       const {children, value} = props;
@@ -52,13 +50,13 @@ const components = {
       return createElement('a', linkProps, children);
     }
   },
-  // --- NUEVA SECCIÓN: Manejo de Imágenes dentro del contenido ---
+  // Manejo de Imágenes dentro del contenido
   types: {
     image: ({ value }: any) => {
       return createElement('img', {
         src: urlFor(value).width(800).url(),
         alt: value.alt || 'Imagen de SEO Local',
-        className: 'rounded-xl my-8 shadow-md w-full h-auto',
+        className: 'main-image-content', // Usamos clase para estilo consistente
         loading: 'lazy'
       });
     }
@@ -68,7 +66,7 @@ const components = {
 
 <Layout 
   title={post.title} 
-  description={post.metaDescription || "Lee nuestro artículo sobre SEO Local."}
+  description={post.metaDescription || "Lee nuestro caso de éxito sobre SEO Local."}
 >
   <article class="post-container">
     <nav class="breadcrumbs">
@@ -93,13 +91,17 @@ const components = {
 
       <header>
         <h1 class="text-4xl font-black mb-4">{post.h1 || post.title}</h1>
-        <p class="meta-info text-gray-500">Publicado en <strong class="text-blue-600">{post.clusterName}</strong></p>
+        <p class="meta-info text-gray-500">Caso de éxito en <strong class="text-blue-600">{post.clusterName}</strong></p>
       </header>
 
       <hr class="divider" />
 
       <div class="rich-text">
-        <PortableText value={post.content} components={components} />
+        {post.content ? (
+          <PortableText value={post.content} components={components} />
+        ) : (
+          <p>El contenido de este caso de éxito se está actualizando...</p>
+        )}
       </div>
     </main>
   </article>
@@ -115,18 +117,21 @@ const components = {
   .main-image { width: 100%; border-radius: 16px; margin-bottom: 2.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.08); object-fit: cover; }
   .divider { border: 0; border-top: 1px solid #eee; margin: 2.5rem 0; }
   .rich-text { line-height: 1.8; font-size: 1.15rem; color: #333; }
+  
+  /* Estilos para encabezados dentro del PortableText */
   .rich-text :global(h2), .rich-text :global(h3), .rich-text :global(h4) { 
     color: #111; line-height: 1.3; margin-top: 3.5rem; margin-bottom: 1.2rem; font-weight: 700; display: block; 
   }
   .rich-text :global(h2) { font-size: 2rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 0.5rem; }
   .rich-text :global(h3) { font-size: 1.6rem; margin-top: 2.5rem; }
-  .rich-text :global(h4) { font-size: 1.3rem; margin-top: 2rem; color: #444; }
   .rich-text :global(p) { margin-bottom: 1.5rem; }
-  /* Estilo para las imágenes dentro del texto */
+
+  /* Estilo para las imágenes insertadas en el contenido */
   .rich-text :global(img) {
     max-width: 100%;
     height: auto;
     border-radius: 12px;
-    margin: 2rem 0;
+    margin: 2.5rem 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
 </style>
