@@ -6,38 +6,26 @@ export default defineType({
   type: 'document',
   fields: [
     defineField({ name: 'title', title: 'Título', type: 'string' }),
+    defineField({ name: 'slug', title: 'Slug', type: 'slug', options: { source: 'title' } }),
+    defineField({ name: 'metaDescription', title: 'Meta Description', type: 'text' }),
+    // Este campo DEBE llamarse 'content' para que tu Astro lo lea
     defineField({
-      name: 'slug',
-      title: 'Slug',
-      type: 'slug',
-      options: { source: 'title' },
-    }),
-    // Añadimos metaDescription para eliminar el error de "Unknown field"
-    defineField({
-      name: 'metaDescription',
-      title: 'Meta Description',
-      type: 'text',
-      rows: 3,
-    }),
-    defineField({
-      name: 'content', // Mantenemos este nombre que es el que busca tu Astro
+      name: 'content',
       title: 'Contenido del Caso de Éxito',
       type: 'array',
-      of: [{ type: 'block' }, { type: 'image' }],
+      of: [{ type: 'block' }, { type: 'image' }]
     }),
     defineField({
       name: 'metrics',
       title: 'Métricas',
       type: 'array',
-      of: [
-        {
-          type: 'object',
-          fields: [
-            { name: 'label', type: 'string', title: 'Métrica' },
-            { name: 'value', type: 'string', title: 'Valor' }
-          ]
-        }
-      ]
+      of: [{
+        type: 'object',
+        fields: [
+          { name: 'label', type: 'string' },
+          { name: 'value', type: 'string' }
+        ]
+      }]
     }),
   ],
 })
