@@ -2,6 +2,7 @@
 import { client, urlFor } from '../../lib/sanity'; 
 import { PortableText } from '@portabletext/react';
 import Layout from '../../layouts/Layout.astro';
+import { createElement } from 'react'; // Necesario para definir los componentes
 
 export const prerender = false;
 const { slug } = Astro.params;
@@ -15,6 +16,27 @@ const caseStudy = await client.fetch(`*[_type == "caseStudy" && slug.current == 
 }`, { slug });
 
 if (!caseStudy) return Astro.redirect('/404');
+
+// DEFINIMOS LOS COMPONENTES PARA PORTABLE TEXT
+const components = {
+  types: {
+    // Esta es la función que "dibuja" la imagen interna
+    image: ({ value }: any) => {
+      if (!value?.asset) return null;
+      return createElement('img', {
+        src: urlFor(value).width(1000).auto('format').url(),
+        alt: value.alt || 'Imagen del caso de éxito',
+        class: 'content-image', // Clase para darle estilo abajo
+        loading: 'lazy'
+      });
+    }
+  },
+  block: {
+    // Estilos para los títulos dentro del contenido
+    h2: ({children}: any) => createElement('h2', { class: 'content-h2' }, children),
+    h3: ({children}: any) => createElement('h3', { class: 'content-h3' }, children),
+  }
+};
 ---
 
 <Layout title={caseStudy.title} description={caseStudy.metaDescription}>
@@ -50,7 +72,8 @@ if (!caseStudy) return Astro.redirect('/404');
 
     <div class="content-wrapper">
       <div class="prose">
-        <PortableText value={caseStudy.content} />
+        {/* PASAMOS LOS COMPONENTES AQUÍ */}
+        <PortableText value={caseStudy.content} components={components} />
       </div>
     </div>
 
@@ -63,7 +86,7 @@ if (!caseStudy) return Astro.redirect('/404');
 </Layout>
 
 <style>
-  /* FIX DE ALINEACIÓN Y CENTRADO */
+  /* Tus estilos actuales se mantienen igual */
   .case-study-container {
     max-width: 900px;
     margin: 0 auto;
@@ -82,15 +105,38 @@ if (!caseStudy) return Astro.redirect('/404');
     width: 0%;
   }
 
+  /* ESTILOS PARA LA IMAGEN DEL CONTENIDO (LA QUE NO SE VEÍA) */
+  :global(.content-image) {
+    width: 100%;
+    height: auto;
+    border-radius: 20px;
+    margin: 40px 0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    display: block;
+  }
+
+  :global(.content-h2) {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-top: 50px;
+    margin-bottom: 20px;
+    color: #1a202c;
+  }
+
+  :global(.content-h3) {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 30px;
+    margin-bottom: 15px;
+  }
+
   .breadcrumbs {
     font-size: 14px;
     color: #718096;
     margin-bottom: 40px;
   }
 
-  .case-header {
-    margin-bottom: 60px;
-  }
+  .case-header { margin-bottom: 60px; }
 
   .badge {
     background: #ebf8ff;
@@ -125,7 +171,6 @@ if (!caseStudy) return Astro.redirect('/404');
     margin-bottom: 60px;
   }
 
-  /* GRID DE MÉTRICAS */
   .metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -156,7 +201,6 @@ if (!caseStudy) return Astro.redirect('/404');
     letter-spacing: 1px;
   }
 
-  /* CONTENIDO */
   .content-wrapper {
     line-height: 1.8;
     font-size: 1.15rem;
