@@ -5,18 +5,14 @@ export default defineType({
   title: 'Caso de Éxito',
   type: 'document',
   fields: [
-    defineField({
-      name: 'title',
-      title: 'Título',
-      type: 'string',
-    }),
+    defineField({ name: 'title', title: 'Título', type: 'string' }),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
       options: { source: 'title' },
-      validation: (Rule) => Rule.required(),
     }),
+    // Añadimos metaDescription para eliminar el error de "Unknown field"
     defineField({
       name: 'metaDescription',
       title: 'Meta Description',
@@ -24,31 +20,10 @@ export default defineType({
       rows: 3,
     }),
     defineField({
-      name: 'cluster',
-      title: 'Clúster',
-      type: 'reference',
-      to: [{ type: 'cluster' }],
-    }),
-    defineField({
-      name: 'mainImage',
-      title: 'Imagen de Portada',
-      type: 'image',
-      options: { hotspot: true },
-    }),
-    // CAMPO DE CONTENIDO REFORZADO
-    defineField({
-      name: 'content',
+      name: 'content', // Mantenemos este nombre que es el que busca tu Astro
       title: 'Contenido del Caso de Éxito',
       type: 'array',
-      of: [
-        { 
-          type: 'block' // Esto DEBE mostrar el editor de texto
-        },
-        { 
-          type: 'image',
-          options: { hotspot: true }
-        }
-      ],
+      of: [{ type: 'block' }, { type: 'image' }],
     }),
     defineField({
       name: 'metrics',
