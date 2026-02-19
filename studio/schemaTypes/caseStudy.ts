@@ -5,34 +5,27 @@ export default defineType({
   title: 'Caso de Éxito',
   type: 'document',
   fields: [
-    defineField({ 
-      name: 'title', 
-      title: 'Título del Caso de Éxito', 
+    defineField({
+      name: 'title',
+      title: 'Título',
       type: 'string',
     }),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
-      options: { source: 'title', maxLength: 96 },
+      options: { source: 'title' },
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'metaDescription',
-      title: 'Meta Description (SEO)',
+      title: 'Meta Description',
       type: 'text',
       rows: 3,
-      description: 'Resumen para los resultados de búsqueda de Google.',
-      validation: (Rule) => Rule.max(160),
-    }),
-    defineField({ 
-      name: 'clientName', 
-      title: 'Nombre del Cliente', 
-      type: 'string' 
     }),
     defineField({
       name: 'cluster',
-      title: 'Clúster Relacionado',
+      title: 'Clúster',
       type: 'reference',
       to: [{ type: 'cluster' }],
     }),
@@ -41,54 +34,35 @@ export default defineType({
       title: 'Imagen de Portada',
       type: 'image',
       options: { hotspot: true },
-      fields: [
-        {
-          name: 'alt',
-          type: 'string',
-          title: 'Texto Alternativo (SEO)',
-        }
-      ]
     }),
-    defineField({
-      name: 'metrics',
-      title: 'Métricas Clave',
-      type: 'array',
-      of: [{
-        type: 'object',
-        fields: [
-          { name: 'label', type: 'string', title: 'Métrica' },
-          { name: 'value', type: 'string', title: 'Valor' }
-        ]
-      }]
-    }),
+    // CAMPO DE CONTENIDO REFORZADO
     defineField({
       name: 'content',
       title: 'Contenido del Caso de Éxito',
       type: 'array',
       of: [
         { 
-          type: 'block',
-          // Esto asegura que el editor de texto enriquecido se cargue correctamente
-          styles: [
-            {title: 'Normal', value: 'normal'},
-            {title: 'H2', value: 'h2'},
-            {title: 'H3', value: 'h3'},
-            {title: 'Quote', value: 'blockquote'}
-          ],
+          type: 'block' // Esto DEBE mostrar el editor de texto
         },
-        {
+        { 
           type: 'image',
-          options: { hotspot: true },
-          fields: [
-            {
-              name: 'alt',
-              type: 'string',
-              title: 'Texto Alternativo (SEO)',
-              options: { isHighlighted: true }
-            }
-          ]
+          options: { hotspot: true }
         }
       ],
+    }),
+    defineField({
+      name: 'metrics',
+      title: 'Métricas',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'label', type: 'string', title: 'Métrica' },
+            { name: 'value', type: 'string', title: 'Valor' }
+          ]
+        }
+      ]
     }),
   ],
 })
