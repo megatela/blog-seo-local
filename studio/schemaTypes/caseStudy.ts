@@ -5,27 +5,35 @@ export default defineType({
   title: 'Caso de Éxito',
   type: 'document',
   fields: [
-    defineField({ name: 'title', title: 'Título', type: 'string' }),
-    defineField({ name: 'slug', title: 'Slug', type: 'slug', options: { source: 'title' } }),
-    defineField({ name: 'metaDescription', title: 'Meta Description', type: 'text' }),
-    // Este campo DEBE llamarse 'content' para que tu Astro lo lea
+    defineField({ name: 'title', type: 'string' }),
+    defineField({ name: 'slug', type: 'slug', options: { source: 'title' } }),
+    defineField({ name: 'metaDescription', type: 'text' }),
     defineField({
       name: 'content',
-      title: 'Contenido del Caso de Éxito',
+      title: 'Contenido',
       type: 'array',
-      of: [{ type: 'block' }, { type: 'image' }]
-    }),
-    defineField({
-      name: 'metrics',
-      title: 'Métricas',
-      type: 'array',
-      of: [{
-        type: 'object',
-        fields: [
-          { name: 'label', type: 'string' },
-          { name: 'value', type: 'string' }
-        ]
-      }]
-    }),
-  ],
+      of: [
+        {
+          type: 'block',
+          // Definir esto ayuda a React a no colapsar si hay datos viejos
+          styles: [
+            {title: 'Normal', value: 'normal'},
+            {title: 'H2', value: 'h2'},
+            {title: 'H3', value: 'h3'}
+          ],
+          lists: [{title: 'Bullet', value: 'bullet'}],
+          marks: {
+            decorators: [
+              {title: 'Strong', value: 'strong'},
+              {title: 'Emphasis', value: 'em'}
+            ]
+          }
+        },
+        {
+          type: 'image',
+          options: { hotspot: true }
+        }
+      ]
+    })
+  ]
 })
