@@ -17,11 +17,11 @@ export default defineType({
       options: { source: 'title', maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
-    // RECUERDA: Añadimos de nuevo la Meta Description para que no aparezca como error
     defineField({
       name: 'metaDescription',
       title: 'Meta Description (SEO)',
-      type: 'text',
+      type: 'text', // Usamos 'text' para que sea un área de texto más grande
+      rows: 3,
       description: 'Resumen para los resultados de búsqueda de Google.',
       validation: (Rule) => Rule.max(160),
     }),
@@ -34,7 +34,7 @@ export default defineType({
       name: 'cluster',
       title: 'Clúster Relacionado',
       type: 'reference',
-      to: [{ type: 'cluster' }], // Asegúrate de que el tipo 'cluster' exista en tu proyecto
+      to: [{ type: 'cluster' }], // Asegúrate de haber creado el clúster "Casos de Éxito" en su propia sección
     }),
     defineField({
       name: 'mainImage',
@@ -61,12 +61,13 @@ export default defineType({
         ]
       }]
     }),
+    // ESTE ES EL CAMPO QUE TIENE QUE REAPARECER
     defineField({
       name: 'content',
       title: 'Contenido del Caso de Éxito',
       type: 'array',
       of: [
-        { type: 'block' },
+        { type: 'block' }, // Esto activa el editor de texto (H1, B, I, listas)
         {
           type: 'image',
           options: { hotspot: true },
