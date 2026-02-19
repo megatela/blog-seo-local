@@ -5,53 +5,49 @@ export default defineType({
   title: 'Caso de Éxito',
   type: 'document',
   fields: [
-    defineField({ 
-      name: 'title', 
-      title: 'Título del Caso de Éxito', 
-      type: 'string' 
-    }),
-    defineField({
-      name: 'slug',
-      title: 'Slug',
-      type: 'slug',
-      options: { source: 'title', maxLength: 96 },
-      validation: (Rule) => Rule.required(),
-    }),
+    defineField({ name: 'title', title: 'Título', type: 'string' }),
+    defineField({ name: 'slug', title: 'Slug', type: 'slug', options: { source: 'title' } }),
+    
+    // Añadimos este para que deje de dar error de "campo desconocido"
     defineField({
       name: 'metaDescription',
       title: 'Meta Description (SEO)',
       type: 'text',
       rows: 3,
     }),
-    // ESTE ES EL CAMPO QUE ESTÁ FALLANDO
+
+    defineField({ name: 'clientName', title: 'Nombre del Cliente', type: 'string' }),
+    
     defineField({
-      name: 'content',
-      title: 'Contenido del Caso de Éxito', // Aquí puedes poner el texto que mencionas
-      description: 'Explica la estrategia: qué hiciste y qué resultados lograste.',
-      type: 'array',
-      of: [
-        {
-          type: 'block', // ESTO ES LO QUE ACTIVA EL EDITOR DE TEXTO
-        },
-        {
-          type: 'image', // ESTO PERMITE SUBIR IMÁGENES DENTRO DEL TEXTO
-          options: { hotspot: true },
-        }
-      ]
+      name: 'mainImage',
+      title: 'Imagen de Portada',
+      type: 'image',
+      options: { hotspot: true },
     }),
+
     defineField({
       name: 'metrics',
       title: 'Métricas Clave',
       type: 'array',
+      of: [{
+        type: 'object',
+        fields: [
+          { name: 'label', type: 'string', title: 'Métrica' },
+          { name: 'value', type: 'string', title: 'Valor' }
+        ]
+      }]
+    }),
+
+    // ESTE ES EL CAMPO QUE TIENE QUE REAPARECER
+    defineField({
+      name: 'content',
+      title: 'Descripción del éxito',
+      description: 'Explica la estrategia: qué hiciste y qué resultados lograste.',
+      type: 'array',
       of: [
-        {
-          type: 'object',
-          fields: [
-            { name: 'label', type: 'string', title: 'Métrica' },
-            { name: 'value', type: 'string', title: 'Valor' }
-          ]
-        }
-      ]
+        { type: 'block' }, 
+        { type: 'image', options: { hotspot: true } }
+      ],
     }),
   ],
 })
