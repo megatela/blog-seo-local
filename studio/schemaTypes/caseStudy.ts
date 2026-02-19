@@ -61,13 +61,21 @@ export default defineType({
         ]
       }]
     }),
-    // REVISA ESTE BLOQUE: Es el editor de contenido
     defineField({
       name: 'content',
       title: 'Contenido del Caso de Éxito',
       type: 'array',
       of: [
-        { type: 'block' }, // Esto es lo que activa el editor de texto
+        { 
+          type: 'block',
+          // Esto asegura que el editor de texto enriquecido se cargue correctamente
+          styles: [
+            {title: 'Normal', value: 'normal'},
+            {title: 'H2', value: 'h2'},
+            {title: 'H3', value: 'h3'},
+            {title: 'Quote', value: 'blockquote'}
+          ],
+        },
         {
           type: 'image',
           options: { hotspot: true },
