@@ -40,7 +40,7 @@ export default defineType({
 
     // ESTE ES EL CAMPO QUE TIENE QUE REAPARECER
     defineField({
-      name: 'content',
+      name: 'body',
       title: 'Descripción del éxito',
       description: 'Explica la estrategia: qué hiciste y qué resultados lograste.',
       type: 'array',
