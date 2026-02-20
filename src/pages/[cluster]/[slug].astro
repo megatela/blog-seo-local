@@ -2,73 +2,30 @@
 import { client, urlFor } from '../../lib/sanity';
 import { PortableText } from '@portabletext/react';
 import Layout from '../../layouts/Layout.astro';
-import { createElement } from 'react';
 
 export const prerender = false;
 const { slug } = Astro.params;
 
-// Traemos "body" y lo renombramos a "content" para el resto del código
 const post = await client.fetch(`*[_type == "caseStudy" && slug.current == $slug][0]{
   title,
   metaDescription,
-  mainImage,
-  "content": body, 
-  "clusterName": coalesce(cluster->title, "Estrategia Local"),
-  "clusterSlug": coalesce(cluster->slug.current, "seo-local"),
-  metrics
+  "content": body
 }`, { slug });
 
 if (!post) return Astro.redirect('/404');
-
-const components = {
-  block: {
-    h2: ({children}: any) => createElement('h2', { class: 'text-3xl font-bold mt-12 mb-6 border-l-4 border-blue-600 pl-4' }, children),
-    normal: ({children}: any) => createElement('p', { class: 'mb-6 text-gray-700 leading-relaxed' }, children),
-  },
-  types: {
-    image: ({ value }: any) => {
-      if (!value?.asset) return null;
-      return createElement('img', {
-        src: urlFor(value).width(1000).url(),
-        alt: value.alt || 'Imagen del caso',
-        class: 'rounded-2xl my-10 shadow-lg w-full'
-      });
-    }
-  }
-};
 ---
 
 <Layout title={post.title} description={post.metaDescription}>
-  <article class="max-w-4xl mx-auto px-6 py-12">
-    <header class="mb-12">
-      <h1 class="text-5xl font-black mb-6">{post.title}</h1>
-      <span class="bg-blue-100 text-blue-800 px-4 py-1 rounded-full font-bold">
-        {post.clusterName}
-      </span>
-    </header>
-
-    {post.mainImage && (
-      <img src={urlFor(post.mainImage).url()} class="w-full rounded-3xl mb-12 shadow-2xl" />
-    )}
-
-    {post.metrics && (
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        {post.metrics.map((m: any) => (
-          <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 text-center">
-            <span class="block text-3xl font-extrabold text-blue-600">{m.value}</span>
-            <span class="text-sm text-gray-500 uppercase font-bold tracking-widest">{m.label}</span>
-          </div>
-        ))}
-      </div>
-    )}
-
-    <div class="prose prose-lg max-w-none">
+  <article style="max-width: 800px; margin: 50px auto; padding: 20px;">
+    <h1>{post.title}</h1>
+    
+    <div class="content">
       {post.content ? (
-        <PortableText value={post.content} components={components} />
+        <PortableText value={post.content} />
       ) : (
-        <div class="p-8 border-2 border-dashed border-gray-200 rounded-2xl text-center text-gray-400">
-          Esperando contenido desde Sanity...
-        </div>
+        <p style="color: red; border: 1px solid red; padding: 10px;">
+          Error: No hay datos en el campo 'body'. El editor en Sanity no está funcionando.
+        </p>
       )}
     </div>
   </article>
