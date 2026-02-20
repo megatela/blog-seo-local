@@ -4,50 +4,35 @@ import { PortableText } from '@portabletext/react';
 import Layout from '../../layouts/Layout.astro';
 import { createElement } from 'react';
 
-// 1. Mantenemos el SSR para Vercel
+// 1. SSR para Vercel activo
 export const prerender = false;
 
-// 2. Capturamos el slug de la URL
 const { slug } = Astro.params;
 
-// 3. Consulta GROQ robusta
-// Usamos coalesce para evitar errores si el clúster no está seleccionado en Sanity
+// 2. Consulta GROQ
+// IMPORTANTE: Buscamos "body" (el campo nuevo) y lo renombramos a "content" aquí mismo
 const post = await client.fetch(`*[_type == "caseStudy" && slug.current == $slug][0]{
   title,
   metaDescription, 
   "h1": title,
   mainImage, 
-  content, 
+  "content": body, 
   "clusterName": coalesce(cluster->title, "Estrategia Local"),
   "clusterSlug": coalesce(cluster->slug.current, "seo-local")
 }`, { slug });
 
-// 4. Redirección si el post no existe
 if (!post) {
   return Astro.redirect('/404');
 }
 
-// 5. Configuración de componentes para el contenido enriquecido
+// 3. Componentes para PortableText
 const components = {
   block: {
     h2: ({children}: any) => createElement('h2', { class: 'text-3xl font-bold mt-12 mb-6' }, children),
     h3: ({children}: any) => createElement('h3', { class: 'text-2xl font-bold mt-8 mb-4' }, children),
     normal: ({children}: any) => createElement('p', { class: 'mb-6 text-gray-700 leading-relaxed' }, children),
   },
-  marks: {
-    link: (props: any) => {
-      const {children, value} = props;
-      const isExternal = value.href.startsWith('http');
-      return createElement('a', {
-        href: value.href,
-        target: isExternal ? "_blank" : undefined,
-        rel: isExternal ? "noopener noreferrer" : undefined,
-        class: "text-blue-600 underline font-semibold hover:text-blue-800"
-      }, children);
-    }
-  },
   types: {
-    // ESTO ES LO QUE PINTA LA IMAGEN DEL MAPA DE CALOR
     image: ({ value }: any) => {
       if (!value?.asset) return null;
       return createElement('img', {
@@ -65,7 +50,6 @@ const components = {
   title={post.title} 
   description={post.metaDescription || "Caso de éxito detallado sobre optimización SEO Local."}
 >
-<pre>{JSON.stringify(post.content, null, 2)}</pre>
   <article class="post-container">
     <nav class="breadcrumbs">
       <div class="nav-content">
@@ -102,7 +86,12 @@ const components = {
       <hr class="divider" />
 
       <div class="rich-text">
-        <PortableText value={post.content} components={components} />
+        {/* Aquí renderizamos lo que capturamos como 'content' */}
+        {post.content ? (
+          <PortableText value={post.content} components={components} />
+        ) : (
+          <p class="italic text-gray-400">Contenido en preparación...</p>
+        )}
       </div>
     </main>
   </article>
@@ -119,9 +108,7 @@ const components = {
   .divider { border: 0; border-top: 1px solid #eee; margin: 3rem 0; }
   .rich-text { font-size: 1.2rem; }
   
-  /* Selectores globales para el contenido dinámico */
-  .rich-text :global(h2) { font-size: 2.25rem; border-left: 5px solid #2563eb; padding-left: 1rem; }
+  .rich-text :global(h2) { font-size: 2.25rem; border-left: 5px solid #2563eb; padding-left: 1rem; margin-top: 2rem; }
   .rich-text :global(p) { margin-bottom: 1.75rem; color: #374151; }
   .rich-text :global(img) { transition: transform 0.3s ease; }
-  .rich-text :global(img:hover) { transform: scale(1.01); }
 </style>
