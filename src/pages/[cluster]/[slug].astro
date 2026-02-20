@@ -4,119 +4,72 @@ import { PortableText } from '@portabletext/react';
 import Layout from '../../layouts/Layout.astro';
 import { createElement } from 'react';
 
-// Forzamos SSR para que los cambios en Sanity se vean al refrescar
 export const prerender = false;
-
 const { slug } = Astro.params;
 
-// GROQ: Buscamos el caso de estudio y mapeamos "body" a "content"
+// Traemos "body" y lo renombramos a "content" para el resto del código
 const post = await client.fetch(`*[_type == "caseStudy" && slug.current == $slug][0]{
   title,
   metaDescription,
   mainImage,
-  "content": body,
+  "content": body, 
   "clusterName": coalesce(cluster->title, "Estrategia Local"),
   "clusterSlug": coalesce(cluster->slug.current, "seo-local"),
   metrics
 }`, { slug });
 
-if (!post) {
-  return Astro.redirect('/404');
-}
+if (!post) return Astro.redirect('/404');
 
-// Configuración de renderizado para PortableText
 const components = {
   block: {
-    h2: ({children}: any) => createElement('h2', { class: 'text-3xl font-bold mt-12 mb-6 border-left-blue' }, children),
-    h3: ({children}: any) => createElement('h3', { class: 'text-2xl font-bold mt-8 mb-4' }, children),
+    h2: ({children}: any) => createElement('h2', { class: 'text-3xl font-bold mt-12 mb-6 border-l-4 border-blue-600 pl-4' }, children),
     normal: ({children}: any) => createElement('p', { class: 'mb-6 text-gray-700 leading-relaxed' }, children),
   },
   types: {
     image: ({ value }: any) => {
       if (!value?.asset) return null;
       return createElement('img', {
-        src: urlFor(value).width(1000).auto('format').url(),
-        alt: value.alt || 'Resultado de SEO Local',
-        class: 'rounded-2xl my-10 shadow-xl border border-gray-100 w-full h-auto',
-        loading: 'lazy'
+        src: urlFor(value).width(1000).url(),
+        alt: value.alt || 'Imagen del caso',
+        class: 'rounded-2xl my-10 shadow-lg w-full'
       });
     }
   }
 };
 ---
 
-<Layout 
-  title={post.title} 
-  description={post.metaDescription || "Caso de éxito sobre optimización SEO Local."}
->
-  <article class="post-container">
-    <nav class="breadcrumbs">
-      <div class="nav-content">
-        <a href="/">Inicio</a> 
-        <span class="separator">/</span> 
-        <a href={`/blog`}>Blog</a> 
-        <span class="separator">/</span> 
-        <span class="current">{post.title}</span>
+<Layout title={post.title} description={post.metaDescription}>
+  <article class="max-w-4xl mx-auto px-6 py-12">
+    <header class="mb-12">
+      <h1 class="text-5xl font-black mb-6">{post.title}</h1>
+      <span class="bg-blue-100 text-blue-800 px-4 py-1 rounded-full font-bold">
+        {post.clusterName}
+      </span>
+    </header>
+
+    {post.mainImage && (
+      <img src={urlFor(post.mainImage).url()} class="w-full rounded-3xl mb-12 shadow-2xl" />
+    )}
+
+    {post.metrics && (
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        {post.metrics.map((m: any) => (
+          <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 text-center">
+            <span class="block text-3xl font-extrabold text-blue-600">{m.value}</span>
+            <span class="text-sm text-gray-500 uppercase font-bold tracking-widest">{m.label}</span>
+          </div>
+        ))}
       </div>
-    </nav>
+    )}
 
-    <main class="main-content">
-      {post.mainImage && (
-        <img 
-          src={urlFor(post.mainImage).width(1200).url()} 
-          alt={post.mainImage.alt || post.title} 
-          class="main-image"
-        />
-      )}
-
-      <header class="mb-12">
-        <h1 class="text-4xl md:text-5xl font-black text-gray-900 mb-4 leading-tight">
-          {post.title}
-        </h1>
-        <div class="flex items-center gap-2 text-gray-500">
-          <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase">
-            {post.clusterName}
-          </span>
-        </div>
-      </header>
-
-      {post.metrics && (
-        <div class="metrics-grid">
-          {post.metrics.map((m: any) => (
-            <div class="metric-card">
-              <span class="metric-value">{m.value}</span>
-              <span class="metric-label">{m.label}</span>
-            </div>
-          ))}
+    <div class="prose prose-lg max-w-none">
+      {post.content ? (
+        <PortableText value={post.content} components={components} />
+      ) : (
+        <div class="p-8 border-2 border-dashed border-gray-200 rounded-2xl text-center text-gray-400">
+          Esperando contenido desde Sanity...
         </div>
       )}
-
-      <hr class="divider" />
-
-      <div class="rich-text">
-        {post.content ? (
-          <PortableText value={post.content} components={components} />
-        ) : (
-          <p class="italic text-gray-400">Contenido en redacción...</p>
-        )}
-      </div>
-    </main>
+    </div>
   </article>
 </Layout>
-
-<style>
-  .post-container { background: white; min-height: 100vh; font-family: sans-serif; }
-  .breadcrumbs { background: #f9f9f9; padding: 1rem 0; border-bottom: 1px solid #eee; font-size: 0.9rem; }
-  .nav-content { max-width: 850px; margin: 0 auto; padding: 0 1.5rem; color: #666; }
-  .separator { margin: 0 10px; color: #ccc; }
-  .main-content { max-width: 850px; margin: 0 auto; padding: 3rem 1.5rem; }
-  .main-image { width: 100%; border-radius: 20px; margin-bottom: 3rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-  .divider { border: 0; border-top: 1px solid #eee; margin: 2.5rem 0; }
-  
-  .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-  .metric-card { background: #f8fafc; padding: 1.5rem; border-radius: 15px; text-align: center; border: 1px solid #e2e8f0; }
-  .metric-value { display: block; font-size: 1.8rem; font-weight: 800; color: #2563eb; }
-  .metric-label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-weight: 600; }
-
-  .rich-text :global(h2) { border-left: 4px solid #2563eb; padding-left: 1rem; }
-</style>
