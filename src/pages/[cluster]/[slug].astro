@@ -4,31 +4,30 @@ import { PortableText } from '@portabletext/react';
 import Layout from '../../layouts/Layout.astro';
 import { createElement } from 'react';
 
-// 1. SSR para Vercel activo
+// Forzamos SSR para que los cambios en Sanity se vean al refrescar
 export const prerender = false;
 
 const { slug } = Astro.params;
 
-// 2. Consulta GROQ
-// IMPORTANTE: Buscamos "body" (el campo nuevo) y lo renombramos a "content" aquí mismo
+// GROQ: Buscamos el caso de estudio y mapeamos "body" a "content"
 const post = await client.fetch(`*[_type == "caseStudy" && slug.current == $slug][0]{
   title,
-  metaDescription, 
-  "h1": title,
-  mainImage, 
-  "content": body, 
+  metaDescription,
+  mainImage,
+  "content": body,
   "clusterName": coalesce(cluster->title, "Estrategia Local"),
-  "clusterSlug": coalesce(cluster->slug.current, "seo-local")
+  "clusterSlug": coalesce(cluster->slug.current, "seo-local"),
+  metrics
 }`, { slug });
 
 if (!post) {
   return Astro.redirect('/404');
 }
 
-// 3. Componentes para PortableText
+// Configuración de renderizado para PortableText
 const components = {
   block: {
-    h2: ({children}: any) => createElement('h2', { class: 'text-3xl font-bold mt-12 mb-6' }, children),
+    h2: ({children}: any) => createElement('h2', { class: 'text-3xl font-bold mt-12 mb-6 border-left-blue' }, children),
     h3: ({children}: any) => createElement('h3', { class: 'text-2xl font-bold mt-8 mb-4' }, children),
     normal: ({children}: any) => createElement('p', { class: 'mb-6 text-gray-700 leading-relaxed' }, children),
   },
@@ -48,14 +47,14 @@ const components = {
 
 <Layout 
   title={post.title} 
-  description={post.metaDescription || "Caso de éxito detallado sobre optimización SEO Local."}
+  description={post.metaDescription || "Caso de éxito sobre optimización SEO Local."}
 >
   <article class="post-container">
     <nav class="breadcrumbs">
       <div class="nav-content">
-        <a href="/" class="hover:text-blue-600 transition">Inicio</a> 
+        <a href="/">Inicio</a> 
         <span class="separator">/</span> 
-        <a href={`/cluster/${post.clusterSlug}`} class="hover:text-blue-600 transition">{post.clusterName}</a> 
+        <a href={`/blog`}>Blog</a> 
         <span class="separator">/</span> 
         <span class="current">{post.title}</span>
       </div>
@@ -67,30 +66,38 @@ const components = {
           src={urlFor(post.mainImage).width(1200).url()} 
           alt={post.mainImage.alt || post.title} 
           class="main-image"
-          loading="eager"
         />
       )}
 
       <header class="mb-12">
         <h1 class="text-4xl md:text-5xl font-black text-gray-900 mb-4 leading-tight">
-          {post.h1 || post.title}
+          {post.title}
         </h1>
         <div class="flex items-center gap-2 text-gray-500">
-          <span>Especialidad:</span>
-          <span class="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider">
+          <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase">
             {post.clusterName}
           </span>
         </div>
       </header>
 
+      {post.metrics && (
+        <div class="metrics-grid">
+          {post.metrics.map((m: any) => (
+            <div class="metric-card">
+              <span class="metric-value">{m.value}</span>
+              <span class="metric-label">{m.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
       <hr class="divider" />
 
       <div class="rich-text">
-        {/* Aquí renderizamos lo que capturamos como 'content' */}
         {post.content ? (
           <PortableText value={post.content} components={components} />
         ) : (
-          <p class="italic text-gray-400">Contenido en preparación...</p>
+          <p class="italic text-gray-400">Contenido en redacción...</p>
         )}
       </div>
     </main>
@@ -98,17 +105,18 @@ const components = {
 </Layout>
 
 <style>
-  .post-container { background: white; min-height: 100vh; }
-  .breadcrumbs { background: #fdfdfd; padding: 1.25rem 0; border-bottom: 1px solid #f0f0f0; font-size: 0.95rem; }
-  .nav-content { max-width: 850px; margin: 0 auto; padding: 0 1.5rem; color: #777; }
-  .separator { margin: 0 12px; color: #ddd; }
-  .current { color: #222; font-weight: 500; }
-  .main-content { max-width: 850px; margin: 0 auto; padding: 4rem 1.5rem; }
-  .main-image { width: 100%; border-radius: 24px; margin-bottom: 3.5rem; shadow: 0 20px 40px rgba(0,0,0,0.1); }
-  .divider { border: 0; border-top: 1px solid #eee; margin: 3rem 0; }
-  .rich-text { font-size: 1.2rem; }
+  .post-container { background: white; min-height: 100vh; font-family: sans-serif; }
+  .breadcrumbs { background: #f9f9f9; padding: 1rem 0; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+  .nav-content { max-width: 850px; margin: 0 auto; padding: 0 1.5rem; color: #666; }
+  .separator { margin: 0 10px; color: #ccc; }
+  .main-content { max-width: 850px; margin: 0 auto; padding: 3rem 1.5rem; }
+  .main-image { width: 100%; border-radius: 20px; margin-bottom: 3rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+  .divider { border: 0; border-top: 1px solid #eee; margin: 2.5rem 0; }
   
-  .rich-text :global(h2) { font-size: 2.25rem; border-left: 5px solid #2563eb; padding-left: 1rem; margin-top: 2rem; }
-  .rich-text :global(p) { margin-bottom: 1.75rem; color: #374151; }
-  .rich-text :global(img) { transition: transform 0.3s ease; }
+  .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .metric-card { background: #f8fafc; padding: 1.5rem; border-radius: 15px; text-align: center; border: 1px solid #e2e8f0; }
+  .metric-value { display: block; font-size: 1.8rem; font-weight: 800; color: #2563eb; }
+  .metric-label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-weight: 600; }
+
+  .rich-text :global(h2) { border-left: 4px solid #2563eb; padding-left: 1rem; }
 </style>
