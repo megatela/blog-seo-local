@@ -8,7 +8,7 @@ export default defineType({
     defineField({ name: 'title', title: 'Título', type: 'string' }),
     defineField({ name: 'slug', title: 'Slug', type: 'slug', options: { source: 'title' } }),
     
-    // Añadimos este para que deje de dar error de "campo desconocido"
+    // 1. Añadimos metaDescription para que desaparezca el error amarillo
     defineField({
       name: 'metaDescription',
       title: 'Meta Description (SEO)',
@@ -18,6 +18,13 @@ export default defineType({
 
     defineField({ name: 'clientName', title: 'Nombre del Cliente', type: 'string' }),
     
+    defineField({
+      name: 'cluster',
+      title: 'Clúster Relacionado',
+      type: 'reference',
+      to: [{ type: 'cluster' }],
+    }),
+
     defineField({
       name: 'mainImage',
       title: 'Imagen de Portada',
@@ -38,14 +45,18 @@ export default defineType({
       }]
     }),
 
-    // ESTE ES EL CAMPO QUE TIENE QUE REAPARECER
+    // 2. EL CAMPO CLAVE: Usamos 'body' para forzar un editor limpio
     defineField({
-      name: 'body',
+      name: 'body', 
       title: 'Descripción del éxito',
-      description: 'Explica la estrategia: qué hiciste y qué resultados lograste.',
+      description: 'Explica la estrategia y resultados.',
       type: 'array',
       of: [
-        { type: 'block' }, 
+        { 
+          type: 'block',
+          styles: [{title: 'Normal', value: 'normal'}, {title: 'H2', value: 'h2'}],
+          lists: [{title: 'Bullet', value: 'bullet'}]
+        },
         { type: 'image', options: { hotspot: true } }
       ],
     }),
