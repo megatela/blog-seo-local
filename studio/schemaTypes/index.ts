@@ -5,5 +5,5 @@ import caseStudy from './caseStudy'
 export const schemaTypes = [
   post,
   cluster,
-  caseStudy
+  caseStudy // Asegúrate de que este nombre coincide con la importación
 ]
