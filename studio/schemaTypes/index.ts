@@ -3,7 +3,7 @@ import cluster from './cluster'
 import caseStudy from './caseStudy'
 
 export const schemaTypes = [
-  post,
+  post
   cluster,
   caseStudy // Asegúrate de que este nombre coincide con la importación
 ]
