@@ -8,15 +8,21 @@ export default defineType({
     defineField({ name: 'title', type: 'string', title: 'Título' }),
     defineField({ name: 'slug', type: 'slug', options: { source: 'title' } }),
     
-    // CAMPOS FANTASMA: Los incluimos para que Sanity se calme
-    defineField({ name: 'metaDescription', type: 'text', title: 'SEO Desc' }),
-    defineField({ name: 'clientName', type: 'string', title: 'Cliente' }),
-    defineField({ name: 'content', type: 'array', of: [{type: 'block'}], title: 'Contenido Antiguo' }),
+    // ESTOS SON LOS CAMPOS QUE ESTÁN CAUSANDO EL AVISO AMARILLO
+    // Los declaramos temporalmente para que Sanity deje de dar error
+    defineField({ name: 'metaDescription', type: 'text', title: 'Descripción SEO Antigua' }),
+    defineField({ name: 'clientName', type: 'string', title: 'Nombre Cliente Antiguo' }),
+    defineField({ 
+      name: 'content', 
+      type: 'array', 
+      title: 'Editor Antiguo (Bloqueado)',
+      of: [{type: 'block'}] 
+    }),
 
-    // CAMPO NUEVO (EL QUE QUEREMOS USAR)
+    // ESTE ES TU NUEVO EDITOR (EL QUE VAMOS A USAR)
     defineField({
       name: 'body',
-      title: 'Descripción del éxito (Editor Actual)',
+      title: 'Descripción del éxito',
       type: 'array',
       of: [{ type: 'block' }, { type: 'image' }]
     }),
