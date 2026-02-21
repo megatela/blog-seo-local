@@ -8,7 +8,7 @@ export const prerender = false;
 const { slug } = Astro.params;
 
 // GROQ: Mapeamos "body" de Sanity a "content" para el componente
-const post = await client.fetch(`*[_type == "caseStudy" && slug.current == $slug][0]{
+const post = await client.fetch(`*[_type == "casoExito" && slug.current == $slug][0]{
   title,
   metaDescription,
   mainImage,
