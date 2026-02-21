@@ -1,69 +1,29 @@
 ---
-import { client, urlFor } from '../../lib/sanity';
+import { client } from '../../lib/sanity';
 import { PortableText } from '@portabletext/react';
 import Layout from '../../layouts/Layout.astro';
-import { createElement } from 'react';
 
 export const prerender = false;
 const { slug } = Astro.params;
 
-// GROQ: Mapeamos "body" de Sanity a "content" para el componente
-const post = await client.fetch(`*[_type == "casoExito" && slug.current == $slug][0]{
+const post = await client.fetch(`*[_type == "caseStudy" && slug.current == $slug][0]{
   title,
-  metaDescription,
-  mainImage,
   "content": body,
   metrics
 }`, { slug });
 
 if (!post) return Astro.redirect('/404');
-
-const components = {
-  block: {
-    h2: ({children}: any) => createElement('h2', { class: 'text-3xl font-bold mt-12 mb-6 border-l-4 border-blue-600 pl-4' }, children),
-    normal: ({children}: any) => createElement('p', { class: 'mb-6 text-gray-700 leading-relaxed' }, children),
-  },
-  types: {
-    image: ({ value }: any) => {
-      if (!value?.asset) return null;
-      return createElement('img', {
-        src: urlFor(value).width(1000).url(),
-        alt: value.alt || 'Imagen de resultado SEO',
-        class: 'rounded-2xl my-10 shadow-lg w-full'
-      });
-    }
-  }
-};
 ---
 
-<Layout title={post.title} description={post.metaDescription}>
-  <article class="max-w-4xl mx-auto px-6 py-12">
-    <header class="mb-10">
-      <h1 class="text-5xl font-black mb-4 leading-tight">{post.title}</h1>
-    </header>
-
-    {post.mainImage && (
-      <img src={urlFor(post.mainImage).url()} class="w-full rounded-3xl mb-12 shadow-xl" />
-    )}
-
-    {post.metrics && (
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-        {post.metrics.map((m: any) => (
-          <div class="bg-blue-50 p-6 rounded-xl text-center border border-blue-100">
-            <span class="block text-2xl font-bold text-blue-700">{m.value}</span>
-            <span class="text-xs text-blue-500 uppercase font-bold tracking-tighter">{m.label}</span>
-          </div>
-        ))}
-      </div>
-    )}
-
-    <div class="prose prose-lg">
+<Layout title={post.title}>
+  <article class="max-w-2xl mx-auto py-20 px-4">
+    <h1 class="text-4xl font-bold mb-8">{post.title}</h1>
+    
+    <div class="prose prose-blue">
       {post.content ? (
-        <PortableText value={post.content} components={components} />
+        <PortableText value={post.content} />
       ) : (
-        <p class="text-gray-400 italic text-center py-10 border-2 border-dashed rounded-xl">
-          El contenido se está redactando en el editor de Sanity...
-        </p>
+        <p>Escribiendo contenido...</p>
       )}
     </div>
   </article>
