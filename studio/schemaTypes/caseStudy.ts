@@ -5,26 +5,20 @@ export default defineType({
   title: 'Caso de Éxito',
   type: 'document',
   fields: [
-    defineField({ name: 'title', title: 'Título', type: 'string' }),
-    defineField({ name: 'slug', title: 'Slug', type: 'slug', options: { source: 'title' } }),
+    defineField({ name: 'title', type: 'string', title: 'Título' }),
+    defineField({ name: 'slug', type: 'slug', options: { source: 'title' } }),
+    
+    // CAMPOS FANTASMA: Los incluimos para que Sanity se calme
+    defineField({ name: 'metaDescription', type: 'text', title: 'SEO Desc' }),
+    defineField({ name: 'clientName', type: 'string', title: 'Cliente' }),
+    defineField({ name: 'content', type: 'array', of: [{type: 'block'}], title: 'Contenido Antiguo' }),
+
+    // CAMPO NUEVO (EL QUE QUEREMOS USAR)
     defineField({
-      name: 'metrics',
-      title: 'Métricas Clave',
+      name: 'body',
+      title: 'Descripción del éxito (Editor Actual)',
       type: 'array',
-      of: [{
-        type: 'object',
-        fields: [
-          { name: 'label', type: 'string', title: 'Etiqueta' },
-          { name: 'value', type: 'string', title: 'Valor' }
-        ]
-      }]
-    }),
-    defineField({
-      name: 'body', // Usamos un nombre fresco para evitar conflictos
-      title: 'Descripción del éxito',
-      description: 'Explica la estrategia y los resultados.',
-      type: 'array',
-      of: [{ type: 'block' }]
+      of: [{ type: 'block' }, { type: 'image' }]
     }),
   ],
 })
