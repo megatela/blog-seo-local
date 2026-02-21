@@ -1,5 +1,5 @@
 ---
-import { client } from '../../lib/sanity';
+import { client, urlFor } from '../../lib/sanity';
 import { PortableText } from '@portabletext/react';
 import Layout from '../../layouts/Layout.astro';
 
@@ -8,22 +8,22 @@ const { slug } = Astro.params;
 
 const post = await client.fetch(`*[_type == "caseStudy" && slug.current == $slug][0]{
   title,
-  "content": body,
-  metrics
+  "content": coalesce(body, content),
+  metaDescription
 }`, { slug });
 
 if (!post) return Astro.redirect('/404');
 ---
 
-<Layout title={post.title}>
-  <article class="max-w-2xl mx-auto py-20 px-4">
-    <h1 class="text-4xl font-bold mb-8">{post.title}</h1>
+<Layout title={post.title} description={post.metaDescription}>
+  <article class="max-w-3xl mx-auto py-10 px-4">
+    <h1 class="text-4xl font-bold mb-10">{post.title}</h1>
     
-    <div class="prose prose-blue">
+    <div class="prose">
       {post.content ? (
         <PortableText value={post.content} />
       ) : (
-        <p>Escribiendo contenido...</p>
+        <p class="text-gray-500">Sin contenido disponible todavía.</p>
       )}
     </div>
   </article>
