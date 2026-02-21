@@ -8,21 +8,20 @@ const { slug } = Astro.params;
 
 const post = await client.fetch(`*[_type == "caseStudy" && slug.current == $slug][0]{
   title,
-  "content": coalesce(body, content),
-  "meta": metaDescription
+  "content": body
 }`, { slug });
 
 if (!post) return Astro.redirect('/404');
 ---
 
-<Layout title={post.title} description={post.meta}>
-  <article class="max-w-3xl mx-auto py-12 px-6">
-    <h1 class="text-4xl font-black mb-8">{post.title}</h1>
-    <div class="prose">
+<Layout title={post.title}>
+  <article class="max-w-3xl mx-auto py-20 px-6">
+    <h1 class="text-5xl font-black mb-10">{post.title}</h1>
+    <div class="prose prose-lg">
       {post.content ? (
         <PortableText value={post.content} />
       ) : (
-        <p class="text-gray-400">Empezando a redactar el caso de éxito...</p>
+        <p>Cargando contenido...</p>
       )}
     </div>
   </article>
