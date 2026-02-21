@@ -12,9 +12,10 @@ export default defineType({
     }),
     defineField({
       name: 'slug',
-      title: 'Slug',
+      title: 'Slug (URL)',
       type: 'slug',
       options: { source: 'title', maxLength: 96 },
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'metaDescription',
@@ -26,7 +27,7 @@ export default defineType({
       name: 'body',
       title: 'Descripción del éxito',
       type: 'array',
-      of: [{ type: 'block' }], // ESTE ES EL EDITOR
+      of: [{ type: 'block' }],
     }),
   ],
 })
