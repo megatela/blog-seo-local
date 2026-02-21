@@ -1,33 +1,13 @@
 import { defineField, defineType } from 'sanity'
 
 export default defineType({
-  name: 'caseStudy',
-  title: 'Caso de Éxito',
+  name: 'caseStudyNuevo', // CAMBIAMOS ESTO
+  title: 'CASO PRUEBA TOTAL', // CAMBIAMOS ESTO
   type: 'document',
   fields: [
-    defineField({
-      name: 'title',
-      title: 'Título',
-      type: 'string',
-    }),
-    defineField({
-      name: 'slug',
-      title: 'Slug (URL)',
-      type: 'slug',
-      options: { source: 'title', maxLength: 96 },
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: 'metaDescription',
-      title: 'Meta Description (SEO)',
-      type: 'text',
-      rows: 3,
-    }),
-    defineField({
-      name: 'body',
-      title: 'Descripción del éxito',
-      type: 'array',
-      of: [{ type: 'block' }],
-    }),
+    defineField({ name: 'title', type: 'string', title: 'Título' }),
+    defineField({ name: 'slug', type: 'slug', title: 'URL Slug', options: { source: 'title' } }),
+    defineField({ name: 'metaDescription', type: 'text', title: 'SEO' }),
+    defineField({ name: 'body', type: 'array', title: 'Editor', of: [{ type: 'block' }] }),
   ],
 })
